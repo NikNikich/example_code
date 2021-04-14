@@ -1,0 +1,9 @@
+.idea
+dist
+e2e
+node_modules
+target
+test
+uml
+unit-coverage
+.scannerwork
