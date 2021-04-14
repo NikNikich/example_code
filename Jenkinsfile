@@ -39,11 +39,11 @@ node {
       }
 
       stage("Finish") {
-        sendMessage("🛠✅ Build ${repositoryName} №${env.BUILD_NUMBER}: ${remoteImageTag}. Finish. Deploy: https://${jenkinsURL}/job/api_deploy/")
+        sendMessage("🛠✅ Build ${repositoryName} №${env.BUILD_NUMBER}: ${imageTag}. Finish. Deploy: https://${jenkinsURL}/job/api_deploy/")
       }
 
     } catch(e) {
-      sendMessage("🛠❌ Build ${repositoryName} №${env.BUILD_NUMBER}: Error ${remoteImageTag} ${e}")
+      sendMessage("🛠❌ Build ${repositoryName} №${env.BUILD_NUMBER}: Error ${imageTag} ${e}")
       throw e
     }
 }
