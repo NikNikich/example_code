@@ -1,7 +1,7 @@
 // noinspection SpellCheckingInspection
 module.exports = {
   server: {
-    port: 3002,
+    port: 3000,
     url: 'http://localhost',
   },
   swagger: {
