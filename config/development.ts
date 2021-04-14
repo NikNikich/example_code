@@ -11,7 +11,7 @@ module.exports = {
     port: '5800',
     host: 'localhost',
     username: 'postgres',
-    password: 'postgres',
+    password: 'HZz359kZoJWiQYGZ',
     database: 'water_loc', // GO TO README FILE
     synchronize: true,
     migrationsRun: true,

@@ -1,0 +1,37 @@
+version: '2.0'
+
+services:
+  postgres:
+    image: postgres:11
+    restart: always
+    env_file:
+      - ./docker/postgres/docker-compose.dev.pg.env
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+    networks:
+      - united-water
+
+  api:
+    image: registry.citronium.com/united-water_api:${APP_VERSION:-latest}
+    build: .
+    restart: always
+    environment:
+      NODE_ENV: 'development'
+    labels:
+      - traefik.backend=united-water_api
+      - traefik.frontend.rule=Host:united-water_api.psrv5.citronium.com
+      - traefik.port=3002
+      - traefik.docker.network=traefik_proxy
+    networks:
+      - united-water
+      - traefik
+
+networks:
+  united-water:
+    driver: bridge
+  traefik:
+    external:
+      name: traefik_proxy
+
+volumes:
+  pg_data:
