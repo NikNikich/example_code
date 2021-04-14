@@ -19,7 +19,7 @@ services:
       NODE_ENV: 'development'
     labels:
       - traefik.backend=united-water_api
-      - traefik.frontend.rule=Host:united-water_api.psrv5.citronium.com
+      - traefik.frontend.rule=Host:unitedwater-api.psrv5.citronium.com
       - traefik.port=3000
       - traefik.docker.network=traefik_proxy
     networks:
