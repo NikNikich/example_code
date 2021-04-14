@@ -30,7 +30,7 @@ node {
         sh "docker build -t ${dockerRegistry}:${imageTag} ."
       }
 
-      tage("Push") {
+      stage("Push") {
         sh "docker push ${dockerRegistry}:${imageTag}"
       }
 
