@@ -8,8 +8,8 @@ module.exports = {
     scheme: 'http',
   },
   db: {
-    port: '5800',
-    host: 'localhost',
+    port: '5432',
+    host: 'postgres',
     username: 'postgres',
     password: 'HZz359kZoJWiQYGZ',
     database: 'water_loc', // GO TO README FILE
