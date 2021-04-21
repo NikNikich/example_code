@@ -18,7 +18,7 @@ import {
   ApiResponse,
   ApiUseTags,
 } from '@nestjs/swagger';
-import { User } from '../../../../core/domain/entity/user.entity';
+import { UserEntity } from '../../../../core/domain/entity/user.entity';
 import { GetRequestId } from '../../../decorators/get.request.id.decorator';
 import { LogoutResponse } from '../../../response/user/logout.response';
 import { SmsResponse } from '../../../response/user/sms.response';
@@ -116,7 +116,7 @@ export class UserController {
   })
   async logout(
     @GetRequestId() requestId: string,
-    @GetUser() user: User,
+    @GetUser() user: UserEntity,
   ): Promise<LogoutResponse> {
     await this.userService.logout(requestId, user);
     return new LogoutResponse(requestId, null);
@@ -159,7 +159,7 @@ export class UserController {
   @ApiOperation({ title: 'Информация об авторизованном юзере' })
   async getMe(
     @GetRequestId() requestId: string,
-    @GetUser() user: User,
+    @GetUser() user: UserEntity,
   ): Promise<MeResponse> {
     return new MeResponse(requestId, user);
   }
@@ -171,7 +171,7 @@ export class UserController {
   @ApiOperation({ title: 'Редактирование полей юзера' })
   async editMyself(
     @GetRequestId() requestId: string,
-    @GetUser() user: User,
+    @GetUser() user: UserEntity,
     @Body(ValidationPipe) userUpdateDto: UpdateUserDto,
   ): Promise<MeResponse> {
     return new MeResponse(

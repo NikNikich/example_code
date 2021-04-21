@@ -1,9 +1,22 @@
-import { BaseEntity, Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  BaseEntity,
+  Column,
+  CreateDateColumn,
+  DeleteDateColumn,
+  Entity,
+  JoinColumn,
+  OneToMany,
+  OneToOne,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
+} from 'typeorm';
 import { ApiModelProperty } from '@nestjs/swagger';
+import { RoleEntity } from './role.entity';
+import { EquipmentEntity } from './equipment.entity';
 
 // TODO: move API Model Properties to DTO in documentation
-@Entity()
-export class User extends BaseEntity {
+@Entity({ name: 'user' })
+export class UserEntity extends BaseEntity {
   @ApiModelProperty({ type: 'number', nullable: false })
   @PrimaryGeneratedColumn()
   id: number;
@@ -52,4 +65,27 @@ export class User extends BaseEntity {
   })
   @Column({ nullable: true })
   birthday: Date;
+
+  @OneToOne(() => RoleEntity, {
+    cascade: true,
+    nullable: true,
+  })
+  @JoinColumn()
+  role: RoleEntity;
+
+  @OneToMany(
+    () => EquipmentEntity,
+    equipment => equipment.user,
+    { nullable: true },
+  )
+  equipment: EquipmentEntity[];
+
+  @DeleteDateColumn({ type: 'timestamp' })
+  public deletedAt: Date;
+
+  @CreateDateColumn({ type: 'timestamp' })
+  public createdAt: Date;
+
+  @UpdateDateColumn({ type: 'timestamp' })
+  public updatedAt: Date;
 }

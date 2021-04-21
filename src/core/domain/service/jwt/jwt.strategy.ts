@@ -5,7 +5,7 @@ import { UserRepository } from '../../repository/user.repository';
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import * as config from 'config';
 import { JwtPayload } from './jwt.payload.interface';
-import { User } from '../../entity/user.entity';
+import { UserEntity } from '../../entity/user.entity';
 import { SessionRepository } from '../../repository/session.repository';
 
 @Injectable()
@@ -25,7 +25,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
 
   /* This method is mandatory for jwt strategy */
   // noinspection JSUnusedGlobalSymbols
-  async validate(payload: JwtPayload): Promise<User> {
+  async validate(payload: JwtPayload): Promise<UserEntity> {
     const { token } = payload;
     const session = await this.sessionRepository.getSessionByToken(token);
     if (!session) {
