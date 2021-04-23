@@ -15,6 +15,9 @@ module.exports = {
       './src/infrastructure/database/typeorm/migrations/*.js',
     ],
     migrationsDir: './src/infrastructure/database/typeorm/migrations/',
+    cli: {
+      migrationsDir: 'src/infrastructure/database/typeorm',
+    },
   },
   sms: {
     minRepeatTime: 60000,

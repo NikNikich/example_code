@@ -21,6 +21,8 @@ import { DeleteBaseResponse } from '../../../response/base/delete.base.response'
 import { GetRequestId } from '../../../decorators/get.request.id.decorator';
 import { NumberIdDto } from '../documentation/shared/number.id.dto';
 import { EquipmentEntity } from '../../../../core/domain/entity/equipment.entity';
+import { Auth } from '../../../../core/common/decorators/auth';
+import { UserRolesEnum } from '../../../shared/user.roles.enum';
 
 @ApiUseTags('equipments')
 @Controller('equipments')
@@ -29,8 +31,9 @@ export class EquipmentController {
 
   // TODO сделать нормально гард ролей юзера
   @Get()
-  @UseGuards(AuthGuard())
-  @ApiBearerAuth()
+  @Auth([UserRolesEnum.ADMIN])
+  /*@UseGuards(AuthGuard())
+  @ApiBearerAuth()*/
   @ApiResponse({ status: HttpStatus.OK, isArray: true, type: EquipmentEntity })
   @ApiOperation({ title: 'Список оборудование' })
   async equipmentList(@GetUser() user: UserEntity): Promise<EquipmentEntity[]> {
@@ -38,8 +41,9 @@ export class EquipmentController {
   }
 
   @Delete('/:id')
-  @UseGuards(AuthGuard())
-  @ApiBearerAuth()
+  @Auth([UserRolesEnum.ADMIN])
+  /* @UseGuards(AuthGuard())
+  @ApiBearerAuth()*/
   @ApiResponse({ status: HttpStatus.OK, type: DeleteBaseResponse })
   @ApiOperation({ title: 'Удалить Equipment' })
   async delete(

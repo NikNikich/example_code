@@ -34,7 +34,10 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
 
     // TODO: check expiration date
 
-    const user = await this.userRepository.findOne(session.userId);
+    const user = await this.userRepository.findOne({
+      where: { id: session.userId },
+      relations: ['role'],
+    });
     if (!user) {
       throw new UnauthorizedException();
     }

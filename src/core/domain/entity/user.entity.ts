@@ -55,16 +55,15 @@ export class UserEntity extends BaseEntity {
 
   @ApiModelProperty({ type: 'string', nullable: true })
   @Column({ nullable: true })
+  surName: string;
+
+  @ApiModelProperty({ type: 'string', nullable: true })
+  @Column({ nullable: true })
   lastName: string;
 
-  @ApiModelProperty({
-    type: 'string',
-    nullable: true,
-    format: 'date-time',
-    description: 'ISO string',
-  })
+  @ApiModelProperty({ type: 'string', nullable: true })
   @Column({ nullable: true })
-  birthday: Date;
+  organization: string;
 
   @OneToOne(() => RoleEntity, {
     cascade: true,

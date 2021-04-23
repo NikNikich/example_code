@@ -43,15 +43,4 @@ export class UpdateUserDto {
     required: false,
   })
   email: string;
-
-  @IsOptional()
-  @IsString()
-  @IsDateString()
-  @ApiModelProperty({
-    type: 'string',
-    format: 'date-time',
-    example: '1993-08-05T14:48:00.000Z',
-    required: false,
-  })
-  birthday: string;
 }

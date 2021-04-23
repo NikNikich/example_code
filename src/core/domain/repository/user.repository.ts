@@ -50,10 +50,6 @@ export class UserRepository extends Repository<UserEntity> {
       user.lastName = userUpdateDto.lastName;
     }
 
-    if (dtoKeys.includes('birthday')) {
-      user.birthday = moment(userUpdateDto.birthday).toDate();
-    }
-
     if (dtoKeys.includes('email')) {
       user.email = userUpdateDto.email.toLowerCase();
     }

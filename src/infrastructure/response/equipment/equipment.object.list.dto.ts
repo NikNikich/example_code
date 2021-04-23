@@ -1,7 +1,4 @@
-import CustomResponse from '../custom.response';
 import { ApiModelProperty } from '@nestjs/swagger';
-import { BaseDto } from '../base/base.dto';
-import { Column, PrimaryGeneratedColumn } from 'typeorm';
 
 export class EquipmentObjectListDto {
   @ApiModelProperty({ type: 'number' })

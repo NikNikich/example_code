@@ -33,6 +33,7 @@ import { PasswordRestoreResponse } from '../../../response/user/password.restore
 import { SignInByEmailDto } from '../documentation/user/sign.in.by.email.dto';
 import { SignUpByEmailDto } from '../documentation/user/sign.up.by.email.dto';
 import { MILLISECONDS_IN_SECOND } from '../../../shared/constants';
+import { Auth } from '../../../../core/common/decorators/auth';
 
 @ApiUseTags('users')
 @Controller('users')
@@ -108,8 +109,9 @@ export class UserController {
   }
 
   @Post('/logout')
-  @UseGuards(AuthGuard())
-  @ApiBearerAuth()
+  @Auth()
+  /*@UseGuards(AuthGuard())
+  @ApiBearerAuth()*/
   @ApiResponse({ status: HttpStatus.CREATED, type: LogoutResponse })
   @ApiOperation({
     title: 'Деактивировать jwt токен',
@@ -153,8 +155,9 @@ export class UserController {
   }
 
   @Get('/me')
-  @UseGuards(AuthGuard())
-  @ApiBearerAuth()
+  @Auth()
+  /* @UseGuards(AuthGuard())
+  @ApiBearerAuth()*/
   @ApiResponse({ status: HttpStatus.OK, type: MeResponse })
   @ApiOperation({ title: 'Информация об авторизованном юзере' })
   async getMe(
@@ -165,8 +168,9 @@ export class UserController {
   }
 
   @Put('/me')
-  @UseGuards(AuthGuard())
-  @ApiBearerAuth()
+  @Auth()
+  /* @UseGuards(AuthGuard())
+  @ApiBearerAuth()*/
   @ApiResponse({ status: HttpStatus.OK, type: MeResponse })
   @ApiOperation({ title: 'Редактирование полей юзера' })
   async editMyself(
