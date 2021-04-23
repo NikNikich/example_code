@@ -16,15 +16,13 @@ export class EmailTransport {
   }
 
   public async send(emailData: EmailSend): Promise<void> {
-    const transporter = nodemailer.createTransport({
-      SES: new aws.SES({
-        apiVersion: '2010-12-01',
-      }),
-    });
+    const transporter = nodemailer.createTransport(
+      config.get('email.transport'),
+    );
 
     try {
       const info: SentMessageInfo = await transporter.sendMail({
-        from: config.get('email.source'),
+        from: config.get('email.from'),
         to: emailData.recipientEmails,
         subject: emailData.subject,
         text: emailData.payload,
