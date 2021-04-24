@@ -1,20 +1,14 @@
-import {
-  ApiBearerAuth,
-  ApiOperation,
-  ApiResponse,
-  ApiUseTags,
-} from '@nestjs/swagger';
+import { ApiOperation, ApiResponse, ApiUseTags } from '@nestjs/swagger';
 import {
   Controller,
   Delete,
   Get,
   HttpStatus,
   Param,
-  UseGuards,
   ValidationPipe,
 } from '@nestjs/common';
 import { EquipmentService } from '../../../../application/services/equipment.service';
-import { AuthGuard } from '@nestjs/passport';
+
 import { UserEntity } from '../../../../core/domain/entity/user.entity';
 import { GetUser } from '../../../decorators/get.user.decorator';
 import { DeleteBaseResponse } from '../../../response/base/delete.base.response';
@@ -42,8 +36,6 @@ export class EquipmentController {
 
   @Delete('/:id')
   @Auth([UserRolesEnum.ADMIN])
-  /* @UseGuards(AuthGuard())
-  @ApiBearerAuth()*/
   @ApiResponse({ status: HttpStatus.OK, type: DeleteBaseResponse })
   @ApiOperation({ title: 'Удалить Equipment' })
   async delete(

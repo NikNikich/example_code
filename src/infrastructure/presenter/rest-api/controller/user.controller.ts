@@ -5,19 +5,13 @@ import {
   HttpStatus,
   Post,
   Put,
-  UseGuards,
   ValidationPipe,
 } from '@nestjs/common';
 import { UserService } from '../../../../application/services/user.service';
-import { AuthGuard } from '@nestjs/passport';
+
 import { GetUser } from '../../../decorators/get.user.decorator';
 import * as config from 'config';
-import {
-  ApiBearerAuth,
-  ApiOperation,
-  ApiResponse,
-  ApiUseTags,
-} from '@nestjs/swagger';
+import { ApiOperation, ApiResponse, ApiUseTags } from '@nestjs/swagger';
 import { UserEntity } from '../../../../core/domain/entity/user.entity';
 import { GetRequestId } from '../../../decorators/get.request.id.decorator';
 import { LogoutResponse } from '../../../response/user/logout.response';
@@ -110,8 +104,6 @@ export class UserController {
 
   @Post('/logout')
   @Auth()
-  /*@UseGuards(AuthGuard())
-  @ApiBearerAuth()*/
   @ApiResponse({ status: HttpStatus.CREATED, type: LogoutResponse })
   @ApiOperation({
     title: 'Деактивировать jwt токен',
@@ -156,8 +148,6 @@ export class UserController {
 
   @Get('/me')
   @Auth()
-  /* @UseGuards(AuthGuard())
-  @ApiBearerAuth()*/
   @ApiResponse({ status: HttpStatus.OK, type: MeResponse })
   @ApiOperation({ title: 'Информация об авторизованном юзере' })
   async getMe(
@@ -169,8 +159,6 @@ export class UserController {
 
   @Put('/me')
   @Auth()
-  /* @UseGuards(AuthGuard())
-  @ApiBearerAuth()*/
   @ApiResponse({ status: HttpStatus.OK, type: MeResponse })
   @ApiOperation({ title: 'Редактирование полей юзера' })
   async editMyself(

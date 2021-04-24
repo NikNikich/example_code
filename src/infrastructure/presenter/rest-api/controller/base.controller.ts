@@ -8,16 +8,10 @@ import {
   Post,
   Put,
   Query,
-  UseGuards,
   ValidationPipe,
 } from '@nestjs/common';
-import { AuthGuard } from '@nestjs/passport';
-import {
-  ApiBearerAuth,
-  ApiOperation,
-  ApiResponse,
-  ApiUseTags,
-} from '@nestjs/swagger';
+
+import { ApiOperation, ApiResponse, ApiUseTags } from '@nestjs/swagger';
 import { BaseService } from '../../../../application/services/base.service';
 import { GetRequestId } from '../../../decorators/get.request.id.decorator';
 import { CreateBaseResponse } from '../../../response/base/create.base.response';
@@ -40,8 +34,6 @@ export class BaseController {
 
   @Post('/')
   @Auth([UserRolesEnum.ADMIN])
-  /*@UseGuards(AuthGuard())
-  @ApiBearerAuth()*/
   @ApiResponse({ status: HttpStatus.CREATED, type: CreateBaseResponse })
   @ApiOperation({ title: 'Создать Base' })
   async create(
@@ -54,8 +46,6 @@ export class BaseController {
 
   @Get('/:id')
   @Auth([UserRolesEnum.ADMIN])
-  /*@UseGuards(AuthGuard())
-  @ApiBearerAuth()*/
   @ApiResponse({ status: HttpStatus.OK, type: GetBaseResponse })
   @ApiOperation({ title: 'Получить Base' })
   async get(
@@ -83,8 +73,6 @@ export class BaseController {
 
   @Put('/:id')
   @Auth([UserRolesEnum.ADMIN])
-  /* @UseGuards(AuthGuard())
-  @ApiBearerAuth()*/
   @ApiResponse({ status: HttpStatus.OK, type: UpdateBaseResponse })
   @ApiOperation({ title: 'Получить Base' })
   async update(
@@ -98,8 +86,6 @@ export class BaseController {
 
   @Delete('/:id')
   @Auth([UserRolesEnum.ADMIN])
-  /*@UseGuards(AuthGuard())
-  @ApiBearerAuth()*/
   @ApiResponse({ status: HttpStatus.OK, type: DeleteBaseResponse })
   @ApiOperation({ title: 'Удалить Base' })
   async delete(
