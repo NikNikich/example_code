@@ -51,7 +51,7 @@ export class UserService {
     private jwtService: JwtService,
   ) {}
 
-  async getUserByPhone(phone: string): Promise<UserEntity | undefined> {
+  async getUserByPhone(phone: number): Promise<UserEntity | undefined> {
     return this.userRepository.findOne({ where: { phone } });
   }
 
@@ -66,7 +66,7 @@ export class UserService {
     return this.userRepository.updateUser(user, userUpdateDto);
   }
 
-  async createUserByPhone(phone: string): Promise<UserEntity> {
+  async createUserByPhone(phone: number): Promise<UserEntity> {
     const role = await this.roleRepository.findOne({
       name: UserRolesEnum.USER,
     });
@@ -96,7 +96,7 @@ export class UserService {
     const backdoorCodes: string[] = config.get('sms.backdoorCodes');
 
     if (
-      backdoorPhones.includes(user.phone) &&
+      backdoorPhones.includes(user.phone.toString()) &&
       backdoorCodes.includes(signInRequestDto.code)
     ) {
       await Notifications.send(
@@ -264,6 +264,10 @@ export class UserService {
     return this.userRepository.findOne({ where: { resetCode } });
   }
 
+  async getListUser(): Promise<UserEntity[]> {
+    return this.userRepository.getListNotDeleteUser();
+  }
+
   async generateSmsCode(): Promise<string> {
     const min = 1000; // TODO: move to config
     const max = 9999; // TODO: move to config
@@ -313,13 +317,13 @@ export class UserService {
   }
 
   async backdoorCheck(
-    phone: string,
+    phone: number,
     smsText: string,
     requestId: string,
     userId: number,
   ): Promise<void> {
     const backdoorPhones: string[] = config.get('sms.backdoorPhones');
-    if (backdoorPhones.includes(phone)) {
+    if (backdoorPhones.includes(phone.toString())) {
       await Notifications.send(
         '📱 Sms request: BACKDOOR +' +
           phone +
@@ -332,7 +336,7 @@ export class UserService {
       );
     } else if (config.get('sms.sendRealSms')) {
       const transport = new SmsTransport();
-      await transport.send(phone, smsText, requestId, userId);
+      await transport.send(phone.toString(), smsText, requestId, userId);
     } else {
       await Notifications.send(
         '📱 Sms request: 1234 +' +

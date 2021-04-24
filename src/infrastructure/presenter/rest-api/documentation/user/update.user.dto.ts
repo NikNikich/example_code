@@ -21,6 +21,15 @@ export class UpdateUserDto {
 
   @IsOptional()
   @IsString()
+  @ApiModelProperty({
+    type: 'string',
+    example: 'Котович',
+    required: false,
+  })
+  surName: string;
+
+  @IsOptional()
+  @IsString()
   @Length(6, 100)
   @ApiModelProperty({
     type: 'string',

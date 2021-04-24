@@ -1,4 +1,4 @@
-import { EntityRepository, Repository } from 'typeorm';
+import { EntityRepository, IsNull, Repository } from 'typeorm';
 import { UpdateUserDto } from '../../../infrastructure/presenter/rest-api/documentation/user/update.user.dto';
 import { UserEntity } from '../entity/user.entity';
 import * as moment from 'moment';
@@ -7,7 +7,7 @@ import { RoleEntity } from '../entity/role.entity';
 
 @EntityRepository(UserEntity)
 export class UserRepository extends Repository<UserEntity> {
-  async createUser(phone: string, role: RoleEntity): Promise<UserEntity> {
+  async createUser(phone: number, role: RoleEntity): Promise<UserEntity> {
     const user = new UserEntity();
     user.role = role || null;
     user.phone = phone;
@@ -44,6 +44,10 @@ export class UserRepository extends Repository<UserEntity> {
 
     if (dtoKeys.includes('firstName')) {
       user.firstName = userUpdateDto.firstName;
+    }
+
+    if (dtoKeys.includes('surName')) {
+      user.surName = userUpdateDto.surName;
     }
 
     if (dtoKeys.includes('lastName')) {
@@ -94,5 +98,9 @@ export class UserRepository extends Repository<UserEntity> {
   async updateLastCode(user: UserEntity): Promise<void> {
     user.lastCode = moment().toDate();
     await user.save();
+  }
+
+  async getListNotDeleteUser(): Promise<UserEntity[]> {
+    return this.find({ updatedAt: IsNull() });
   }
 }

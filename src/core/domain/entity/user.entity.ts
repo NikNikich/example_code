@@ -21,9 +21,9 @@ export class UserEntity extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @ApiModelProperty({ type: 'string', nullable: true })
+  @ApiModelProperty({ type: 'number', nullable: true })
   @Column({ nullable: true })
-  phone: string;
+  phone: number;
 
   @ApiModelProperty({ type: 'string', nullable: true })
   @Column({ nullable: true })
@@ -64,6 +64,10 @@ export class UserEntity extends BaseEntity {
   @ApiModelProperty({ type: 'string', nullable: true })
   @Column({ nullable: true })
   organization: string;
+
+  @ApiModelProperty({ type: 'string', nullable: true })
+  @Column({ nullable: true })
+  position: string;
 
   @OneToOne(() => RoleEntity, {
     cascade: true,

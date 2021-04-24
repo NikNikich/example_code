@@ -28,11 +28,37 @@ import { SignInByEmailDto } from '../documentation/user/sign.in.by.email.dto';
 import { SignUpByEmailDto } from '../documentation/user/sign.up.by.email.dto';
 import { MILLISECONDS_IN_SECOND } from '../../../shared/constants';
 import { Auth } from '../../../../core/common/decorators/auth';
+import { UserRolesEnum } from '../../../shared/user.roles.enum';
+import { ListUserResponse } from '../../../response/user/list.user.response';
 
 @ApiUseTags('users')
 @Controller('users')
 export class UserController {
   constructor(private userService: UserService) {}
+
+  @Get('')
+  @Auth([UserRolesEnum.ADMIN])
+  @ApiResponse({ status: HttpStatus.OK, type: ListUserResponse })
+  @ApiOperation({ title: 'Вывести список пользователей' })
+  async getListUser(
+    @GetRequestId() requestId: string,
+  ): Promise<ListUserResponse> {
+    const users = await this.userService.getListUser();
+    return new ListUserResponse(requestId, users);
+  }
+
+  //TODO Додоелать сервис
+  @Put('/:id')
+  @Auth()
+  @ApiResponse({ status: HttpStatus.OK, type: MeResponse })
+  @ApiOperation({ title: 'Изменение пользователя' })
+  async editUser(
+    @GetRequestId() requestId: string,
+    /* @Param(ValidationPipe) idDto: NumberIdDto,
+      @Body(ValidationPipe) userUpdateDto: CreateAdminUserDto,*/
+  ): Promise<MeResponse> {
+    return new MeResponse(requestId, null);
+  }
 
   @Post('/sms')
   @ApiResponse({ status: HttpStatus.CREATED, type: SmsResponse })
