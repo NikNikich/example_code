@@ -131,7 +131,7 @@
   "husky": {
     "hooks": {
       "pre-commit": "pretty-quick --staged",
-      "pre-push": "yarn format && yarn lint && yarn format"
+      "pre-push": "yarn format"
     }
   }
 }
