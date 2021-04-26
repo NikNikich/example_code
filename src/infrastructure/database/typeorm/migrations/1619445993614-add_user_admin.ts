@@ -1,8 +1,8 @@
-import { getConnection, MigrationInterface } from 'typeorm';
 import { genSalt, hash } from 'bcryptjs';
-import { RoleEntity } from '../../../core/domain/entity/role.entity';
-import { UserRolesEnum } from '../../shared/user.roles.enum';
-import { UserEntity } from '../../../core/domain/entity/user.entity';
+import { getConnection, MigrationInterface } from 'typeorm';
+import { UserEntity } from '../../../../core/domain/entity/user.entity';
+import { RoleEntity } from '../../../../core/domain/entity/role.entity';
+import { UserRolesEnum } from '../../../shared/user.roles.enum';
 
 export class addUserAdmin1619445993614 implements MigrationInterface {
   public async up(): Promise<any> {
