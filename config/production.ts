@@ -29,4 +29,16 @@ module.exports = {
     sendImportant: true,
     sendCommon: true,
   },
+  email: {
+    from: 'emailsmttp@mail.ru',
+    transport: {
+      host: 'smtp.mail.ru',
+      port: 465,
+      secure: true, // upgrade later with STARTTLS
+      auth: {
+        user: 'emailsmttp@mail.ru',
+        pass: 'rAO}UPpiyo32',
+      },
+    },
+  },
 };

@@ -14,5 +14,6 @@ FROM node:14.15.0
 WORKDIR /app
 COPY --from=0 /app/modules /app/node_modules
 COPY --from=0 /app/dist /app/
+COPY app/src/application/views/email /app/application/views
 EXPOSE 3000
 CMD node src/main.js
