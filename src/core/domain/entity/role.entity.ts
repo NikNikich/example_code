@@ -1,6 +1,13 @@
-import { BaseEntity, Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  BaseEntity,
+  Column,
+  Entity,
+  OneToMany,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 import { UserRolesEnum } from '../../../infrastructure/shared/user.roles.enum';
 import { ApiModelProperty } from '@nestjs/swagger';
+import { UserEntity } from './user.entity';
 
 @Entity({ name: 'role' })
 export class RoleEntity extends BaseEntity {
@@ -10,4 +17,11 @@ export class RoleEntity extends BaseEntity {
   @ApiModelProperty({ enum: UserRolesEnum, nullable: true })
   @Column({ enum: UserRolesEnum, default: UserRolesEnum.USER })
   name: UserRolesEnum;
+
+  @OneToMany(
+    () => UserEntity,
+    user => user.role,
+    { nullable: true },
+  )
+  users: UserEntity[];
 }

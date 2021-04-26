@@ -7,22 +7,24 @@ import {
   MinLength,
 } from 'class-validator';
 import { MAX_PHONE_NUMBER, MIN_PHONE_NUMBER } from './sign.in.by.sms.dto';
-export class CreateAdminUserDto {
+export class UpdateAdminUserDto {
   @IsString()
+  @IsOptional()
   @ApiModelProperty({
     type: 'string',
     example: 'Кот',
-    required: true,
+    required: false,
   })
-  firstName: string;
+  firstName?: string;
 
   @IsString()
+  @IsOptional()
   @ApiModelProperty({
     type: 'string',
     example: 'Простоквашин',
-    required: true,
+    required: false,
   })
-  lastName: string;
+  lastName?: string;
 
   @IsOptional()
   @IsString()
@@ -34,37 +36,41 @@ export class CreateAdminUserDto {
   surName?: string;
 
   @IsEmail()
+  @IsOptional()
   @ApiModelProperty({
     type: 'string',
     example: 'test@test.com',
-    required: true,
+    required: false,
   })
-  email: string;
+  email?: string;
 
   @IsString()
+  @IsOptional()
   @MinLength(MIN_PHONE_NUMBER)
   @MaxLength(MAX_PHONE_NUMBER)
   @ApiModelProperty({
     type: 'string',
     example: '12345678',
-    required: true,
+    required: false,
   })
-  phone: string;
+  phone?: string;
 
   @IsString()
+  @IsOptional()
   @ApiModelProperty({
     type: 'string',
     example: 'ООО "Лысо-Котвской"',
-    required: true,
+    required: false,
   })
-  organization: string;
+  organization?: string;
 
   @IsString()
+  @IsOptional()
   @ApiModelProperty({
     type: 'string',
     example:
       ' Заместитель Директор по управлению движения ручки двери входа в туалет',
-    required: true,
+    required: false,
   })
-  position: string;
+  position?: string;
 }

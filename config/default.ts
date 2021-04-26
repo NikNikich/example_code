@@ -33,4 +33,5 @@ module.exports = {
     chatId: '',
   },
   showErrorStackTrace: true,
+  siteAddress: 'localhost',
 };

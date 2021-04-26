@@ -4,6 +4,9 @@ import { UserEntity } from '../entity/user.entity';
 import * as moment from 'moment';
 import { genSalt, hash } from 'bcryptjs';
 import { RoleEntity } from '../entity/role.entity';
+import { UpdateAdminUserDto } from '../../../infrastructure/presenter/rest-api/documentation/user/update.admin.user.dto';
+import * as _ from 'lodash';
+import { CreateAdminUserDto } from '../../../infrastructure/presenter/rest-api/documentation/user/create.admin.user.dto';
 
 @EntityRepository(UserEntity)
 export class UserRepository extends Repository<UserEntity> {
@@ -63,6 +66,27 @@ export class UserRepository extends Repository<UserEntity> {
     }
 
     return await user.save();
+  }
+
+  async updateAdminUser(
+    user: UserEntity,
+    updateUserDto: UpdateAdminUserDto,
+  ): Promise<UserEntity> {
+    const userNew = user;
+    _.assign(userNew, updateUserDto);
+    return await userNew.save();
+  }
+
+  async createAdminUser(
+    createUserDto: CreateAdminUserDto,
+    role: RoleEntity,
+    password: string,
+  ): Promise<UserEntity> {
+    const userNew = new UserEntity();
+    _.assign(userNew, createUserDto);
+    userNew.role = role;
+    userNew.password = await this.hashPassword(password);
+    return await userNew.save();
   }
 
   async updateResetCode(user: UserEntity, resetCode: string): Promise<void> {

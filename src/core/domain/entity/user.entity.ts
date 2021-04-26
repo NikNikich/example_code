@@ -5,8 +5,8 @@ import {
   DeleteDateColumn,
   Entity,
   JoinColumn,
+  ManyToOne,
   OneToMany,
-  OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
@@ -69,10 +69,11 @@ export class UserEntity extends BaseEntity {
   @Column({ nullable: true })
   position: string;
 
-  @OneToOne(() => RoleEntity, {
-    cascade: true,
-    nullable: true,
-  })
+  @ManyToOne(
+    () => RoleEntity,
+    role => role.users,
+    {},
+  )
   @JoinColumn()
   role: RoleEntity;
 

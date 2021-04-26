@@ -3,6 +3,7 @@ import {
   Controller,
   Get,
   HttpStatus,
+  Param,
   Post,
   Put,
   ValidationPipe,
@@ -30,6 +31,9 @@ import { MILLISECONDS_IN_SECOND } from '../../../shared/constants';
 import { Auth } from '../../../../core/common/decorators/auth';
 import { UserRolesEnum } from '../../../shared/user.roles.enum';
 import { ListUserResponse } from '../../../response/user/list.user.response';
+import { NumberIdDto } from '../documentation/shared/number.id.dto';
+import { UpdateAdminUserDto } from '../documentation/user/update.admin.user.dto';
+import { CreateAdminUserDto } from '../documentation/user/create.admin.user.dto';
 
 @ApiUseTags('users')
 @Controller('users')
@@ -47,17 +51,33 @@ export class UserController {
     return new ListUserResponse(requestId, users);
   }
 
-  //TODO Додоелать сервис
   @Put('/:id')
-  @Auth()
+  @Auth([UserRolesEnum.ADMIN])
   @ApiResponse({ status: HttpStatus.OK, type: MeResponse })
-  @ApiOperation({ title: 'Изменение пользователя' })
+  @ApiOperation({ title: 'Изменение пользователя администратором' })
   async editUser(
     @GetRequestId() requestId: string,
-    /* @Param(ValidationPipe) idDto: NumberIdDto,
-      @Body(ValidationPipe) userUpdateDto: CreateAdminUserDto,*/
+    @Param(ValidationPipe) idDto: NumberIdDto,
+    @Body(ValidationPipe) userUpdateDto: UpdateAdminUserDto,
   ): Promise<MeResponse> {
-    return new MeResponse(requestId, null);
+    return new MeResponse(
+      requestId,
+      await this.userService.updateAdminUser(idDto, userUpdateDto),
+    );
+  }
+
+  @Post()
+  @Auth([UserRolesEnum.ADMIN])
+  @ApiResponse({ status: HttpStatus.OK, type: MeResponse })
+  @ApiOperation({ title: 'Создание пользователя администратором' })
+  async createAdminUser(
+    @GetRequestId() requestId: string,
+    @Body(ValidationPipe) createAdminUserDto: CreateAdminUserDto,
+  ): Promise<MeResponse> {
+    return new MeResponse(
+      requestId,
+      await this.userService.createAdminUser(createAdminUserDto, requestId),
+    );
   }
 
   @Post('/sms')

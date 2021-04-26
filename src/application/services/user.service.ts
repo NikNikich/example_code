@@ -13,6 +13,7 @@ import {
   INVALID_CREDENTIALS,
   PASSWORD_IS_EMPTY,
   SMS_TOO_OFTEN,
+  USED_EMAIL,
   USER_NOT_FOUND,
 } from '../../infrastructure/presenter/rest-api/errors/errors';
 import { SmsDto } from '../../infrastructure/presenter/rest-api/documentation/user/sms.dto';
@@ -33,6 +34,10 @@ import { SignUpByEmailDto } from '../../infrastructure/presenter/rest-api/docume
 import { SingInResponseDto } from '../../infrastructure/response/user/sign.in.response';
 import { RoleRepository } from '../../core/domain/repository/role.repository';
 import { UserRolesEnum } from '../../infrastructure/shared/user.roles.enum';
+import { UpdateAdminUserDto } from '../../infrastructure/presenter/rest-api/documentation/user/update.admin.user.dto';
+import { NumberIdDto } from '../../infrastructure/presenter/rest-api/documentation/shared/number.id.dto';
+import { CreateAdminUserDto } from '../../infrastructure/presenter/rest-api/documentation/user/create.admin.user.dto';
+import * as generator from 'generate-password';
 
 const REPEAT_SMS_TIME_MS: number = config.get('sms.minRepeatTime');
 const emailTransport = new EmailTransport();
@@ -64,6 +69,41 @@ export class UserService {
     userUpdateDto: UpdateUserDto,
   ): Promise<UserEntity> {
     return this.userRepository.updateUser(user, userUpdateDto);
+  }
+
+  async updateAdminUser(
+    idDto: NumberIdDto,
+    userUpdateDto: UpdateAdminUserDto,
+  ): Promise<UserEntity> {
+    const user = await this.userRepository.findOne(idDto.id);
+    ErrorIf.isEmpty(user, USER_NOT_FOUND);
+    return this.userRepository.updateAdminUser(user, userUpdateDto);
+  }
+
+  async createAdminUser(
+    createAdminUserDto: CreateAdminUserDto,
+    requestId: string,
+  ): Promise<UserEntity> {
+    const user = await this.getUserByEmail(
+      createAdminUserDto.email.toLowerCase(),
+    );
+    ErrorIf.isExist(user, USED_EMAIL);
+    const password = generator.generate({
+      length: 10,
+      numbers: true,
+    });
+    const role = await this.roleRepository.findOne({
+      where: { name: UserRolesEnum.USER },
+    });
+    const newUser = await this.userRepository.createAdminUser(
+      createAdminUserDto,
+      role,
+      password,
+    );
+    const html: string = config.get('siteAddress');
+    const content: Buffer = await PdfRender.renderPdf(html);
+    this.sendEmail(requestId, newUser, html, content);
+    return user;
   }
 
   async createUserByPhone(phone: number): Promise<UserEntity> {
@@ -209,21 +249,7 @@ export class UserService {
     });
     const content: Buffer = await PdfRender.renderPdf(pdfHtml);
 
-    const emailData: EmailSend = {
-      recipientEmails: [user.email],
-      subject: 'Reset Password Request',
-      payload: 'Hello! Reset link is here!',
-      html,
-      requestId: requestId,
-      userId: user.id,
-      attachments: [
-        {
-          content,
-          filename: 'certificate.pdf',
-        },
-      ],
-    };
-    await emailTransport.send(emailData);
+    this.sendEmail(requestId, user, html, content);
 
     await Notifications.send(
       '🔑 Password restore from EMAIL +' + user.email + ' UserId: ' + user.id,
@@ -354,5 +380,28 @@ export class UserService {
   isFewTime(user: UserEntity): boolean {
     const diff = moment.utc().diff(moment.utc(user.lastCode), 'milliseconds');
     return diff < REPEAT_SMS_TIME_MS;
+  }
+
+  async sendEmail(
+    requestId: string,
+    user: UserEntity,
+    html: string,
+    content: Buffer,
+  ): Promise<void> {
+    const emailData: EmailSend = {
+      recipientEmails: [user.email],
+      subject: 'New Registration',
+      payload: 'Hello! Reset link is here!',
+      html,
+      requestId: requestId,
+      userId: user.id,
+      attachments: [
+        {
+          content,
+          filename: 'certificate.pdf',
+        },
+      ],
+    };
+    await emailTransport.send(emailData);
   }
 }
