@@ -125,6 +125,6 @@ export class UserRepository extends Repository<UserEntity> {
   }
 
   async getListNotDeleteUser(): Promise<UserEntity[]> {
-    return this.find({ updatedAt: IsNull() });
+    return this.find({ where: { deletedAt: IsNull() }, relations: ['role'] });
   }
 }

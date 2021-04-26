@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   HttpStatus,
   Param,
@@ -78,6 +79,19 @@ export class UserController {
       requestId,
       await this.userService.createAdminUser(createAdminUserDto, requestId),
     );
+  }
+
+  @Delete('/:id')
+  @Auth([UserRolesEnum.ADMIN])
+  @ApiResponse({ status: HttpStatus.OK, type: LogoutResponse })
+  @ApiOperation({ title: 'Изменение пользователя администратором' })
+  async deleteUser(
+    @GetRequestId() requestId: string,
+    @Param(ValidationPipe) idDto: NumberIdDto,
+    @Body(ValidationPipe) userUpdateDto: UpdateAdminUserDto,
+  ): Promise<LogoutResponse> {
+    await this.userService.deleteAdminUser(idDto);
+    return new LogoutResponse(requestId, null);
   }
 
   @Post('/sms')

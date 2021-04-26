@@ -56,6 +56,8 @@ export class UserService {
     private jwtService: JwtService,
   ) {}
 
+  private lengthPassword = 10;
+
   async getUserByPhone(phone: number): Promise<UserEntity | undefined> {
     return this.userRepository.findOne({ where: { phone } });
   }
@@ -77,7 +79,21 @@ export class UserService {
   ): Promise<UserEntity> {
     const user = await this.userRepository.findOne(idDto.id);
     ErrorIf.isEmpty(user, USER_NOT_FOUND);
+    if (userUpdateDto.email) {
+      const userEmail = await this.getUserByEmail(
+        userUpdateDto.email.toLowerCase(),
+      );
+      if (userEmail && userEmail.id !== user.id) {
+        ErrorIf.isExist(userEmail, USED_EMAIL);
+      }
+    }
     return this.userRepository.updateAdminUser(user, userUpdateDto);
+  }
+
+  async deleteAdminUser(idDto: NumberIdDto): Promise<void> {
+    const user = await this.userRepository.findOne(idDto.id);
+    ErrorIf.isEmpty(user, USER_NOT_FOUND);
+    user.softRemove();
   }
 
   async createAdminUser(
@@ -89,7 +105,7 @@ export class UserService {
     );
     ErrorIf.isExist(user, USED_EMAIL);
     const password = generator.generate({
-      length: 10,
+      length: this.lengthPassword,
       numbers: true,
     });
     const role = await this.roleRepository.findOne({
@@ -100,9 +116,16 @@ export class UserService {
       role,
       password,
     );
-    const html: string = config.get('siteAddress');
+    const html: string = `${config.get('siteAddress')} password: ${password}`;
     const content: Buffer = await PdfRender.renderPdf(html);
-    this.sendEmail(requestId, newUser, html, content);
+    this.sendEmail(
+      requestId,
+      newUser,
+      html,
+      content,
+      'New Registration',
+      'Hello, My friend. Your password in ours site',
+    );
     return user;
   }
 
@@ -249,7 +272,14 @@ export class UserService {
     });
     const content: Buffer = await PdfRender.renderPdf(pdfHtml);
 
-    this.sendEmail(requestId, user, html, content);
+    this.sendEmail(
+      requestId,
+      user,
+      html,
+      content,
+      'Reset Password',
+      'Hello! Reset link is here!',
+    );
 
     await Notifications.send(
       '🔑 Password restore from EMAIL +' + user.email + ' UserId: ' + user.id,
@@ -387,11 +417,13 @@ export class UserService {
     user: UserEntity,
     html: string,
     content: Buffer,
+    subject,
+    payload,
   ): Promise<void> {
     const emailData: EmailSend = {
       recipientEmails: [user.email],
-      subject: 'New Registration',
-      payload: 'Hello! Reset link is here!',
+      subject,
+      payload,
       html,
       requestId: requestId,
       userId: user.id,
