@@ -88,7 +88,6 @@ export class UserController {
   async deleteUser(
     @GetRequestId() requestId: string,
     @Param(ValidationPipe) idDto: NumberIdDto,
-    @Body(ValidationPipe) userUpdateDto: UpdateAdminUserDto,
   ): Promise<LogoutResponse> {
     await this.userService.deleteAdminUser(idDto);
     return new LogoutResponse(requestId, null);

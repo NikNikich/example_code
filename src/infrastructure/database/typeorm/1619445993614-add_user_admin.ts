@@ -1,11 +1,11 @@
-import { getConnection, MigrationInterface, QueryRunner } from 'typeorm';
+import { getConnection, MigrationInterface } from 'typeorm';
 import { genSalt, hash } from 'bcryptjs';
 import { RoleEntity } from '../../../core/domain/entity/role.entity';
 import { UserRolesEnum } from '../../shared/user.roles.enum';
 import { UserEntity } from '../../../core/domain/entity/user.entity';
 
 export class addUserAdmin1619445993614 implements MigrationInterface {
-  public async up(queryRunner: QueryRunner): Promise<any> {
+  public async up(): Promise<any> {
     const user = new UserEntity();
     user.firstName = 'Admin';
     user.lastName = 'Admin';
@@ -23,8 +23,8 @@ export class addUserAdmin1619445993614 implements MigrationInterface {
         .execute();
     }
   }
-
-  public async down(queryRunner: QueryRunner): Promise<void> {}
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
+  public async down(): Promise<void> {}
 
   private async findRoleAdmin(): Promise<RoleEntity[] | undefined> {
     const manager = getConnection().manager;

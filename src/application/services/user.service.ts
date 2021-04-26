@@ -116,7 +116,7 @@ export class UserService {
       role,
       password,
     );
-    const html: string = `${config.get('siteAddress')} password: ${password}`;
+    const html = `${config.get('siteAddress')} password: ${password}`;
     const content: Buffer = await PdfRender.renderPdf(html);
     this.sendEmail(
       requestId,
@@ -417,8 +417,8 @@ export class UserService {
     user: UserEntity,
     html: string,
     content: Buffer,
-    subject,
-    payload,
+    subject: string,
+    payload: string,
   ): Promise<void> {
     const emailData: EmailSend = {
       recipientEmails: [user.email],
