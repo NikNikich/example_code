@@ -13,6 +13,7 @@ import {
 import { ApiModelProperty } from '@nestjs/swagger';
 import { RoleEntity } from './role.entity';
 import { EquipmentEntity } from './equipment.entity';
+import { Exclude } from 'class-transformer';
 
 // TODO: move API Model Properties to DTO in documentation
 @Entity({ name: 'user' })
@@ -69,6 +70,7 @@ export class UserEntity extends BaseEntity {
   @Column({ nullable: true })
   position: string;
 
+  @ApiModelProperty({ type: RoleEntity, nullable: true })
   @ManyToOne(
     () => RoleEntity,
     role => role.users,
@@ -77,19 +79,31 @@ export class UserEntity extends BaseEntity {
   @JoinColumn()
   role: RoleEntity;
 
+  @Exclude()
   @OneToMany(
     () => EquipmentEntity,
-    equipment => equipment.user,
+    equipment => equipment.manager,
     { nullable: true },
   )
-  equipment: EquipmentEntity[];
+  equipmentManagers: EquipmentEntity[];
 
+  @Exclude()
+  @OneToMany(
+    () => EquipmentEntity,
+    equipment => equipment.engineer,
+    { nullable: true },
+  )
+  equipmentEngineers: EquipmentEntity[];
+
+  @Exclude()
   @DeleteDateColumn({ type: 'timestamp' })
   public deletedAt: Date;
 
+  @Exclude()
   @CreateDateColumn({ type: 'timestamp' })
   public createdAt: Date;
 
+  @Exclude()
   @UpdateDateColumn({ type: 'timestamp' })
   public updatedAt: Date;
 }

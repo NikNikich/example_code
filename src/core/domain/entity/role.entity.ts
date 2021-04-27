@@ -14,7 +14,6 @@ export class RoleEntity extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @ApiModelProperty({ enum: UserRolesEnum, nullable: true })
   @Column({ enum: UserRolesEnum, default: UserRolesEnum.USER })
   name: UserRolesEnum;
 

@@ -37,3 +37,8 @@ export const USED_EMAIL: StandardRestApiError = StandardRestApiError.create(
   1008,
   'Users email already registered in system',
 );
+
+export const EQUIPMENT_NOT_FOUND: StandardRestApiError = StandardRestApiError.create(
+  1009,
+  'Equipment not found',
+);
