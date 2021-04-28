@@ -31,3 +31,9 @@ export const PASSWORD_IS_EMPTY: StandardRestApiError = StandardRestApiError.crea
   1007,
   'User`s password is empty',
 );
+
+// noinspection MagicNumberJS,JSUnusedGlobalSymbols
+export const USED_EMAIL: StandardRestApiError = StandardRestApiError.create(
+  1008,
+  'Users email already registered in system',
+);

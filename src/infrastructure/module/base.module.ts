@@ -10,6 +10,7 @@ import { UserService } from '../../application/services/user.service';
 import { JwtStrategy } from '../../core/domain/service/jwt/jwt.strategy';
 import { BaseController } from '../presenter/rest-api/controller/base.controller';
 import { SessionRepository } from '../../core/domain/repository/session.repository';
+import { RoleRepository } from '../../core/domain/repository/role.repository';
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import { SessionRepository } from '../../core/domain/repository/session.reposito
       UserRepository,
       SessionRepository,
       BaseRepository,
+      RoleRepository,
     ]),
   ],
   controllers: [BaseController],

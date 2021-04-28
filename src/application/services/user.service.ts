@@ -13,6 +13,7 @@ import {
   INVALID_CREDENTIALS,
   PASSWORD_IS_EMPTY,
   SMS_TOO_OFTEN,
+  USED_EMAIL,
   USER_NOT_FOUND,
 } from '../../infrastructure/presenter/rest-api/errors/errors';
 import { SmsDto } from '../../infrastructure/presenter/rest-api/documentation/user/sms.dto';
@@ -31,6 +32,12 @@ import { SessionRepository } from '../../core/domain/repository/session.reposito
 import { Session } from '../../core/domain/entity/session.entity';
 import { SignUpByEmailDto } from '../../infrastructure/presenter/rest-api/documentation/user/sign.up.by.email.dto';
 import { SingInResponseDto } from '../../infrastructure/response/user/sign.in.response';
+import { RoleRepository } from '../../core/domain/repository/role.repository';
+import { UserRolesEnum } from '../../infrastructure/shared/user.roles.enum';
+import { UpdateAdminUserDto } from '../../infrastructure/presenter/rest-api/documentation/user/update.admin.user.dto';
+import { NumberIdDto } from '../../infrastructure/presenter/rest-api/documentation/shared/number.id.dto';
+import { CreateAdminUserDto } from '../../infrastructure/presenter/rest-api/documentation/user/create.admin.user.dto';
+import * as generator from 'generate-password';
 
 const REPEAT_SMS_TIME_MS: number = config.get('sms.minRepeatTime');
 const emailTransport = new EmailTransport();
@@ -38,7 +45,8 @@ const emailTransport = new EmailTransport();
 @Injectable()
 export class UserService {
   constructor(
-    @InjectRepository(UserRepository)
+    private roleRepository: RoleRepository,
+
     private userRepository: UserRepository,
 
     @InjectRepository(SessionRepository)
@@ -47,24 +55,91 @@ export class UserService {
     private jwtService: JwtService,
   ) {}
 
-  async getUserByPhone(phone: string): Promise<User | undefined> {
-    return this.userRepository.findOne({ where: { phone } });
+  private lengthPassword = 10;
+
+  async getUserByPhone(phone: number): Promise<User | undefined> {
+    return this.userRepository.findOne({ where: { phone }, withDeleted: true });
   }
 
   async getUserByEmail(email: string): Promise<User | undefined> {
-    return this.userRepository.findOne({ where: { email } });
+    return this.userRepository.findOne({ where: { email }, withDeleted: true });
   }
 
   async editMyself(user: User, userUpdateDto: UpdateUserDto): Promise<User> {
     return this.userRepository.updateUser(user, userUpdateDto);
   }
 
-  async createUserByPhone(phone: string): Promise<User> {
-    return this.userRepository.createUser(phone);
+  async updateAdminUser(
+    idDto: NumberIdDto,
+    userUpdateDto: UpdateAdminUserDto,
+  ): Promise<User> {
+    const user = await this.userRepository.findOne(
+      { id: idDto.id },
+      { withDeleted: true },
+    );
+    ErrorIf.isEmpty(user, USER_NOT_FOUND);
+    if (userUpdateDto.email) {
+      const userEmail = await this.getUserByEmail(
+        userUpdateDto.email.toLowerCase(),
+      );
+      if (userEmail && userEmail.id !== user.id) {
+        ErrorIf.isExist(userEmail, USED_EMAIL);
+      }
+    }
+    return this.userRepository.updateAdminUser(user, userUpdateDto);
+  }
+
+  async deleteAdminUser(idDto: NumberIdDto): Promise<void> {
+    const user = await this.userRepository.findOne(idDto.id);
+    ErrorIf.isEmpty(user, USER_NOT_FOUND);
+    user.softRemove();
+  }
+
+  async createAdminUser(
+    createAdminUserDto: CreateAdminUserDto,
+    requestId: string,
+  ): Promise<User> {
+    const user = await this.getUserByEmail(
+      createAdminUserDto.email.toLowerCase(),
+    );
+    ErrorIf.isExist(user, USED_EMAIL);
+    const password = generator.generate({
+      length: this.lengthPassword,
+      numbers: true,
+    });
+    const role = await this.roleRepository.findOne({
+      where: { name: UserRolesEnum.USER },
+    });
+    const newUser = await this.userRepository.createAdminUser(
+      createAdminUserDto,
+      role,
+      password,
+    );
+    const html = `${config.get('siteAddress')} password: ${password}`;
+    const content: Buffer = await PdfRender.renderPdf(html);
+    this.sendEmail(
+      requestId,
+      newUser,
+      html,
+      content,
+      'New Registration',
+      'Hello, My friend. Your password in ours site',
+    );
+    return user;
+  }
+
+  async createUserByPhone(phone: number): Promise<User> {
+    const role = await this.roleRepository.findOne({
+      name: UserRolesEnum.USER,
+    });
+    return this.userRepository.createUser(phone, role);
   }
 
   async createUserByEmail(email: string, password: string): Promise<User> {
-    return this.userRepository.createUserByEmail(email, password);
+    const role = await this.roleRepository.findOne({
+      name: UserRolesEnum.USER,
+    });
+    return this.userRepository.createUserByEmail(email, password, role);
   }
 
   async signInBySms(
@@ -80,7 +155,7 @@ export class UserService {
     const backdoorCodes: string[] = config.get('sms.backdoorCodes');
 
     if (
-      backdoorPhones.includes(user.phone) &&
+      backdoorPhones.includes(user.phone.toString()) &&
       backdoorCodes.includes(signInRequestDto.code)
     ) {
       await Notifications.send(
@@ -193,21 +268,14 @@ export class UserService {
     });
     const content: Buffer = await PdfRender.renderPdf(pdfHtml);
 
-    const emailData: EmailSend = {
-      recipientEmails: [user.email],
-      subject: 'Reset Password Request',
-      payload: 'Hello! Reset link is here!',
+    this.sendEmail(
+      requestId,
+      user,
       html,
-      requestId: requestId,
-      userId: user.id,
-      attachments: [
-        {
-          content,
-          filename: 'certificate.pdf',
-        },
-      ],
-    };
-    await emailTransport.send(emailData);
+      content,
+      'Reset Password',
+      'Hello! Reset link is here!',
+    );
 
     await Notifications.send(
       '🔑 Password restore from EMAIL +' + user.email + ' UserId: ' + user.id,
@@ -244,8 +312,18 @@ export class UserService {
     return { token };
   }
 
+  async getUserById(idDto: NumberIdDto): Promise<User> {
+    const user = await this.userRepository.findUserByIdWithDeleted(idDto.id);
+    ErrorIf.isEmpty(user, USER_NOT_FOUND);
+    return user;
+  }
+
   async getUserByResetCode(resetCode: string): Promise<User | undefined> {
     return this.userRepository.findOne({ where: { resetCode } });
+  }
+
+  async getListUser(): Promise<User[]> {
+    return this.userRepository.getListNotDeleteUser();
   }
 
   async generateSmsCode(): Promise<string> {
@@ -297,13 +375,13 @@ export class UserService {
   }
 
   async backdoorCheck(
-    phone: string,
+    phone: number,
     smsText: string,
     requestId: string,
     userId: number,
   ): Promise<void> {
     const backdoorPhones: string[] = config.get('sms.backdoorPhones');
-    if (backdoorPhones.includes(phone)) {
+    if (backdoorPhones.includes(phone.toString())) {
       await Notifications.send(
         '📱 Sms request: BACKDOOR +' +
           phone +
@@ -316,7 +394,7 @@ export class UserService {
       );
     } else if (config.get('sms.sendRealSms')) {
       const transport = new SmsTransport();
-      await transport.send(phone, smsText, requestId, userId);
+      await transport.send(phone.toString(), smsText, requestId, userId);
     } else {
       await Notifications.send(
         '📱 Sms request: 1234 +' +
@@ -334,5 +412,30 @@ export class UserService {
   isFewTime(user: User): boolean {
     const diff = moment.utc().diff(moment.utc(user.lastCode), 'milliseconds');
     return diff < REPEAT_SMS_TIME_MS;
+  }
+
+  async sendEmail(
+    requestId: string,
+    user: User,
+    html: string,
+    content: Buffer,
+    subject: string,
+    payload: string,
+  ): Promise<void> {
+    const emailData: EmailSend = {
+      recipientEmails: [user.email],
+      subject,
+      payload,
+      html,
+      requestId: requestId,
+      userId: user.id,
+      attachments: [
+        {
+          content,
+          filename: 'certificate.pdf',
+        },
+      ],
+    };
+    await emailTransport.send(emailData);
   }
 }

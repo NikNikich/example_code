@@ -3,7 +3,7 @@ import { ApiModelProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import { MAX_ID_POSTGRES, MIN_ID_POSTGRES } from '../../../../shared/constants';
 
-export class IdDto {
+export class NumberIdDto {
   @IsNumber()
   @Min(MIN_ID_POSTGRES)
   @Max(MAX_ID_POSTGRES)

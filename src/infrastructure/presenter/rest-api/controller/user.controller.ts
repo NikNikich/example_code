@@ -1,23 +1,19 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   HttpStatus,
+  Param,
   Post,
   Put,
-  UseGuards,
   ValidationPipe,
 } from '@nestjs/common';
 import { UserService } from '../../../../application/services/user.service';
-import { AuthGuard } from '@nestjs/passport';
+
 import { GetUser } from '../../../decorators/get.user.decorator';
 import * as config from 'config';
-import {
-  ApiBearerAuth,
-  ApiOperation,
-  ApiResponse,
-  ApiUseTags,
-} from '@nestjs/swagger';
+import { ApiOperation, ApiResponse, ApiUseTags } from '@nestjs/swagger';
 import { User } from '../../../../core/domain/entity/user.entity';
 import { GetRequestId } from '../../../decorators/get.request.id.decorator';
 import { LogoutResponse } from '../../../response/user/logout.response';
@@ -33,11 +29,96 @@ import { PasswordRestoreResponse } from '../../../response/user/password.restore
 import { SignInByEmailDto } from '../documentation/user/sign.in.by.email.dto';
 import { SignUpByEmailDto } from '../documentation/user/sign.up.by.email.dto';
 import { MILLISECONDS_IN_SECOND } from '../../../shared/constants';
+import { Auth } from '../../../../core/common/decorators/auth';
+import { UserRolesEnum } from '../../../shared/user.roles.enum';
+import { ListUserResponse } from '../../../response/user/list.user.response';
+import { NumberIdDto } from '../documentation/shared/number.id.dto';
+import { UpdateAdminUserDto } from '../documentation/user/update.admin.user.dto';
+import { CreateAdminUserDto } from '../documentation/user/create.admin.user.dto';
+import { plainToClass } from 'class-transformer';
 
 @ApiUseTags('users')
 @Controller('users')
 export class UserController {
   constructor(private userService: UserService) {}
+
+  @Get('')
+  @Auth([UserRolesEnum.ADMIN])
+  @ApiResponse({ status: HttpStatus.OK, type: ListUserResponse })
+  @ApiOperation({ title: 'Вывести список пользователей' })
+  async getListUser(
+    @GetRequestId() requestId: string,
+  ): Promise<ListUserResponse> {
+    const users = await this.userService.getListUser();
+    const listUser = new ListUserResponse(requestId, users);
+    return plainToClass(ListUserResponse, listUser);
+  }
+
+  @Get('/:id')
+  @Auth([UserRolesEnum.ADMIN])
+  @ApiResponse({ status: HttpStatus.OK, type: MeResponse })
+  @ApiOperation({ title: 'Выдаёт данные пользователя по его id' })
+  async getUserById(
+    @GetRequestId() requestId: string,
+    @Param(
+      new ValidationPipe({
+        transform: true,
+      }),
+    )
+    idDto: NumberIdDto,
+  ): Promise<MeResponse> {
+    const user = await this.userService.getUserById(idDto);
+    const meResponse = new MeResponse(requestId, user);
+    return plainToClass(MeResponse, meResponse);
+  }
+
+  @Put('/:id')
+  @Auth([UserRolesEnum.ADMIN])
+  @ApiResponse({ status: HttpStatus.OK, type: MeResponse })
+  @ApiOperation({ title: 'Изменение пользователя администратором' })
+  async editUser(
+    @GetRequestId() requestId: string,
+    @Param(
+      new ValidationPipe({
+        transform: true,
+      }),
+    )
+    idDto: NumberIdDto,
+    @Body(ValidationPipe) userUpdateDto: UpdateAdminUserDto,
+  ): Promise<MeResponse> {
+    const meResponse = new MeResponse(
+      requestId,
+      await this.userService.updateAdminUser(idDto, userUpdateDto),
+    );
+    return plainToClass(MeResponse, meResponse);
+  }
+
+  @Post()
+  @Auth([UserRolesEnum.ADMIN])
+  @ApiResponse({ status: HttpStatus.OK, type: MeResponse })
+  @ApiOperation({ title: 'Создание пользователя администратором' })
+  async createAdminUser(
+    @GetRequestId() requestId: string,
+    @Body(ValidationPipe) createAdminUserDto: CreateAdminUserDto,
+  ): Promise<MeResponse> {
+    const meResponse = new MeResponse(
+      requestId,
+      await this.userService.createAdminUser(createAdminUserDto, requestId),
+    );
+    return plainToClass(MeResponse, meResponse);
+  }
+
+  @Delete('/:id')
+  @Auth([UserRolesEnum.ADMIN])
+  @ApiResponse({ status: HttpStatus.OK, type: LogoutResponse })
+  @ApiOperation({ title: 'Изменение пользователя администратором' })
+  async deleteUser(
+    @GetRequestId() requestId: string,
+    @Param(ValidationPipe) idDto: NumberIdDto,
+  ): Promise<LogoutResponse> {
+    await this.userService.deleteAdminUser(idDto);
+    return new LogoutResponse(requestId, null);
+  }
 
   @Post('/sms')
   @ApiResponse({ status: HttpStatus.CREATED, type: SmsResponse })
@@ -108,8 +189,7 @@ export class UserController {
   }
 
   @Post('/logout')
-  @UseGuards(AuthGuard())
-  @ApiBearerAuth()
+  @Auth()
   @ApiResponse({ status: HttpStatus.CREATED, type: LogoutResponse })
   @ApiOperation({
     title: 'Деактивировать jwt токен',
@@ -153,20 +233,19 @@ export class UserController {
   }
 
   @Get('/me')
-  @UseGuards(AuthGuard())
-  @ApiBearerAuth()
+  @Auth()
   @ApiResponse({ status: HttpStatus.OK, type: MeResponse })
   @ApiOperation({ title: 'Информация об авторизованном юзере' })
   async getMe(
     @GetRequestId() requestId: string,
     @GetUser() user: User,
   ): Promise<MeResponse> {
-    return new MeResponse(requestId, user);
+    const meResponse = new MeResponse(requestId, user);
+    return plainToClass(MeResponse, meResponse);
   }
 
   @Put('/me')
-  @UseGuards(AuthGuard())
-  @ApiBearerAuth()
+  @Auth()
   @ApiResponse({ status: HttpStatus.OK, type: MeResponse })
   @ApiOperation({ title: 'Редактирование полей юзера' })
   async editMyself(
@@ -174,9 +253,10 @@ export class UserController {
     @GetUser() user: User,
     @Body(ValidationPipe) userUpdateDto: UpdateUserDto,
   ): Promise<MeResponse> {
-    return new MeResponse(
+    const meResponse = new MeResponse(
       requestId,
       await this.userService.editMyself(user, userUpdateDto),
     );
+    return plainToClass(MeResponse, meResponse);
   }
 }
