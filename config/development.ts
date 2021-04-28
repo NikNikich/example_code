@@ -9,7 +9,7 @@ module.exports = {
   },
   db: {
     port: '5432',
-    host: 'localhost',
+    host: 'postgres',
     username: 'postgres',
     password: 'HZz359kZoJWiQYGZ',
     database: 'water_loc', // GO TO README FILE

@@ -9,17 +9,15 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { UserEntity } from './user.entity';
-import { BuildingEntity } from './building.entity';
+import { User } from './user.entity';
+import { Building } from './building.entity';
 import { EquipmentJobStatusEnum } from '../../../infrastructure/shared/equipment.job.status.enum';
 import { ApiModelProperty } from '@nestjs/swagger';
 import { EquipmentUseStatusEnum } from '../../../infrastructure/shared/equipment.use.status.enum';
-import { RoleEntity } from './role.entity';
 import { Exclude } from 'class-transformer';
 
 @Entity({ name: 'equipment' })
-export class EquipmentEntity extends BaseEntity {
-  @ApiModelProperty({ type: 'number' })
+export class Equipment extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
@@ -35,9 +33,9 @@ export class EquipmentEntity extends BaseEntity {
   @Column()
   servicePassword: string;
 
-  @ApiModelProperty({ type: UserEntity, nullable: true })
+  @ApiModelProperty({ type: User, nullable: true })
   @ManyToOne(
-    () => UserEntity,
+    () => User,
     user => user.equipmentEngineers,
     {
       cascade: true,
@@ -45,11 +43,11 @@ export class EquipmentEntity extends BaseEntity {
     },
   )
   @JoinColumn()
-  engineer: UserEntity;
+  engineer: User;
 
-  @ApiModelProperty({ type: UserEntity, nullable: true })
+  @ApiModelProperty({ type: User, nullable: true })
   @ManyToOne(
-    () => UserEntity,
+    () => User,
     user => user.equipmentManagers,
     {
       cascade: true,
@@ -57,18 +55,18 @@ export class EquipmentEntity extends BaseEntity {
     },
   )
   @JoinColumn()
-  manager: UserEntity;
+  manager: User;
 
-  @ApiModelProperty({ type: BuildingEntity, nullable: true })
+  @ApiModelProperty({ type: Building, nullable: true })
   @ManyToOne(
-    () => BuildingEntity,
+    () => Building,
     building => building.equipment,
     {
       nullable: true,
     },
   )
   @JoinColumn()
-  building: BuildingEntity;
+  building: Building;
 
   @ApiModelProperty({ enum: EquipmentJobStatusEnum })
   @Column({ enum: EquipmentJobStatusEnum, default: EquipmentJobStatusEnum.OK })

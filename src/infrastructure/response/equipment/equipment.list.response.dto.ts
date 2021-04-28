@@ -1,12 +1,12 @@
 import { ApiModelProperty } from '@nestjs/swagger';
 import CustomResponse from '../custom.response';
-import { EquipmentEntity } from '../../../core/domain/entity/equipment.entity';
+import { Equipment } from '../../../core/domain/entity/equipment.entity';
 
 export class EquipmentListResponseDto extends CustomResponse {
-  @ApiModelProperty({ type: EquipmentEntity, isArray: true })
-  data: EquipmentEntity[];
+  @ApiModelProperty({ type: Equipment, isArray: true })
+  data: Equipment[];
 
-  constructor(requestId: string, data: EquipmentEntity[]) {
+  constructor(requestId: string, data: Equipment[]) {
     super(requestId);
     this.data = data;
   }

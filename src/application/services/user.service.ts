@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserRepository } from '../../core/domain/repository/user.repository';
 import { JwtService } from '@nestjs/jwt';
-import { UserEntity } from '../../core/domain/entity/user.entity';
+import { User } from '../../core/domain/entity/user.entity';
 import * as config from 'config';
 import { HtmlRender } from '../../infrastructure/presenter/html.render';
 import { PdfRender } from '../../infrastructure/presenter/pdf.render';
@@ -47,7 +47,6 @@ export class UserService {
   constructor(
     private roleRepository: RoleRepository,
 
-    @InjectRepository(UserRepository)
     private userRepository: UserRepository,
 
     @InjectRepository(SessionRepository)
@@ -58,26 +57,26 @@ export class UserService {
 
   private lengthPassword = 10;
 
-  async getUserByPhone(phone: number): Promise<UserEntity | undefined> {
-    return this.userRepository.findOne({ where: { phone } });
+  async getUserByPhone(phone: number): Promise<User | undefined> {
+    return this.userRepository.findOne({ where: { phone }, withDeleted: true });
   }
 
-  async getUserByEmail(email: string): Promise<UserEntity | undefined> {
-    return this.userRepository.findOne({ where: { email } });
+  async getUserByEmail(email: string): Promise<User | undefined> {
+    return this.userRepository.findOne({ where: { email }, withDeleted: true });
   }
 
-  async editMyself(
-    user: UserEntity,
-    userUpdateDto: UpdateUserDto,
-  ): Promise<UserEntity> {
+  async editMyself(user: User, userUpdateDto: UpdateUserDto): Promise<User> {
     return this.userRepository.updateUser(user, userUpdateDto);
   }
 
   async updateAdminUser(
     idDto: NumberIdDto,
     userUpdateDto: UpdateAdminUserDto,
-  ): Promise<UserEntity> {
-    const user = await this.userRepository.findOne(idDto.id);
+  ): Promise<User> {
+    const user = await this.userRepository.findOne(
+      { id: idDto.id },
+      { withDeleted: true },
+    );
     ErrorIf.isEmpty(user, USER_NOT_FOUND);
     if (userUpdateDto.email) {
       const userEmail = await this.getUserByEmail(
@@ -99,7 +98,7 @@ export class UserService {
   async createAdminUser(
     createAdminUserDto: CreateAdminUserDto,
     requestId: string,
-  ): Promise<UserEntity> {
+  ): Promise<User> {
     const user = await this.getUserByEmail(
       createAdminUserDto.email.toLowerCase(),
     );
@@ -129,17 +128,14 @@ export class UserService {
     return user;
   }
 
-  async createUserByPhone(phone: number): Promise<UserEntity> {
+  async createUserByPhone(phone: number): Promise<User> {
     const role = await this.roleRepository.findOne({
       name: UserRolesEnum.USER,
     });
     return this.userRepository.createUser(phone, role);
   }
 
-  async createUserByEmail(
-    email: string,
-    password: string,
-  ): Promise<UserEntity> {
+  async createUserByEmail(email: string, password: string): Promise<User> {
     const role = await this.roleRepository.findOne({
       name: UserRolesEnum.USER,
     });
@@ -226,19 +222,19 @@ export class UserService {
       .replace(/=/g, '_');
   }
 
-  async generateJwtToken(user: UserEntity): Promise<string> {
+  async generateJwtToken(user: User): Promise<string> {
     const token = this.generateRandomString();
     await this.sessionRepository.createSession(user.id, token);
     const payload: JwtPayload = { token };
     return this.jwtService.sign(payload);
   }
 
-  async comparePassword(user: UserEntity, password: string): Promise<boolean> {
+  async comparePassword(user: User, password: string): Promise<boolean> {
     ErrorIf.isEmpty(user.password, PASSWORD_IS_EMPTY);
     return compare(password, user.password);
   }
 
-  async logout(requestId: string, user: UserEntity): Promise<void> {
+  async logout(requestId: string, user: User): Promise<void> {
     const sessions: Session[] = await this.sessionRepository.getSessionsByUserId(
       user.id,
     );
@@ -316,11 +312,17 @@ export class UserService {
     return { token };
   }
 
-  async getUserByResetCode(resetCode: string): Promise<UserEntity | undefined> {
+  async getUserById(idDto: NumberIdDto): Promise<User> {
+    const user = await this.userRepository.findUserByIdWithDeleted(idDto.id);
+    ErrorIf.isEmpty(user, USER_NOT_FOUND);
+    return user;
+  }
+
+  async getUserByResetCode(resetCode: string): Promise<User | undefined> {
     return this.userRepository.findOne({ where: { resetCode } });
   }
 
-  async getListUser(): Promise<UserEntity[]> {
+  async getListUser(): Promise<User[]> {
     return this.userRepository.getListNotDeleteUser();
   }
 
@@ -333,7 +335,7 @@ export class UserService {
   async sendSms(requestId: string, smsRequestDto: SmsDto): Promise<boolean> {
     let newUser = false;
     const { phone } = smsRequestDto;
-    let user: UserEntity | undefined = await this.getUserByPhone(phone);
+    let user: User | undefined = await this.getUserByPhone(phone);
     if (!user) {
       user = await this.createUserByPhone(phone);
       newUser = true;
@@ -359,7 +361,7 @@ export class UserService {
     signUpByEmailRequestDto: SignUpByEmailDto,
   ): Promise<SingInResponseDto> {
     const { email, password } = signUpByEmailRequestDto;
-    let user: UserEntity | undefined = await this.getUserByEmail(email);
+    let user: User | undefined = await this.getUserByEmail(email);
     if (!user) {
       user = await this.createUserByEmail(email, password);
       await Notifications.send(
@@ -407,14 +409,14 @@ export class UserService {
     }
   }
 
-  isFewTime(user: UserEntity): boolean {
+  isFewTime(user: User): boolean {
     const diff = moment.utc().diff(moment.utc(user.lastCode), 'milliseconds');
     return diff < REPEAT_SMS_TIME_MS;
   }
 
   async sendEmail(
     requestId: string,
-    user: UserEntity,
+    user: User,
     html: string,
     content: Buffer,
     subject: string,

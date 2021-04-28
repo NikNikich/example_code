@@ -8,10 +8,10 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { EquipmentEntity } from './equipment.entity';
+import { Equipment } from './equipment.entity';
 
 @Entity({ name: 'building' })
-export class BuildingEntity extends BaseEntity {
+export class Building extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
@@ -25,11 +25,11 @@ export class BuildingEntity extends BaseEntity {
   address: string;
 
   @OneToMany(
-    () => EquipmentEntity,
+    () => Equipment,
     equipment => equipment.building,
     { nullable: true },
   )
-  equipment?: EquipmentEntity[];
+  equipment?: Equipment[];
 
   @DeleteDateColumn({ type: 'timestamp' })
   public deletedAt: Date;

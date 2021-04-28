@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
-import { UserEntity } from '../../core/domain/entity/user.entity';
+import { User } from '../../core/domain/entity/user.entity';
 import { EquipmentRepository } from '../../core/domain/repository/equipment.repository';
-import { EquipmentEntity } from '../../core/domain/entity/equipment.entity';
+import { Equipment } from '../../core/domain/entity/equipment.entity';
 import { ErrorIf } from '../../infrastructure/presenter/rest-api/errors/error.if';
 import {
   EQUIPMENT_NOT_FOUND,
@@ -22,13 +22,13 @@ export class EquipmentService {
     private userRepository: UserRepository,
   ) {}
 
-  async getActiveEquipments(user: UserEntity): Promise<EquipmentEntity[]> {
+  async getActiveEquipments(user: User): Promise<Equipment[]> {
     if (user.role.name === UserRolesEnum.ADMIN) {
       return this.equipmentRepository.find({ deletedAt: IsNull() });
     }
   }
 
-  async delete(user: UserEntity, id: number): Promise<void> {
+  async delete(user: User, id: number): Promise<void> {
     const equipment = await this.equipmentRepository.findOne({
       id,
       deletedAt: IsNull(),
@@ -39,7 +39,7 @@ export class EquipmentService {
 
   async createEquipment(
     createEquipmentDto: CreateEquipmentDto,
-  ): Promise<EquipmentEntity> {
+  ): Promise<Equipment> {
     const engineer = await this.userRepository.getUserByIdNotDelete(
       createEquipmentDto.engineerId,
     );
@@ -57,11 +57,11 @@ export class EquipmentService {
   async editEquipment(
     idDto: NumberIdDto,
     updateEquipmentDto: UpdateEquipmentDto,
-  ): Promise<EquipmentEntity> {
+  ): Promise<Equipment> {
     const equipment = await this.equipmentRepository.findOne(idDto.id);
     ErrorIf.isEmpty(equipment, EQUIPMENT_NOT_FOUND);
-    let engineer: UserEntity;
-    let manager: UserEntity;
+    let engineer: User;
+    let manager: User;
     if (updateEquipmentDto.engineerId) {
       engineer = await this.userRepository.getUserByIdNotDelete(
         updateEquipmentDto.engineerId,

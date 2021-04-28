@@ -11,13 +11,13 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 import { ApiModelProperty } from '@nestjs/swagger';
-import { RoleEntity } from './role.entity';
-import { EquipmentEntity } from './equipment.entity';
+import { Role } from './role.entity';
+import { Equipment } from './equipment.entity';
 import { Exclude } from 'class-transformer';
 
 // TODO: move API Model Properties to DTO in documentation
-@Entity({ name: 'user' })
-export class UserEntity extends BaseEntity {
+@Entity()
+export class User extends BaseEntity {
   @ApiModelProperty({ type: 'number', nullable: false })
   @PrimaryGeneratedColumn()
   id: number;
@@ -38,15 +38,16 @@ export class UserEntity extends BaseEntity {
   @Column({ nullable: true })
   email: string;
 
+  @Exclude()
   @ApiModelProperty({ type: 'string', nullable: true })
   @Column({ nullable: true })
   password: string;
 
-  @ApiModelProperty({ type: 'string', nullable: true })
+  @Exclude()
   @Column({ nullable: true })
   resetCode: string;
 
-  @ApiModelProperty({ type: 'string', nullable: true, format: 'date-time' })
+  @Exclude()
   @Column({ nullable: true })
   resetCodeExpirationDate: Date;
 
@@ -70,32 +71,36 @@ export class UserEntity extends BaseEntity {
   @Column({ nullable: true })
   position: string;
 
-  @ApiModelProperty({ type: RoleEntity, nullable: true })
+  @ApiModelProperty({ type: Role, nullable: true })
   @ManyToOne(
-    () => RoleEntity,
+    () => Role,
     role => role.users,
     {},
   )
   @JoinColumn()
-  role: RoleEntity;
+  role: Role;
 
   @Exclude()
   @OneToMany(
-    () => EquipmentEntity,
+    () => Equipment,
     equipment => equipment.manager,
     { nullable: true },
   )
-  equipmentManagers: EquipmentEntity[];
+  equipmentManagers: Equipment[];
 
   @Exclude()
   @OneToMany(
-    () => EquipmentEntity,
+    () => Equipment,
     equipment => equipment.engineer,
     { nullable: true },
   )
-  equipmentEngineers: EquipmentEntity[];
+  equipmentEngineers: Equipment[];
 
-  @Exclude()
+  @ApiModelProperty({
+    type: 'Date',
+    nullable: true,
+    description: 'Если не null, значит запись считается йдалённой',
+  })
   @DeleteDateColumn({ type: 'timestamp' })
   public deletedAt: Date;
 

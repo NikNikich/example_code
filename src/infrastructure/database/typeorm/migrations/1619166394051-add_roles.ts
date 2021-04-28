@@ -1,5 +1,5 @@
 import { getConnection, MigrationInterface } from 'typeorm';
-import { RoleEntity } from '../../../../core/domain/entity/role.entity';
+import { Role } from '../../../../core/domain/entity/role.entity';
 import { UserRolesEnum } from '../../../shared/user.roles.enum';
 
 export class addRoles1619166394051 implements MigrationInterface {
@@ -12,7 +12,7 @@ export class addRoles1619166394051 implements MigrationInterface {
     await getConnection()
       .createQueryBuilder()
       .insert()
-      .into(RoleEntity.name)
+      .into(Role.name)
       .values(this.dataStatus)
       .execute();
   }
