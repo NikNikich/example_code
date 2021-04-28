@@ -10,7 +10,7 @@ import { User } from '../entity/user.entity';
 
 @EntityRepository(User)
 export class UserRepository extends Repository<User> {
-  async createUser(phone: number, role: Role): Promise<User> {
+  async createUser(phone: string, role: Role): Promise<User> {
     const user = new User();
     user.role = role || null;
     user.phone = phone;

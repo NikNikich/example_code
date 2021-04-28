@@ -2,8 +2,8 @@ import * as aws from 'aws-sdk';
 import { PublishInput, PublishResponse } from 'aws-sdk/clients/sns';
 import * as config from 'config';
 import { Notifications } from './notifications.transport';
+import { MAX_PHONE_NUMBER_LENGTH } from '../presenter/rest-api/documentation/user/sign.in.by.sms.dto';
 
-export const MAX_PHONE_NUMBER_LENGTH = 20;
 export class SmsTransport {
   public constructor() {
     aws.config.update({
