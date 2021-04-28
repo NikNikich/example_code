@@ -49,7 +49,7 @@ export class CreateEquipmentDto {
   @IsEnum(EquipmentUseStatusEnum)
   @ApiModelProperty({
     enum: EquipmentUseStatusEnum,
-    example: 13,
+    example: 'Куплено',
     required: true,
   })
   useStatus: EquipmentUseStatusEnum;
@@ -57,10 +57,10 @@ export class CreateEquipmentDto {
   @IsDate()
   @Type(() => Date)
   @ApiModelProperty({
-    type: 'Date',
+    type: 'datetime',
     required: true,
+    example: '2021-04-26 14:04:16',
   })
-  start: Date;
   dateInitialization: Date;
 
   @ApiModelProperty({

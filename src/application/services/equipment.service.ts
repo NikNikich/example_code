@@ -6,6 +6,7 @@ import { ErrorIf } from '../../infrastructure/presenter/rest-api/errors/error.if
 import {
   EQUIPMENT_NOT_FOUND,
   OBJECT_NOT_FOUND,
+  USED_ID_EQUIPMENT,
   USER_NOT_FOUND,
 } from '../../infrastructure/presenter/rest-api/errors/errors';
 import { IsNull } from 'typeorm';
@@ -28,6 +29,14 @@ export class EquipmentService {
     }
   }
 
+  async getActiveEquipment(idDto: NumberIdDto): Promise<Equipment> {
+    const equipment = await this.equipmentRepository.findOne(idDto.id, {
+      relations: ['engineer', 'manager'],
+    });
+    ErrorIf.isEmpty(equipment, EQUIPMENT_NOT_FOUND);
+    return equipment;
+  }
+
   async delete(user: User, id: number): Promise<void> {
     const equipment = await this.equipmentRepository.findOne({
       id,
@@ -47,6 +56,10 @@ export class EquipmentService {
       createEquipmentDto.managerId,
     );
     ErrorIf.isTrue(!engineer || !manager, USER_NOT_FOUND);
+    const equipmentWithId = await this.equipmentRepository.getEquipmentByIdEquipment(
+      createEquipmentDto.idEquipment,
+    );
+    ErrorIf.isExist(equipmentWithId, USED_ID_EQUIPMENT);
     return this.equipmentRepository.createEquipment(
       createEquipmentDto,
       manager,
@@ -73,6 +86,15 @@ export class EquipmentService {
         updateEquipmentDto.managerId,
       );
       ErrorIf.isEmpty(manager, USER_NOT_FOUND);
+    }
+    if (updateEquipmentDto.idEquipment) {
+      const equipmentWithId = await this.equipmentRepository.getEquipmentByIdEquipment(
+        updateEquipmentDto.idEquipment,
+      );
+      ErrorIf.isTrue(
+        equipmentWithId && equipmentWithId.id !== idDto.id,
+        USED_ID_EQUIPMENT,
+      );
     }
     return this.equipmentRepository.updateEquipment(
       equipment,

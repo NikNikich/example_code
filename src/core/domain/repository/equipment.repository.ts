@@ -41,4 +41,9 @@ export class EquipmentRepository extends Repository<Equipment> {
     _.assign(editEquipment, _.omit(updateEquipmentDto, listOmit));
     return editEquipment.save();
   }
+  async getEquipmentByIdEquipment(
+    idEquipment: string,
+  ): Promise<Equipment | undefined> {
+    return this.findOne({ where: { idEquipment }, withDeleted: true });
+  }
 }

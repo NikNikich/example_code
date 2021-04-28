@@ -42,3 +42,9 @@ export const EQUIPMENT_NOT_FOUND: StandardRestApiError = StandardRestApiError.cr
   1009,
   'Equipment not found',
 );
+
+// noinspection MagicNumberJS,JSUnusedGlobalSymbols
+export const USED_ID_EQUIPMENT: StandardRestApiError = StandardRestApiError.create(
+  1008,
+  'Equipment id already registered in system',
+);
