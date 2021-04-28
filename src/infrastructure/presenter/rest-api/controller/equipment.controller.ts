@@ -9,12 +9,12 @@ import {
 } from '@nestjs/common';
 import { EquipmentService } from '../../../../application/services/equipment.service';
 
-import { UserEntity } from '../../../../core/domain/entity/user.entity';
+import { User } from '../../../../core/domain/entity/user.entity';
 import { GetUser } from '../../../decorators/get.user.decorator';
 import { DeleteBaseResponse } from '../../../response/base/delete.base.response';
 import { GetRequestId } from '../../../decorators/get.request.id.decorator';
 import { NumberIdDto } from '../documentation/shared/number.id.dto';
-import { EquipmentEntity } from '../../../../core/domain/entity/equipment.entity';
+import { Equipment } from '../../../../core/domain/entity/equipment.entity';
 import { Auth } from '../../../../core/common/decorators/auth';
 import { UserRolesEnum } from '../../../shared/user.roles.enum';
 
@@ -28,9 +28,9 @@ export class EquipmentController {
   @Auth([UserRolesEnum.ADMIN])
   /*@UseGuards(AuthGuard())
   @ApiBearerAuth()*/
-  @ApiResponse({ status: HttpStatus.OK, isArray: true, type: EquipmentEntity })
+  @ApiResponse({ status: HttpStatus.OK, isArray: true, type: Equipment })
   @ApiOperation({ title: 'Список оборудование' })
-  async equipmentList(@GetUser() user: UserEntity): Promise<EquipmentEntity[]> {
+  async equipmentList(@GetUser() user: User): Promise<Equipment[]> {
     return await this.equipmentService.getActiveEquipments(user);
   }
 
@@ -40,7 +40,7 @@ export class EquipmentController {
   @ApiOperation({ title: 'Удалить Equipment' })
   async delete(
     @GetRequestId() requestId: string,
-    @GetUser() user: UserEntity,
+    @GetUser() user: User,
     @Param(ValidationPipe) idDto: NumberIdDto,
   ): Promise<DeleteBaseResponse> {
     await this.equipmentService.delete(user, idDto.id);

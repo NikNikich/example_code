@@ -11,12 +11,13 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 import { ApiModelProperty } from '@nestjs/swagger';
-import { RoleEntity } from './role.entity';
-import { EquipmentEntity } from './equipment.entity';
+import { Role } from './role.entity';
+import { Equipment } from './equipment.entity';
+import { Exclude } from 'class-transformer';
 
 // TODO: move API Model Properties to DTO in documentation
-@Entity({ name: 'user' })
-export class UserEntity extends BaseEntity {
+@Entity()
+export class User extends BaseEntity {
   @ApiModelProperty({ type: 'number', nullable: false })
   @PrimaryGeneratedColumn()
   id: number;
@@ -37,15 +38,16 @@ export class UserEntity extends BaseEntity {
   @Column({ nullable: true })
   email: string;
 
+  @Exclude()
   @ApiModelProperty({ type: 'string', nullable: true })
   @Column({ nullable: true })
   password: string;
 
-  @ApiModelProperty({ type: 'string', nullable: true })
+  @Exclude()
   @Column({ nullable: true })
   resetCode: string;
 
-  @ApiModelProperty({ type: 'string', nullable: true, format: 'date-time' })
+  @Exclude()
   @Column({ nullable: true })
   resetCodeExpirationDate: Date;
 
@@ -70,26 +72,33 @@ export class UserEntity extends BaseEntity {
   position: string;
 
   @ManyToOne(
-    () => RoleEntity,
+    () => Role,
     role => role.users,
     {},
   )
   @JoinColumn()
-  role: RoleEntity;
+  role: Role;
 
   @OneToMany(
-    () => EquipmentEntity,
+    () => Equipment,
     equipment => equipment.user,
     { nullable: true },
   )
-  equipment: EquipmentEntity[];
+  equipment: Equipment[];
 
+  @ApiModelProperty({
+    type: 'Date',
+    nullable: true,
+    description: 'Если не null, значит запись считается йдалённой',
+  })
   @DeleteDateColumn({ type: 'timestamp' })
   public deletedAt: Date;
 
+  @Exclude()
   @CreateDateColumn({ type: 'timestamp' })
   public createdAt: Date;
 
+  @Exclude()
   @UpdateDateColumn({ type: 'timestamp' })
   public updatedAt: Date;
 }

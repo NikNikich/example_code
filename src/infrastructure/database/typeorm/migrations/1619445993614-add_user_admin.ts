@@ -1,12 +1,12 @@
 import { genSalt, hash } from 'bcryptjs';
 import { getConnection, MigrationInterface } from 'typeorm';
-import { UserEntity } from '../../../../core/domain/entity/user.entity';
-import { RoleEntity } from '../../../../core/domain/entity/role.entity';
+import { User } from '../../../../core/domain/entity/user.entity';
+import { Role } from '../../../../core/domain/entity/role.entity';
 import { UserRolesEnum } from '../../../shared/user.roles.enum';
 
 export class addUserAdmin1619445993614 implements MigrationInterface {
   public async up(): Promise<any> {
-    const user = new UserEntity();
+    const user = new User();
     user.firstName = 'Admin';
     user.lastName = 'Admin';
     user.surName = 'Admin';
@@ -18,7 +18,7 @@ export class addUserAdmin1619445993614 implements MigrationInterface {
       await getConnection()
         .createQueryBuilder()
         .insert()
-        .into(UserEntity.name)
+        .into(User.name)
         .values(user)
         .execute();
     }
@@ -26,7 +26,7 @@ export class addUserAdmin1619445993614 implements MigrationInterface {
   // eslint-disable-next-line @typescript-eslint/no-empty-function
   public async down(): Promise<void> {}
 
-  private async findRoleAdmin(): Promise<RoleEntity[] | undefined> {
+  private async findRoleAdmin(): Promise<Role[] | undefined> {
     const manager = getConnection().manager;
     return manager.query(
       `SELECT m.id FROM role AS m WHERE m."name" = '${UserRolesEnum.ADMIN}'`,

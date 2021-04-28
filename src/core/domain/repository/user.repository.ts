@@ -1,17 +1,17 @@
 import { EntityRepository, IsNull, Repository } from 'typeorm';
 import { UpdateUserDto } from '../../../infrastructure/presenter/rest-api/documentation/user/update.user.dto';
-import { UserEntity } from '../entity/user.entity';
 import * as moment from 'moment';
 import { genSalt, hash } from 'bcryptjs';
-import { RoleEntity } from '../entity/role.entity';
+import { Role } from '../entity/role.entity';
 import { UpdateAdminUserDto } from '../../../infrastructure/presenter/rest-api/documentation/user/update.admin.user.dto';
 import * as _ from 'lodash';
 import { CreateAdminUserDto } from '../../../infrastructure/presenter/rest-api/documentation/user/create.admin.user.dto';
+import { User } from '../entity/user.entity';
 
-@EntityRepository(UserEntity)
-export class UserRepository extends Repository<UserEntity> {
-  async createUser(phone: number, role: RoleEntity): Promise<UserEntity> {
-    const user = new UserEntity();
+@EntityRepository(User)
+export class UserRepository extends Repository<User> {
+  async createUser(phone: number, role: Role): Promise<User> {
+    const user = new User();
     user.role = role || null;
     user.phone = phone;
     await user.save();
@@ -21,17 +21,17 @@ export class UserRepository extends Repository<UserEntity> {
   async createUserByEmail(
     email: string,
     password: string,
-    role?: RoleEntity,
-  ): Promise<UserEntity> {
-    const user = new UserEntity();
+    role?: Role,
+  ): Promise<User> {
+    const user = new User();
     user.role = role || null;
     user.email = email;
     user.password = await this.hashPassword(password);
     return user.save();
   }
 
-  async findUserById(id: string): Promise<UserEntity | undefined> {
-    return UserEntity.findOne(id);
+  async findUserByIdWithDeleted(id: number): Promise<User | undefined> {
+    return User.findOne(id, { withDeleted: true });
   }
 
   async hashPassword(password: string): Promise<string> {
@@ -39,10 +39,7 @@ export class UserRepository extends Repository<UserEntity> {
     return hash(password, salt);
   }
 
-  async updateUser(
-    user: UserEntity,
-    userUpdateDto: UpdateUserDto,
-  ): Promise<UserEntity> {
+  async updateUser(user: User, userUpdateDto: UpdateUserDto): Promise<User> {
     const dtoKeys: string[] = Object.keys(userUpdateDto);
 
     if (dtoKeys.includes('firstName')) {
@@ -69,9 +66,9 @@ export class UserRepository extends Repository<UserEntity> {
   }
 
   async updateAdminUser(
-    user: UserEntity,
+    user: User,
     updateUserDto: UpdateAdminUserDto,
-  ): Promise<UserEntity> {
+  ): Promise<User> {
     const userNew = user;
     _.assign(userNew, updateUserDto);
     return await userNew.save();
@@ -79,17 +76,17 @@ export class UserRepository extends Repository<UserEntity> {
 
   async createAdminUser(
     createUserDto: CreateAdminUserDto,
-    role: RoleEntity,
+    role: Role,
     password: string,
-  ): Promise<UserEntity> {
-    const userNew = new UserEntity();
+  ): Promise<User> {
+    const userNew = new User();
     _.assign(userNew, createUserDto);
     userNew.role = role;
     userNew.password = await this.hashPassword(password);
     return await userNew.save();
   }
 
-  async updateResetCode(user: UserEntity, resetCode: string): Promise<void> {
+  async updateResetCode(user: User, resetCode: string): Promise<void> {
     user.resetCode = resetCode;
     user.resetCodeExpirationDate = moment
       .utc()
@@ -98,33 +95,33 @@ export class UserRepository extends Repository<UserEntity> {
     await user.save();
   }
 
-  async deleteResetCode(user: UserEntity): Promise<void> {
+  async deleteResetCode(user: User): Promise<void> {
     user.resetCode = null;
     user.resetCodeExpirationDate = null;
     await user.save();
   }
 
-  async updatePassword(user: UserEntity, password: string): Promise<void> {
+  async updatePassword(user: User, password: string): Promise<void> {
     user.password = await this.hashPassword(password);
     await user.save();
   }
 
-  async resetSmsCode(user: UserEntity): Promise<void> {
+  async resetSmsCode(user: User): Promise<void> {
     user.smsCode = null;
     await user.save();
   }
 
-  async updateSmsCode(user: UserEntity, smsCode: string): Promise<void> {
+  async updateSmsCode(user: User, smsCode: string): Promise<void> {
     user.smsCode = smsCode;
     await user.save();
   }
 
-  async updateLastCode(user: UserEntity): Promise<void> {
+  async updateLastCode(user: User): Promise<void> {
     user.lastCode = moment().toDate();
     await user.save();
   }
 
-  async getListNotDeleteUser(): Promise<UserEntity[]> {
+  async getListNotDeleteUser(): Promise<User[]> {
     return this.find({ where: { deletedAt: IsNull() }, relations: ['role'] });
   }
 }

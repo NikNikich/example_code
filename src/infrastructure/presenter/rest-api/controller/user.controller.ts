@@ -14,7 +14,7 @@ import { UserService } from '../../../../application/services/user.service';
 import { GetUser } from '../../../decorators/get.user.decorator';
 import * as config from 'config';
 import { ApiOperation, ApiResponse, ApiUseTags } from '@nestjs/swagger';
-import { UserEntity } from '../../../../core/domain/entity/user.entity';
+import { User } from '../../../../core/domain/entity/user.entity';
 import { GetRequestId } from '../../../decorators/get.request.id.decorator';
 import { LogoutResponse } from '../../../response/user/logout.response';
 import { SmsResponse } from '../../../response/user/sms.response';
@@ -35,6 +35,7 @@ import { ListUserResponse } from '../../../response/user/list.user.response';
 import { NumberIdDto } from '../documentation/shared/number.id.dto';
 import { UpdateAdminUserDto } from '../documentation/user/update.admin.user.dto';
 import { CreateAdminUserDto } from '../documentation/user/create.admin.user.dto';
+import { plainToClass } from 'class-transformer';
 
 @ApiUseTags('users')
 @Controller('users')
@@ -49,7 +50,26 @@ export class UserController {
     @GetRequestId() requestId: string,
   ): Promise<ListUserResponse> {
     const users = await this.userService.getListUser();
-    return new ListUserResponse(requestId, users);
+    const listUser = new ListUserResponse(requestId, users);
+    return plainToClass(ListUserResponse, listUser);
+  }
+
+  @Get('/:id')
+  @Auth([UserRolesEnum.ADMIN])
+  @ApiResponse({ status: HttpStatus.OK, type: MeResponse })
+  @ApiOperation({ title: 'Выдаёт данные пользователя по его id' })
+  async getUserById(
+    @GetRequestId() requestId: string,
+    @Param(
+      new ValidationPipe({
+        transform: true,
+      }),
+    )
+    idDto: NumberIdDto,
+  ): Promise<MeResponse> {
+    const user = await this.userService.getUserById(idDto);
+    const meResponse = new MeResponse(requestId, user);
+    return plainToClass(MeResponse, meResponse);
   }
 
   @Put('/:id')
@@ -58,13 +78,19 @@ export class UserController {
   @ApiOperation({ title: 'Изменение пользователя администратором' })
   async editUser(
     @GetRequestId() requestId: string,
-    @Param(ValidationPipe) idDto: NumberIdDto,
+    @Param(
+      new ValidationPipe({
+        transform: true,
+      }),
+    )
+    idDto: NumberIdDto,
     @Body(ValidationPipe) userUpdateDto: UpdateAdminUserDto,
   ): Promise<MeResponse> {
-    return new MeResponse(
+    const meResponse = new MeResponse(
       requestId,
       await this.userService.updateAdminUser(idDto, userUpdateDto),
     );
+    return plainToClass(MeResponse, meResponse);
   }
 
   @Post()
@@ -75,10 +101,11 @@ export class UserController {
     @GetRequestId() requestId: string,
     @Body(ValidationPipe) createAdminUserDto: CreateAdminUserDto,
   ): Promise<MeResponse> {
-    return new MeResponse(
+    const meResponse = new MeResponse(
       requestId,
       await this.userService.createAdminUser(createAdminUserDto, requestId),
     );
+    return plainToClass(MeResponse, meResponse);
   }
 
   @Delete('/:id')
@@ -169,7 +196,7 @@ export class UserController {
   })
   async logout(
     @GetRequestId() requestId: string,
-    @GetUser() user: UserEntity,
+    @GetUser() user: User,
   ): Promise<LogoutResponse> {
     await this.userService.logout(requestId, user);
     return new LogoutResponse(requestId, null);
@@ -211,9 +238,10 @@ export class UserController {
   @ApiOperation({ title: 'Информация об авторизованном юзере' })
   async getMe(
     @GetRequestId() requestId: string,
-    @GetUser() user: UserEntity,
+    @GetUser() user: User,
   ): Promise<MeResponse> {
-    return new MeResponse(requestId, user);
+    const meResponse = new MeResponse(requestId, user);
+    return plainToClass(MeResponse, meResponse);
   }
 
   @Put('/me')
@@ -222,12 +250,13 @@ export class UserController {
   @ApiOperation({ title: 'Редактирование полей юзера' })
   async editMyself(
     @GetRequestId() requestId: string,
-    @GetUser() user: UserEntity,
+    @GetUser() user: User,
     @Body(ValidationPipe) userUpdateDto: UpdateUserDto,
   ): Promise<MeResponse> {
-    return new MeResponse(
+    const meResponse = new MeResponse(
       requestId,
       await this.userService.editMyself(user, userUpdateDto),
     );
+    return plainToClass(MeResponse, meResponse);
   }
 }

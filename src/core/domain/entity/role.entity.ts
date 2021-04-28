@@ -7,10 +7,10 @@ import {
 } from 'typeorm';
 import { UserRolesEnum } from '../../../infrastructure/shared/user.roles.enum';
 import { ApiModelProperty } from '@nestjs/swagger';
-import { UserEntity } from './user.entity';
+import { User } from './user.entity';
 
 @Entity({ name: 'role' })
-export class RoleEntity extends BaseEntity {
+export class Role extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
@@ -19,9 +19,9 @@ export class RoleEntity extends BaseEntity {
   name: UserRolesEnum;
 
   @OneToMany(
-    () => UserEntity,
+    () => User,
     user => user.role,
     { nullable: true },
   )
-  users: UserEntity[];
+  users: User[];
 }

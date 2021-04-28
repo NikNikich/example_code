@@ -9,18 +9,18 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { UserEntity } from './user.entity';
-import { BuildingEntity } from './building.entity';
+import { User } from './user.entity';
+import { Building } from './building.entity';
 import { EquipmentStatusEnum } from '../../../infrastructure/shared/equipment.status.enum';
 import { ApiModelProperty } from '@nestjs/swagger';
 
 @Entity({ name: 'equipment' })
-export class EquipmentEntity extends BaseEntity {
+export class Equipment extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
   @ManyToOne(
-    () => UserEntity,
+    () => User,
     user => user.equipment,
     {
       cascade: true,
@@ -28,17 +28,17 @@ export class EquipmentEntity extends BaseEntity {
     },
   )
   @JoinColumn()
-  user: UserEntity;
+  user: User;
 
   @ManyToOne(
-    () => BuildingEntity,
+    () => Building,
     building => building.equipment,
     {
       nullable: true,
     },
   )
   @JoinColumn()
-  building: BuildingEntity;
+  building: Building;
 
   @ApiModelProperty({ enum: EquipmentStatusEnum, nullable: true })
   @Column({ enum: EquipmentStatusEnum, default: EquipmentStatusEnum.OK })
