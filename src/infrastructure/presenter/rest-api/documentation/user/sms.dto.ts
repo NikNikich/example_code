@@ -1,15 +1,25 @@
-import { IsNumber, Max, Min } from 'class-validator';
+import {
+  IsNumber,
+  IsString,
+  Max,
+  MaxLength,
+  Min,
+  MinLength,
+} from 'class-validator';
 import { ApiModelProperty } from '@nestjs/swagger';
-import { MAX_PHONE_NUMBER, MIN_PHONE_NUMBER } from './sign.in.by.sms.dto';
+import {
+  MAX_PHONE_NUMBER_LENGTH,
+  MIN_PHONE_NUMBER_LENGTH,
+} from './sign.in.by.sms.dto';
 
 export class SmsDto {
-  @IsNumber()
-  @Min(MIN_PHONE_NUMBER)
-  @Max(MAX_PHONE_NUMBER)
+  @IsString()
+  @MinLength(MIN_PHONE_NUMBER_LENGTH)
+  @MaxLength(MAX_PHONE_NUMBER_LENGTH)
   @ApiModelProperty({
     type: 'string',
-    example: 12345678,
+    example: '12345678',
     required: true,
   })
-  phone: number;
+  phone: string;
 }

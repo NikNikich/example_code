@@ -57,7 +57,7 @@ export class UserService {
 
   private lengthPassword = 10;
 
-  async getUserByPhone(phone: number): Promise<User | undefined> {
+  async getUserByPhone(phone: string): Promise<User | undefined> {
     return this.userRepository.findOne({ where: { phone }, withDeleted: true });
   }
 
@@ -128,7 +128,7 @@ export class UserService {
     return user;
   }
 
-  async createUserByPhone(phone: number): Promise<User> {
+  async createUserByPhone(phone: string): Promise<User> {
     const role = await this.roleRepository.findOne({
       name: UserRolesEnum.USER,
     });
@@ -375,7 +375,7 @@ export class UserService {
   }
 
   async backdoorCheck(
-    phone: number,
+    phone: string,
     smsText: string,
     requestId: string,
     userId: number,

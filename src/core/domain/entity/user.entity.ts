@@ -22,9 +22,9 @@ export class User extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @ApiModelProperty({ type: 'number', nullable: true })
+  @ApiModelProperty({ type: 'string', nullable: true })
   @Column({ nullable: true })
-  phone: number;
+  phone: string;
 
   @ApiModelProperty({ type: 'string', nullable: true })
   @Column({ nullable: true })

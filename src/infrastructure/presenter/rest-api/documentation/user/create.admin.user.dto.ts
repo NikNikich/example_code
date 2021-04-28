@@ -6,7 +6,10 @@ import {
   MaxLength,
   MinLength,
 } from 'class-validator';
-import { MAX_PHONE_NUMBER, MIN_PHONE_NUMBER } from './sign.in.by.sms.dto';
+import {
+  MAX_PHONE_NUMBER_LENGTH,
+  MIN_PHONE_NUMBER_LENGTH,
+} from './sign.in.by.sms.dto';
 export class CreateAdminUserDto {
   @IsString()
   @ApiModelProperty({
@@ -42,8 +45,8 @@ export class CreateAdminUserDto {
   email: string;
 
   @IsString()
-  @MinLength(MIN_PHONE_NUMBER)
-  @MaxLength(MAX_PHONE_NUMBER)
+  @MinLength(MIN_PHONE_NUMBER_LENGTH)
+  @MaxLength(MAX_PHONE_NUMBER_LENGTH)
   @ApiModelProperty({
     type: 'string',
     example: '12345678',
