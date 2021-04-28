@@ -6,7 +6,7 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { UserRolesEnum } from '../../../infrastructure/shared/user.roles.enum';
-import { ApiModelProperty } from '@nestjs/swagger';
+
 import { User } from './user.entity';
 
 @Entity({ name: 'role' })

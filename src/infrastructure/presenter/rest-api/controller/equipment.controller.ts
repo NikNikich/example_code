@@ -17,14 +17,10 @@ import { GetUser } from '../../../decorators/get.user.decorator';
 import { DeleteBaseResponse } from '../../../response/base/delete.base.response';
 import { GetRequestId } from '../../../decorators/get.request.id.decorator';
 import { NumberIdDto } from '../documentation/shared/number.id.dto';
-import { Equipment } from '../../../../core/domain/entity/equipment.entity';
+
 import { Auth } from '../../../../core/common/decorators/auth';
 import { UserRolesEnum } from '../../../shared/user.roles.enum';
-import { ListUserResponse } from '../../../response/user/list.user.response';
-import { MeResponse } from '../../../response/user/me.response';
-import { UpdateAdminUserDto } from '../documentation/user/update.admin.user.dto';
-import { CreateAdminUserDto } from '../documentation/user/create.admin.user.dto';
-import { LogoutResponse } from '../../../response/user/logout.response';
+
 import { EquipmentResponseDto } from '../../../response/equipment/equipment.response.dto';
 import { EquipmentListResponseDto } from '../../../response/equipment/equipment.list.response.dto';
 import { CreateEquipmentDto } from '../documentation/equipment/create.equipment.dto';
@@ -79,7 +75,6 @@ export class EquipmentController {
   async getEquipment(
     @GetRequestId() requestId: string,
     @Param(ValidationPipe) idDto: NumberIdDto,
-    @GetUser() user: User,
   ): Promise<EquipmentResponseDto> {
     return new EquipmentResponseDto(
       requestId,

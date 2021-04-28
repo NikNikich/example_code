@@ -1,11 +1,4 @@
-import {
-  IsNumber,
-  IsString,
-  Max,
-  MaxLength,
-  Min,
-  MinLength,
-} from 'class-validator';
+import { IsString, MaxLength, MinLength } from 'class-validator';
 import { ApiModelProperty } from '@nestjs/swagger';
 import {
   MAX_PHONE_NUMBER_LENGTH,

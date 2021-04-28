@@ -1,11 +1,7 @@
 import {
   IsNumberString,
   Length,
-  IsNumber,
-  Min,
-  Max,
   IsString,
-  IsOptional,
   MinLength,
   MaxLength,
 } from 'class-validator';
