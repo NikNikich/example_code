@@ -22,7 +22,7 @@ export class Equipment extends BaseEntity {
   id: number;
 
   @ApiModelProperty({ type: 'string' })
-  @Column()
+  @Column({ nullable: true })
   name: string;
 
   @ApiModelProperty({ type: 'string' })
@@ -30,7 +30,7 @@ export class Equipment extends BaseEntity {
   idEquipment: string;
 
   @ApiModelProperty({ type: 'string' })
-  @Column()
+  @Column({ nullable: true })
   servicePassword: string;
 
   @ApiModelProperty({ type: User, nullable: true })
@@ -73,39 +73,39 @@ export class Equipment extends BaseEntity {
   jobStatus: EquipmentJobStatusEnum;
 
   @ApiModelProperty({ enum: EquipmentUseStatusEnum, nullable: true })
-  @Column({ enum: EquipmentUseStatusEnum })
+  @Column({ enum: EquipmentUseStatusEnum, nullable: true })
   useStatus: EquipmentUseStatusEnum;
 
   @ApiModelProperty({ type: 'timestamp', nullable: true })
   @Column({ type: 'timestamp', nullable: true })
   dateStatus: Date;
 
-  @ApiModelProperty({ type: 'string' })
+  @ApiModelProperty({ type: 'string', nullable: true })
   @Column()
   SNComponent1: string;
 
-  @ApiModelProperty({ type: 'string' })
+  @ApiModelProperty({ type: 'string', nullable: true })
   @Column()
   SNComponent2: string;
 
-  @ApiModelProperty({ type: 'string' })
+  @ApiModelProperty({ type: 'string', nullable: true })
   @Column()
   SNComponent3: string;
 
-  @ApiModelProperty({ type: 'string' })
+  @ApiModelProperty({ type: 'string', nullable: true })
   @Column()
   SNComponent4: string;
 
-  @ApiModelProperty({ type: 'string' })
+  @ApiModelProperty({ type: 'string', nullable: true })
   @Column()
   SNComponent5: string;
 
-  @ApiModelProperty({ type: 'string' })
+  @ApiModelProperty({ type: 'string', nullable: true })
   @Column()
   SNComponent6: string;
 
   @Exclude()
-  @DeleteDateColumn({ type: 'timestamp' })
+  @DeleteDateColumn({ type: 'timestamp', nullable: true })
   public deletedAt: Date;
 
   @Exclude()

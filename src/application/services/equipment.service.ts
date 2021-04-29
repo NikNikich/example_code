@@ -25,7 +25,10 @@ export class EquipmentService {
 
   async getActiveEquipments(user: User): Promise<Equipment[]> {
     if (user.role.name === UserRolesEnum.ADMIN) {
-      return this.equipmentRepository.find({ deletedAt: IsNull() });
+      return this.equipmentRepository.find({
+        where: { deletedAt: IsNull() },
+        relations: ['manager', 'engineer'],
+      });
     }
   }
 
