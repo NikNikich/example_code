@@ -31,7 +31,7 @@ export class UserRepository extends Repository<User> {
   }
 
   async findUserByIdWithDeleted(id: number): Promise<User | undefined> {
-    return User.findOne(id, { withDeleted: true });
+    return User.findOne(id, { withDeleted: true, relations: ['role'] });
   }
 
   async hashPassword(password: string): Promise<string> {
