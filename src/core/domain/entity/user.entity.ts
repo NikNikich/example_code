@@ -96,6 +96,14 @@ export class User extends BaseEntity {
   )
   equipmentEngineers: Equipment[];
 
+  @Exclude()
+  @OneToMany(
+    () => Equipment,
+    equipment => equipment.owner,
+    { nullable: true },
+  )
+  equipmentOwner: Equipment[];
+
   @ApiModelProperty({
     type: 'Date',
     nullable: true,

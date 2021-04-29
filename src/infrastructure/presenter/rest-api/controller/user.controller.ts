@@ -259,4 +259,20 @@ export class UserController {
     );
     return plainToClass(MeResponse, meResponse);
   }
+
+  @Put(':id/equipment/add')
+  @Auth()
+  @ApiResponse({ status: HttpStatus.OK, type: MeResponse })
+  @ApiOperation({ title: 'Добавить оборудование к пользователю' })
+  async addEquipment(
+    @GetRequestId() requestId: string,
+    @GetUser() user: User,
+    @Body(ValidationPipe) userUpdateDto: UpdateUserDto,
+  ): Promise<MeResponse> {
+    const meResponse = new MeResponse(
+      requestId,
+      await this.userService.editMyself(user, userUpdateDto),
+    );
+    return plainToClass(MeResponse, meResponse);
+  }
 }

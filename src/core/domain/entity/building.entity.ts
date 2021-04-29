@@ -15,14 +15,23 @@ export class Building extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column()
+  @Column({ nullable: true })
   type: string;
+
+  @Column()
+  country: string;
+
+  @Column()
+  region: string;
+
+  @Column()
+  area: string;
 
   @Column()
   city: string;
 
   @Column()
-  address: string;
+  house: string;
 
   @OneToMany(
     () => Equipment,

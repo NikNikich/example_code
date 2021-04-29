@@ -57,6 +57,18 @@ export class Equipment extends BaseEntity {
   @JoinColumn()
   manager: User;
 
+  @ApiModelProperty({ type: User, nullable: true })
+  @ManyToOne(
+    () => User,
+    user => user.equipmentOwner,
+    {
+      cascade: true,
+      nullable: true,
+    },
+  )
+  @JoinColumn()
+  owner: User;
+
   @ApiModelProperty({ type: Building, nullable: true })
   @ManyToOne(
     () => Building,
