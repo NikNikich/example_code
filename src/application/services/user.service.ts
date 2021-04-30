@@ -199,6 +199,7 @@ export class UserService {
     );
 
     ErrorIf.isEmpty(user, INVALID_CREDENTIALS);
+    ErrorIf.isTrue(user.deletedAt !== null, INVALID_CREDENTIALS);
     ErrorIf.isFalse(
       await this.comparePassword(user, signInByEmailRequestDto.password),
       INVALID_CREDENTIALS,

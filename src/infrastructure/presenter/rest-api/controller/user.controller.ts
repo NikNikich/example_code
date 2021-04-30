@@ -54,45 +54,6 @@ export class UserController {
     return plainToClass(ListUserResponse, listUser);
   }
 
-  @Get('/:id')
-  @Auth([UserRolesEnum.ADMIN])
-  @ApiResponse({ status: HttpStatus.OK, type: MeResponse })
-  @ApiOperation({ title: 'Выдаёт данные пользователя по его id' })
-  async getUserById(
-    @GetRequestId() requestId: string,
-    @Param(
-      new ValidationPipe({
-        transform: true,
-      }),
-    )
-    idDto: NumberIdDto,
-  ): Promise<MeResponse> {
-    const user = await this.userService.getUserById(idDto);
-    const meResponse = new MeResponse(requestId, user);
-    return plainToClass(MeResponse, meResponse);
-  }
-
-  @Put('/:id')
-  @Auth([UserRolesEnum.ADMIN])
-  @ApiResponse({ status: HttpStatus.OK, type: MeResponse })
-  @ApiOperation({ title: 'Изменение пользователя администратором' })
-  async editUser(
-    @GetRequestId() requestId: string,
-    @Param(
-      new ValidationPipe({
-        transform: true,
-      }),
-    )
-    idDto: NumberIdDto,
-    @Body(ValidationPipe) userUpdateDto: UpdateAdminUserDto,
-  ): Promise<MeResponse> {
-    const meResponse = new MeResponse(
-      requestId,
-      await this.userService.updateAdminUser(idDto, userUpdateDto),
-    );
-    return plainToClass(MeResponse, meResponse);
-  }
-
   @Post()
   @Auth([UserRolesEnum.ADMIN])
   @ApiResponse({ status: HttpStatus.OK, type: MeResponse })
@@ -106,18 +67,6 @@ export class UserController {
       await this.userService.createAdminUser(createAdminUserDto, requestId),
     );
     return plainToClass(MeResponse, meResponse);
-  }
-
-  @Delete('/:id')
-  @Auth([UserRolesEnum.ADMIN])
-  @ApiResponse({ status: HttpStatus.OK, type: LogoutResponse })
-  @ApiOperation({ title: 'Изменение пользователя администратором' })
-  async deleteUser(
-    @GetRequestId() requestId: string,
-    @Param(ValidationPipe) idDto: NumberIdDto,
-  ): Promise<LogoutResponse> {
-    await this.userService.deleteAdminUser(idDto);
-    return new LogoutResponse(requestId, null);
   }
 
   @Post('/sms')
@@ -258,5 +207,56 @@ export class UserController {
       await this.userService.editMyself(user, userUpdateDto),
     );
     return plainToClass(MeResponse, meResponse);
+  }
+
+  @Get('/:id')
+  @Auth([UserRolesEnum.ADMIN])
+  @ApiResponse({ status: HttpStatus.OK, type: MeResponse })
+  @ApiOperation({ title: 'Выдаёт данные пользователя по его id' })
+  async getUserById(
+    @GetRequestId() requestId: string,
+    @Param(
+      new ValidationPipe({
+        transform: true,
+      }),
+    )
+    idDto: NumberIdDto,
+  ): Promise<MeResponse> {
+    const user = await this.userService.getUserById(idDto);
+    const meResponse = new MeResponse(requestId, user);
+    return plainToClass(MeResponse, meResponse);
+  }
+
+  @Put('/:id')
+  @Auth([UserRolesEnum.ADMIN])
+  @ApiResponse({ status: HttpStatus.OK, type: MeResponse })
+  @ApiOperation({ title: 'Изменение пользователя администратором' })
+  async editUser(
+    @GetRequestId() requestId: string,
+    @Param(
+      new ValidationPipe({
+        transform: true,
+      }),
+    )
+    idDto: NumberIdDto,
+    @Body(ValidationPipe) userUpdateDto: UpdateAdminUserDto,
+  ): Promise<MeResponse> {
+    const meResponse = new MeResponse(
+      requestId,
+      await this.userService.updateAdminUser(idDto, userUpdateDto),
+    );
+    return plainToClass(MeResponse, meResponse);
+  }
+
+  @Delete('/:id')
+  @Auth([UserRolesEnum.ADMIN])
+  @ApiResponse({ status: HttpStatus.OK, type: LogoutResponse })
+  @ApiOperation({ title: 'Изменение пользователя администратором' })
+  async deleteUser(
+    @GetRequestId() requestId: string,
+    @Param(ValidationPipe) idDto: NumberIdDto,
+  ): Promise<LogoutResponse> {
+    await this.userService.deleteAdminUser(idDto);
+    return new LogoutResponse(requestId, null);
   }
 }
