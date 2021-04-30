@@ -31,6 +31,9 @@ export class Building extends BaseEntity {
   city: string;
 
   @Column()
+  street: string;
+
+  @Column()
   house: string;
 
   @OneToMany(
