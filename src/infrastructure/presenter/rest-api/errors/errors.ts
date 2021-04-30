@@ -48,3 +48,9 @@ export const USED_ID_EQUIPMENT: StandardRestApiError = StandardRestApiError.crea
   1008,
   'Equipment id already registered in system',
 );
+
+// noinspection MagicNumberJS,JSUnusedGlobalSymbols
+export const INVALID_ADDRESS_DATA: StandardRestApiError = StandardRestApiError.create(
+  1009,
+  'invalid data address',
+);

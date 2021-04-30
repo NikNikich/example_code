@@ -26,12 +26,16 @@ export class Equipment extends BaseEntity {
   name: string;
 
   @ApiModelProperty({ type: 'string' })
-  @Column({ unique: true })
+  @Column({ unique: true, nullable: true })
   idEquipment: string;
 
   @ApiModelProperty({ type: 'string' })
   @Column({ nullable: true })
   servicePassword: string;
+
+  @ApiModelProperty({ type: 'string' })
+  @Column({ nullable: true })
+  address: string;
 
   @ApiModelProperty({ type: User, nullable: true })
   @ManyToOne(

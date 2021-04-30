@@ -11,6 +11,8 @@ import { JwtStrategy } from '../../core/domain/service/jwt/jwt.strategy';
 import { BaseController } from '../presenter/rest-api/controller/base.controller';
 import { SessionRepository } from '../../core/domain/repository/session.repository';
 import { RoleRepository } from '../../core/domain/repository/role.repository';
+import { EquipmentRepository } from '../../core/domain/repository/equipment.repository';
+import { BuildingRepository } from '../../core/domain/repository/building.repository';
 
 @Module({
   imports: [
@@ -26,6 +28,8 @@ import { RoleRepository } from '../../core/domain/repository/role.repository';
       SessionRepository,
       BaseRepository,
       RoleRepository,
+      EquipmentRepository,
+      BuildingRepository,
     ]),
   ],
   controllers: [BaseController],

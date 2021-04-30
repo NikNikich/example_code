@@ -1,52 +1,23 @@
-import { IsString } from 'class-validator';
+import { IsString, ValidateNested } from 'class-validator';
 import { ApiModelProperty } from '@nestjs/swagger';
+import { DadataDataDto } from './dadata.data.dto';
+import { Type } from 'class-transformer';
 
 export class DadataObjectDto {
   @IsString()
   @ApiModelProperty({
     type: 'string',
-    example: 'Россия',
+    example: 'Респ Татарстан, г Зеленодольск, ул Йошкар-Олинская',
     required: true,
   })
-  country: string;
+  value: string;
 
-  @IsString()
   @ApiModelProperty({
-    type: 'string',
-    example: 'Респ Марий-Эл',
-    required: true,
+    type: DadataDataDto,
+    description: 'Dadata data',
+    isArray: true,
   })
-  region_with_type: string;
-
-  @IsString()
-  @ApiModelProperty({
-    type: 'string',
-    example: 'Зеленодольский р-н',
-    required: true,
-  })
-  area_with_type: string;
-
-  @IsString()
-  @ApiModelProperty({
-    type: 'string',
-    example: 'г Зеленодольск',
-    required: true,
-  })
-  city_with_type: string;
-
-  @IsString()
-  @ApiModelProperty({
-    type: 'string',
-    example: 'ул Йошкар-Олинская',
-    required: true,
-  })
-  street_with_type: string;
-
-  @IsString()
-  @ApiModelProperty({
-    type: 'string',
-    example: 'Простоквашин',
-    required: true,
-  })
-  house: string;
+  @Type(() => DadataDataDto)
+  @ValidateNested()
+  data: DadataDataDto;
 }

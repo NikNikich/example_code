@@ -36,6 +36,8 @@ import { NumberIdDto } from '../documentation/shared/number.id.dto';
 import { UpdateAdminUserDto } from '../documentation/user/update.admin.user.dto';
 import { CreateAdminUserDto } from '../documentation/user/create.admin.user.dto';
 import { plainToClass } from 'class-transformer';
+import { AddUserEquipmentDto } from '../documentation/user/add.user.equipment.dto';
+import { AddEquipmentResponse } from '../../../response/user/add.equipment.response';
 
 @ApiUseTags('users')
 @Controller('users')
@@ -91,6 +93,24 @@ export class UserController {
       await this.userService.updateAdminUser(idDto, userUpdateDto),
     );
     return plainToClass(MeResponse, meResponse);
+  }
+
+  @Put(':id/equipment/add')
+  @Auth([UserRolesEnum.ADMIN])
+  @ApiResponse({ status: HttpStatus.OK, type: AddEquipmentResponse })
+  @ApiOperation({ title: 'Добавить оборудование к пользователю' })
+  async addEquipment(
+    @GetRequestId() requestId: string,
+    @Param(
+      new ValidationPipe({
+        transform: true,
+      }),
+    )
+    idDto: NumberIdDto,
+    @Body(ValidationPipe) addUserEquipmentDto: AddUserEquipmentDto,
+  ): Promise<AddEquipmentResponse> {
+    await this.userService.addUserEquipment(idDto, addUserEquipmentDto);
+    return new AddEquipmentResponse(requestId);
   }
 
   @Post()
@@ -172,7 +192,7 @@ export class UserController {
       await this.userService.signUpByEmail(requestId, signUpByEmailRequestDto),
     );
   }
-
+  [UserRolesEnum.ADMIN];
   @Post('/signin/email')
   @ApiResponse({ status: HttpStatus.CREATED, type: SignInResponse })
   @ApiOperation({
@@ -249,22 +269,6 @@ export class UserController {
   @ApiResponse({ status: HttpStatus.OK, type: MeResponse })
   @ApiOperation({ title: 'Редактирование полей юзера' })
   async editMyself(
-    @GetRequestId() requestId: string,
-    @GetUser() user: User,
-    @Body(ValidationPipe) userUpdateDto: UpdateUserDto,
-  ): Promise<MeResponse> {
-    const meResponse = new MeResponse(
-      requestId,
-      await this.userService.editMyself(user, userUpdateDto),
-    );
-    return plainToClass(MeResponse, meResponse);
-  }
-
-  @Put(':id/equipment/add')
-  @Auth()
-  @ApiResponse({ status: HttpStatus.OK, type: MeResponse })
-  @ApiOperation({ title: 'Добавить оборудование к пользователю' })
-  async addEquipment(
     @GetRequestId() requestId: string,
     @GetUser() user: User,
     @Body(ValidationPipe) userUpdateDto: UpdateUserDto,

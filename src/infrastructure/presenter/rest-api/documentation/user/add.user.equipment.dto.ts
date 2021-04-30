@@ -3,7 +3,7 @@ import { IsEnum, IsNumber, ValidateNested } from 'class-validator';
 import { EquipmentUseStatusEnum } from '../../../../shared/equipment.use.status.enum';
 import { DadataObjectDto } from './dadata.object.dto';
 import { Type } from 'class-transformer';
-export class CreateAdminUserDto {
+export class AddUserEquipmentDto {
   @IsNumber()
   @ApiModelProperty({
     type: 'number',
@@ -22,7 +22,7 @@ export class CreateAdminUserDto {
 
   @ApiModelProperty({
     type: DadataObjectDto,
-    description: 'Id menu item',
+    description: 'DaData validation JSON',
     isArray: true,
   })
   @Type(() => DadataObjectDto)
