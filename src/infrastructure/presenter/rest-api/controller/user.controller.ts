@@ -95,7 +95,7 @@ export class UserController {
         transform: true,
       }),
     )
-    idDto: NumberIdDto,
+      idDto: NumberIdDto,
     @Body(ValidationPipe) addUserEquipmentDto: AddUserEquipmentDto,
   ): Promise<AddEquipmentResponse> {
     await this.userService.addUserEquipment(idDto, addUserEquipmentDto);
@@ -152,7 +152,7 @@ export class UserController {
       'Используйте код 1234.' +
       ' Для авторизации к полученному токену нужно добавить слово Bearer и пробел. ' +
       ` Время жизни кода ${Number(config.get('sms.codeLifetime')) /
-        MILLISECONDS_IN_SECOND} сек.` +
+      MILLISECONDS_IN_SECOND} сек.` +
       ` Повторно отправить запрос на смс можно через ${Number(
         config.get('sms.minRepeatTime'),
       ) / MILLISECONDS_IN_SECOND} сек.`,
@@ -252,7 +252,7 @@ export class UserController {
         transform: true,
       }),
     )
-    idDto: NumberIdDto,
+      idDto: NumberIdDto,
   ): Promise<MeResponse> {
     const user = await this.userService.getUserById(idDto);
     const meResponse = new MeResponse(requestId, user);
@@ -270,7 +270,7 @@ export class UserController {
         transform: true,
       }),
     )
-    idDto: NumberIdDto,
+      idDto: NumberIdDto,
     @Body(ValidationPipe) userUpdateDto: UpdateAdminUserDto,
   ): Promise<MeResponse> {
     const meResponse = new MeResponse(
