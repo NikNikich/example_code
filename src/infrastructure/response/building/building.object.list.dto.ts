@@ -8,7 +8,7 @@ export class BuildingObjectListDto {
   type: string;
 
   @ApiModelProperty({ type: 'string' })
-  address: string;
+  address: string | undefined;
 
   @ApiModelProperty({ type: 'number' })
   allEquipment: number;
@@ -21,7 +21,7 @@ export class BuildingObjectListDto {
 
   constructor(
     id: number,
-    type: string,
+    type: string | undefined,
     address: string,
     allEquipment: number,
     extensionEquipment: number,

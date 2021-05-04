@@ -9,6 +9,7 @@ import { APP_FILTER } from '@nestjs/core';
 import { AllExceptionsFilter } from '../presenter/rest-api/errors/all.exception.filter';
 import { routerLogger } from '../presenter/rest-api/router.logger';
 import { EquipmentModule } from './equipment.module';
+import { BuildingModule } from './building.module';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { EquipmentModule } from './equipment.module';
     UserModule,
     EquipmentModule,
     BaseModule,
+    BuildingModule,
   ],
   controllers: [AppController],
   providers: [
