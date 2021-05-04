@@ -2,10 +2,7 @@ import { EntityRepository, Repository } from 'typeorm';
 import { Building } from '../entity/building.entity';
 import { DadataDataDto } from '../../../infrastructure/presenter/rest-api/documentation/user/dadata.data.dto';
 import { ErrorIf } from '../../../infrastructure/presenter/rest-api/errors/error.if';
-import {
-  INVALID_ADDRESS_DATA,
-  USER_NOT_FOUND,
-} from '../../../infrastructure/presenter/rest-api/errors/errors';
+import { INVALID_ADDRESS_DATA } from '../../../infrastructure/presenter/rest-api/errors/errors';
 
 @EntityRepository(Building)
 export class BuildingRepository extends Repository<Building> {

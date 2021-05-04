@@ -23,7 +23,6 @@ export class AddUserEquipmentDto {
   @ApiModelProperty({
     type: DadataObjectDto,
     description: 'DaData validation JSON',
-    isArray: true,
   })
   @Type(() => DadataObjectDto)
   @ValidateNested()

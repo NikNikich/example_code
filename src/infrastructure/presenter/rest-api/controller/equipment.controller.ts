@@ -48,6 +48,19 @@ export class EquipmentController {
       await this.equipmentService.getActiveEquipments(user),
     );
   }
+  @Post()
+  @Auth([UserRolesEnum.ADMIN])
+  @ApiResponse({ status: HttpStatus.OK, type: EquipmentResponseDto })
+  @ApiOperation({ title: 'Создание оборудования администратором' })
+  async createEquipment(
+    @GetRequestId() requestId: string,
+    @Body(ValidationPipe) createEquipmentDto: CreateEquipmentDto,
+  ): Promise<EquipmentResponseDto> {
+    return new EquipmentResponseDto(
+      requestId,
+      await this.equipmentService.createEquipment(createEquipmentDto),
+    );
+  }
 
   @Put('/:id')
   @Auth([UserRolesEnum.ADMIN])
@@ -79,20 +92,6 @@ export class EquipmentController {
     return new EquipmentResponseDto(
       requestId,
       await this.equipmentService.getActiveEquipment(idDto),
-    );
-  }
-
-  @Post()
-  @Auth([UserRolesEnum.ADMIN])
-  @ApiResponse({ status: HttpStatus.OK, type: EquipmentResponseDto })
-  @ApiOperation({ title: 'Создание оборудования администратором' })
-  async createEquipment(
-    @GetRequestId() requestId: string,
-    @Body(ValidationPipe) createEquipmentDto: CreateEquipmentDto,
-  ): Promise<EquipmentResponseDto> {
-    return new EquipmentResponseDto(
-      requestId,
-      await this.equipmentService.createEquipment(createEquipmentDto),
     );
   }
 

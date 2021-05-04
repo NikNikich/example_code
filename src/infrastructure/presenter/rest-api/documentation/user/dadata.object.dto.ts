@@ -15,7 +15,6 @@ export class DadataObjectDto {
   @ApiModelProperty({
     type: DadataDataDto,
     description: 'Dadata data',
-    isArray: true,
   })
   @Type(() => DadataDataDto)
   @ValidateNested()

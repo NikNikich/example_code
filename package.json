@@ -18,7 +18,7 @@
     "start:dev": "nest start --watch",
     "start:debug": "nest start --debug --watch",
     "start:prod": "node dist/main",
-    "lint": "eslint '{src,config,test}/**/*.ts' --fix --max-warnings 0",
+    "lint": "eslint \"{src,config,test}/**/*.ts\" --fix --max-warnings 0",
     "test": "jest  --runInBand --detectOpenHandles",
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",

@@ -56,41 +56,30 @@ export class UserController {
     return plainToClass(ListUserResponse, listUser);
   }
 
-  @Get('/:id')
-  @Auth([UserRolesEnum.ADMIN])
+  @Get('/me')
+  @Auth()
   @ApiResponse({ status: HttpStatus.OK, type: MeResponse })
-  @ApiOperation({ title: 'Выдаёт данные пользователя по его id' })
-  async getUserById(
+  @ApiOperation({ title: 'Информация об авторизованном юзере' })
+  async getMe(
     @GetRequestId() requestId: string,
-    @Param(
-      new ValidationPipe({
-        transform: true,
-      }),
-    )
-    idDto: NumberIdDto,
+    @GetUser() user: User,
   ): Promise<MeResponse> {
-    const user = await this.userService.getUserById(idDto);
     const meResponse = new MeResponse(requestId, user);
     return plainToClass(MeResponse, meResponse);
   }
 
-  @Put('/:id')
-  @Auth([UserRolesEnum.ADMIN])
+  @Put('/me')
+  @Auth()
   @ApiResponse({ status: HttpStatus.OK, type: MeResponse })
-  @ApiOperation({ title: 'Изменение пользователя администратором' })
-  async editUser(
+  @ApiOperation({ title: 'Редактирование полей юзера' })
+  async editMyself(
     @GetRequestId() requestId: string,
-    @Param(
-      new ValidationPipe({
-        transform: true,
-      }),
-    )
-    idDto: NumberIdDto,
-    @Body(ValidationPipe) userUpdateDto: UpdateAdminUserDto,
+    @GetUser() user: User,
+    @Body(ValidationPipe) userUpdateDto: UpdateUserDto,
   ): Promise<MeResponse> {
     const meResponse = new MeResponse(
       requestId,
-      await this.userService.updateAdminUser(idDto, userUpdateDto),
+      await this.userService.editMyself(user, userUpdateDto),
     );
     return plainToClass(MeResponse, meResponse);
   }
@@ -252,30 +241,41 @@ export class UserController {
     );
   }
 
-  @Get('/me')
-  @Auth()
+  @Get('/:id')
+  @Auth([UserRolesEnum.ADMIN])
   @ApiResponse({ status: HttpStatus.OK, type: MeResponse })
-  @ApiOperation({ title: 'Информация об авторизованном юзере' })
-  async getMe(
+  @ApiOperation({ title: 'Выдаёт данные пользователя по его id' })
+  async getUserById(
     @GetRequestId() requestId: string,
-    @GetUser() user: User,
+    @Param(
+      new ValidationPipe({
+        transform: true,
+      }),
+    )
+    idDto: NumberIdDto,
   ): Promise<MeResponse> {
+    const user = await this.userService.getUserById(idDto);
     const meResponse = new MeResponse(requestId, user);
     return plainToClass(MeResponse, meResponse);
   }
 
-  @Put('/me')
-  @Auth()
+  @Put('/:id')
+  @Auth([UserRolesEnum.ADMIN])
   @ApiResponse({ status: HttpStatus.OK, type: MeResponse })
-  @ApiOperation({ title: 'Редактирование полей юзера' })
-  async editMyself(
+  @ApiOperation({ title: 'Изменение пользователя администратором' })
+  async editUser(
     @GetRequestId() requestId: string,
-    @GetUser() user: User,
-    @Body(ValidationPipe) userUpdateDto: UpdateUserDto,
+    @Param(
+      new ValidationPipe({
+        transform: true,
+      }),
+    )
+    idDto: NumberIdDto,
+    @Body(ValidationPipe) userUpdateDto: UpdateAdminUserDto,
   ): Promise<MeResponse> {
     const meResponse = new MeResponse(
       requestId,
-      await this.userService.editMyself(user, userUpdateDto),
+      await this.userService.updateAdminUser(idDto, userUpdateDto),
     );
     return plainToClass(MeResponse, meResponse);
   }
