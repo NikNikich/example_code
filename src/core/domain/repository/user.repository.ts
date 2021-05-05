@@ -101,9 +101,9 @@ export class UserRepository extends Repository<User> {
     await user.save();
   }
 
-  async updatePassword(user: User, password: string): Promise<void> {
+  async updatePassword(user: User, password: string): Promise<User> {
     user.password = await this.hashPassword(password);
-    await user.save();
+    return user.save();
   }
 
   async resetSmsCode(user: User): Promise<void> {

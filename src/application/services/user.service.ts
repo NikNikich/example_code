@@ -38,6 +38,7 @@ import { UpdateAdminUserDto } from '../../infrastructure/presenter/rest-api/docu
 import { NumberIdDto } from '../../infrastructure/presenter/rest-api/documentation/shared/number.id.dto';
 import { CreateAdminUserDto } from '../../infrastructure/presenter/rest-api/documentation/user/create.admin.user.dto';
 import * as generator from 'generate-password';
+import { UpdatePasswordDto } from '../../infrastructure/presenter/rest-api/documentation/user/update.password.dto';
 
 const REPEAT_SMS_TIME_MS: number = config.get('sms.minRepeatTime');
 const emailTransport = new EmailTransport();
@@ -283,6 +284,22 @@ export class UserService {
       false,
       requestId,
     );
+  }
+
+  async updateMePassword(
+    user: User,
+    passwordUpdateDto: UpdatePasswordDto,
+  ): Promise<SingInResponseDto> {
+    ErrorIf.isFalse(
+      await this.comparePassword(user, passwordUpdateDto.oldPassword),
+      INVALID_CREDENTIALS,
+    );
+    const updateUser = await this.userRepository.updatePassword(
+      user,
+      passwordUpdateDto.password,
+    );
+    const token = await this.generateJwtToken(updateUser);
+    return { token };
   }
 
   async passwordReset(
