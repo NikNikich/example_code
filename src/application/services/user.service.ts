@@ -451,7 +451,7 @@ export class UserService {
     idDto: NumberIdDto,
     addUserEquipmentDto: AddUserEquipmentDto,
   ): Promise<void> {
-    const user = await this.userRepository.findOne({ id: idDto.id });
+    const user = await this.userRepository.findOne(idDto.id);
     ErrorIf.isEmpty(user, USER_NOT_FOUND);
     const equipment = await this.equipmentRepository.findOne(
       addUserEquipmentDto.equipmentId,

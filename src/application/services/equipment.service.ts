@@ -59,8 +59,8 @@ export class EquipmentService {
       createEquipmentDto.managerId,
     );
     ErrorIf.isTrue(!engineer || !manager, USER_NOT_FOUND);
-    const equipmentWithId = await this.equipmentRepository.getEquipmentByIdEquipment(
-      createEquipmentDto.idEquipment,
+    const equipmentWithId = await this.equipmentRepository.getEquipmentByEquipmentId(
+      createEquipmentDto.equipmentId,
     );
     ErrorIf.isExist(equipmentWithId, USED_ID_EQUIPMENT);
     return this.equipmentRepository.createEquipment(
@@ -90,9 +90,9 @@ export class EquipmentService {
       );
       ErrorIf.isEmpty(manager, USER_NOT_FOUND);
     }
-    if (updateEquipmentDto.idEquipment) {
-      const equipmentWithId = await this.equipmentRepository.getEquipmentByIdEquipment(
-        updateEquipmentDto.idEquipment,
+    if (updateEquipmentDto.equipmentId) {
+      const equipmentWithId = await this.equipmentRepository.getEquipmentByEquipmentId(
+        updateEquipmentDto.equipmentId,
       );
       ErrorIf.isTrue(
         equipmentWithId && equipmentWithId.id !== idDto.id,

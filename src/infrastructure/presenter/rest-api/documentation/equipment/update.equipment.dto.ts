@@ -27,7 +27,7 @@ export class UpdateEquipmentDto {
     example: '1212e25',
     required: false,
   })
-  idEquipment?: string;
+  equipmentId?: string;
 
   @IsOptional()
   @IsString()

@@ -84,24 +84,6 @@ export class UserController {
     return plainToClass(MeResponse, meResponse);
   }
 
-  @Put(':id/equipment/add')
-  @Auth([UserRolesEnum.ADMIN])
-  @ApiResponse({ status: HttpStatus.OK, type: AddEquipmentResponse })
-  @ApiOperation({ title: 'Добавить оборудование к пользователю' })
-  async addEquipment(
-    @GetRequestId() requestId: string,
-    @Param(
-      new ValidationPipe({
-        transform: true,
-      }),
-    )
-    idDto: NumberIdDto,
-    @Body(ValidationPipe) addUserEquipmentDto: AddUserEquipmentDto,
-  ): Promise<AddEquipmentResponse> {
-    await this.userService.addUserEquipment(idDto, addUserEquipmentDto);
-    return new AddEquipmentResponse(requestId);
-  }
-
   @Post()
   @Auth([UserRolesEnum.ADMIN])
   @ApiResponse({ status: HttpStatus.OK, type: MeResponse })
@@ -120,7 +102,7 @@ export class UserController {
   @Delete('/:id')
   @Auth([UserRolesEnum.ADMIN])
   @ApiResponse({ status: HttpStatus.OK, type: LogoutResponse })
-  @ApiOperation({ title: 'Изменение пользователя администратором' })
+  @ApiOperation({ title: 'Удаление пользователя администратором' })
   async deleteUser(
     @GetRequestId() requestId: string,
     @Param(ValidationPipe) idDto: NumberIdDto,
@@ -257,6 +239,24 @@ export class UserController {
     const user = await this.userService.getUserById(idDto);
     const meResponse = new MeResponse(requestId, user);
     return plainToClass(MeResponse, meResponse);
+  }
+
+  @Put(':id/equipment')
+  @Auth([UserRolesEnum.ADMIN])
+  @ApiResponse({ status: HttpStatus.OK, type: AddEquipmentResponse })
+  @ApiOperation({ title: 'Добавить оборудование к пользователю' })
+  async addEquipment(
+    @GetRequestId() requestId: string,
+    @Param(
+      new ValidationPipe({
+        transform: true,
+      }),
+    )
+    idDto: NumberIdDto,
+    @Body(ValidationPipe) addUserEquipmentDto: AddUserEquipmentDto,
+  ): Promise<AddEquipmentResponse> {
+    await this.userService.addUserEquipment(idDto, addUserEquipmentDto);
+    return new AddEquipmentResponse(requestId);
   }
 
   @Put('/:id')
