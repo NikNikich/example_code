@@ -52,7 +52,7 @@ export class EquipmentController {
   @Put('/:id')
   @Auth([UserRolesEnum.ADMIN])
   @ApiResponse({ status: HttpStatus.OK, type: EquipmentResponseDto })
-  @ApiOperation({ title: 'Изменение оборудованя администратором' })
+  @ApiOperation({ title: 'Изменение оборудования администратором' })
   async editEquipment(
     @GetRequestId() requestId: string,
     @Param(ValidationPipe) idDto: NumberIdDto,

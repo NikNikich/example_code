@@ -22,19 +22,21 @@ export class EquipmentService {
     private equipmentRepository: EquipmentRepository,
     private userRepository: UserRepository,
   ) {}
+  private engineerRelation = 'engineer';
+  private managerRelation = 'manager';
 
   async getActiveEquipments(user: User): Promise<Equipment[]> {
     if (user.role.name === UserRolesEnum.ADMIN) {
       return this.equipmentRepository.find({
         where: { deletedAt: IsNull() },
-        relations: ['manager', 'engineer'],
+        relations: [this.engineerRelation, this.managerRelation],
       });
     }
   }
 
   async getActiveEquipment(idDto: NumberIdDto): Promise<Equipment> {
     const equipment = await this.equipmentRepository.findOne(idDto.id, {
-      relations: ['engineer', 'manager'],
+      relations: [this.engineerRelation, this.managerRelation],
     });
     ErrorIf.isEmpty(equipment, EQUIPMENT_NOT_FOUND);
     return equipment;
@@ -59,8 +61,8 @@ export class EquipmentService {
       createEquipmentDto.managerId,
     );
     ErrorIf.isTrue(!engineer || !manager, USER_NOT_FOUND);
-    const equipmentWithId = await this.equipmentRepository.getEquipmentByIdEquipment(
-      createEquipmentDto.idEquipment,
+    const equipmentWithId = await this.equipmentRepository.getEquipmentByEquipmentId(
+      createEquipmentDto.equipmentId,
     );
     ErrorIf.isExist(equipmentWithId, USED_ID_EQUIPMENT);
     return this.equipmentRepository.createEquipment(
@@ -90,9 +92,9 @@ export class EquipmentService {
       );
       ErrorIf.isEmpty(manager, USER_NOT_FOUND);
     }
-    if (updateEquipmentDto.idEquipment) {
-      const equipmentWithId = await this.equipmentRepository.getEquipmentByIdEquipment(
-        updateEquipmentDto.idEquipment,
+    if (updateEquipmentDto.equipmentId) {
+      const equipmentWithId = await this.equipmentRepository.getEquipmentByEquipmentId(
+        updateEquipmentDto.equipmentId,
       );
       ErrorIf.isTrue(
         equipmentWithId && equipmentWithId.id !== idDto.id,

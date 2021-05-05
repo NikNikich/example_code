@@ -26,8 +26,8 @@ export class Equipment extends BaseEntity {
   name: string;
 
   @ApiModelProperty({ type: 'string' })
-  @Column({ unique: true })
-  idEquipment: string;
+  @Column({ unique: true, nullable: true })
+  equipmentId: string;
 
   @ApiModelProperty({ type: 'string' })
   @Column({ nullable: true })
@@ -81,27 +81,27 @@ export class Equipment extends BaseEntity {
   dateStatus: Date;
 
   @ApiModelProperty({ type: 'string', nullable: true })
-  @Column()
+  @Column({ nullable: true })
   SNComponent1: string;
 
   @ApiModelProperty({ type: 'string', nullable: true })
-  @Column()
+  @Column({ nullable: true })
   SNComponent2: string;
 
   @ApiModelProperty({ type: 'string', nullable: true })
-  @Column()
+  @Column({ nullable: true })
   SNComponent3: string;
 
   @ApiModelProperty({ type: 'string', nullable: true })
-  @Column()
+  @Column({ nullable: true })
   SNComponent4: string;
 
   @ApiModelProperty({ type: 'string', nullable: true })
-  @Column()
+  @Column({ nullable: true })
   SNComponent5: string;
 
   @ApiModelProperty({ type: 'string', nullable: true })
-  @Column()
+  @Column({ nullable: true })
   SNComponent6: string;
 
   @Exclude()

@@ -18,7 +18,7 @@ export class CreateEquipmentDto {
     example: '1212e25',
     required: true,
   })
-  idEquipment: string;
+  equipmentId: string;
 
   @IsString()
   @ApiModelProperty({
