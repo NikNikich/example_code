@@ -3,10 +3,17 @@ import { BuildingRepository } from '../../core/domain/repository/building.reposi
 import { FilterBuildingDto } from '../../infrastructure/presenter/rest-api/documentation/building/filter.building.dto';
 import { BuildingObjectListDto } from '../../infrastructure/response/building/building.object.list.dto';
 import { EquipmentJobStatusEnum } from '../../infrastructure/shared/equipment.job.status.enum';
+import { Building } from '../../core/domain/entity/building.entity';
+import { NumberIdDto } from '../../infrastructure/presenter/rest-api/documentation/shared/number.id.dto';
+import { ErrorIf } from '../../infrastructure/presenter/rest-api/errors/error.if';
+import { BUILDING_NOT_FOUND } from '../../infrastructure/presenter/rest-api/errors/errors';
 
 @Injectable()
 export class BuildingService {
   constructor(private buildingRepository: BuildingRepository) {}
+
+  private equipmentRelation = 'equipment';
+
   async getListBuilding(
     filter: FilterBuildingDto,
   ): Promise<BuildingObjectListDto[]> {
@@ -23,7 +30,7 @@ export class BuildingService {
     }
     const buildings = await this.buildingRepository.find({
       where: buildingFilter,
-      relations: ['equipment'],
+      relations: [this.equipmentRelation],
     });
     const buildingObjectList: BuildingObjectListDto[] = [];
     for (const building of buildings) {
@@ -50,5 +57,14 @@ export class BuildingService {
       );
     }
     return buildingObjectList;
+  }
+
+  async getById(idDto: NumberIdDto): Promise<Building> {
+    const building = await this.buildingRepository.findOne({
+      where: { id: idDto.id },
+      relations: [this.equipmentRelation],
+    });
+    ErrorIf.isEmpty(building, BUILDING_NOT_FOUND);
+    return building;
   }
 }

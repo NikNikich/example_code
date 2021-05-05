@@ -3,6 +3,7 @@ import {
   Controller,
   Get,
   HttpStatus,
+  Param,
   Query,
   ValidationPipe,
 } from '@nestjs/common';
@@ -14,6 +15,8 @@ import { GetRequestId } from '../../../decorators/get.request.id.decorator';
 import { BuildingService } from '../../../../application/services/building service';
 import { FilterBuildingDto } from '../documentation/building/filter.building.dto';
 import { GetBuildingResponse } from '../../../response/building/get.building.response';
+import { NumberIdDto } from '../documentation/shared/number.id.dto';
+import { GetByIdBuildingDto } from '../../../response/building/get.by.id.building.dto';
 
 @ApiUseTags('buildings')
 @Controller('buildings')
@@ -38,5 +41,24 @@ export class BuildingController {
   ): Promise<GetBuildingResponse> {
     const response = await this.buildingService.getListBuilding(filter);
     return new GetBuildingResponse(requestId, response);
+  }
+
+  @Get(':id')
+  @Auth([UserRolesEnum.ADMIN])
+  @ApiResponse({ status: HttpStatus.OK, type: GetByIdBuildingDto })
+  @ApiOperation({
+    title: 'Получить список зданий, отфильтрованных по региону и городу',
+  })
+  async getById(
+    @GetRequestId() requestId: string,
+    @Param(
+      new ValidationPipe({
+        transform: true,
+      }),
+    )
+    idDto: NumberIdDto,
+  ): Promise<GetByIdBuildingDto> {
+    const response = await this.buildingService.getById(idDto);
+    return new GetByIdBuildingDto(requestId, response);
   }
 }
