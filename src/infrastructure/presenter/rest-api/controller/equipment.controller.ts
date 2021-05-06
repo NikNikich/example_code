@@ -84,7 +84,7 @@ export class EquipmentController {
     isArray: true,
     type: EquipmentResponseDto,
   })
-  @ApiOperation({ title: 'Список оборудование' })
+  @ApiOperation({ title: 'Оборудование по id' })
   async getEquipment(
     @GetRequestId() requestId: string,
     @Param(ValidationPipe) idDto: NumberIdDto,

@@ -47,7 +47,7 @@ export class BuildingController {
   @Auth([UserRolesEnum.ADMIN])
   @ApiResponse({ status: HttpStatus.OK, type: GetByIdBuildingDto })
   @ApiOperation({
-    title: 'Получить список зданий, отфильтрованных по региону и городу',
+    title: 'Получить здание по id',
   })
   async getById(
     @GetRequestId() requestId: string,

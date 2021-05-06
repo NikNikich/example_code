@@ -18,6 +18,7 @@ import { Exclude } from 'class-transformer';
 
 @Entity({ name: 'equipment' })
 export class Equipment extends BaseEntity {
+  @ApiModelProperty({ type: 'number', nullable: false })
   @PrimaryGeneratedColumn()
   id: number;
 
@@ -73,7 +74,6 @@ export class Equipment extends BaseEntity {
   @JoinColumn()
   owner: User;
 
-  @ApiModelProperty({ type: Building, nullable: true })
   @ManyToOne(
     () => Building,
     building => building.equipment,
