@@ -1,10 +1,13 @@
 import { ApiOperation, ApiResponse, ApiUseTags } from '@nestjs/swagger';
 import {
+  Body,
   Controller,
   Delete,
   Get,
   HttpStatus,
   Param,
+  Post,
+  Put,
   ValidationPipe,
 } from '@nestjs/common';
 import { EquipmentService } from '../../../../application/services/equipment.service';
@@ -14,28 +17,89 @@ import { GetUser } from '../../../decorators/get.user.decorator';
 import { DeleteBaseResponse } from '../../../response/base/delete.base.response';
 import { GetRequestId } from '../../../decorators/get.request.id.decorator';
 import { NumberIdDto } from '../documentation/shared/number.id.dto';
-import { Equipment } from '../../../../core/domain/entity/equipment.entity';
+
 import { Auth } from '../../../../core/common/decorators/auth';
 import { UserRolesEnum } from '../../../shared/user.roles.enum';
+
+import { EquipmentResponseDto } from '../../../response/equipment/equipment.response.dto';
+import { EquipmentListResponseDto } from '../../../response/equipment/equipment.list.response.dto';
+import { CreateEquipmentDto } from '../documentation/equipment/create.equipment.dto';
+import { UpdateEquipmentDto } from '../documentation/equipment/update.equipment.dto';
 
 @ApiUseTags('equipments')
 @Controller('equipments')
 export class EquipmentController {
   constructor(private equipmentService: EquipmentService) {}
 
-  // TODO сделать нормально гард ролей юзера
   @Get()
-  @Auth([UserRolesEnum.ADMIN])
-  @ApiResponse({ status: HttpStatus.OK, isArray: true, type: Equipment })
+  @Auth()
+  @ApiResponse({
+    status: HttpStatus.OK,
+    isArray: true,
+    type: EquipmentListResponseDto,
+  })
   @ApiOperation({ title: 'Список оборудование' })
-  async equipmentList(@GetUser() user: User): Promise<Equipment[]> {
-    return await this.equipmentService.getActiveEquipments(user);
+  async getEquipmentList(
+    @GetRequestId() requestId: string,
+    @GetUser() user: User,
+  ): Promise<EquipmentListResponseDto> {
+    return new EquipmentListResponseDto(
+      requestId,
+      await this.equipmentService.getActiveEquipments(user),
+    );
+  }
+
+  @Put('/:id')
+  @Auth([UserRolesEnum.ADMIN])
+  @ApiResponse({ status: HttpStatus.OK, type: EquipmentResponseDto })
+  @ApiOperation({ title: 'Изменение оборудования администратором' })
+  async editEquipment(
+    @GetRequestId() requestId: string,
+    @Param(ValidationPipe) idDto: NumberIdDto,
+    @Body(ValidationPipe) updateEquipmentDto: UpdateEquipmentDto,
+  ): Promise<EquipmentResponseDto> {
+    return new EquipmentResponseDto(
+      requestId,
+      await this.equipmentService.editEquipment(idDto, updateEquipmentDto),
+    );
+  }
+
+  @Get('/:id')
+  @Auth()
+  @ApiResponse({
+    status: HttpStatus.OK,
+    isArray: true,
+    type: EquipmentResponseDto,
+  })
+  @ApiOperation({ title: 'Список оборудование' })
+  async getEquipment(
+    @GetRequestId() requestId: string,
+    @Param(ValidationPipe) idDto: NumberIdDto,
+  ): Promise<EquipmentResponseDto> {
+    return new EquipmentResponseDto(
+      requestId,
+      await this.equipmentService.getActiveEquipment(idDto),
+    );
+  }
+
+  @Post()
+  @Auth([UserRolesEnum.ADMIN])
+  @ApiResponse({ status: HttpStatus.OK, type: EquipmentResponseDto })
+  @ApiOperation({ title: 'Создание оборудования администратором' })
+  async createEquipment(
+    @GetRequestId() requestId: string,
+    @Body(ValidationPipe) createEquipmentDto: CreateEquipmentDto,
+  ): Promise<EquipmentResponseDto> {
+    return new EquipmentResponseDto(
+      requestId,
+      await this.equipmentService.createEquipment(createEquipmentDto),
+    );
   }
 
   @Delete('/:id')
   @Auth([UserRolesEnum.ADMIN])
   @ApiResponse({ status: HttpStatus.OK, type: DeleteBaseResponse })
-  @ApiOperation({ title: 'Удалить Equipment' })
+  @ApiOperation({ title: 'Удалить оборудование' })
   async delete(
     @GetRequestId() requestId: string,
     @GetUser() user: User,

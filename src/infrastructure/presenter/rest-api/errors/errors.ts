@@ -37,3 +37,14 @@ export const USED_EMAIL: StandardRestApiError = StandardRestApiError.create(
   1008,
   'Users email already registered in system',
 );
+
+export const EQUIPMENT_NOT_FOUND: StandardRestApiError = StandardRestApiError.create(
+  1009,
+  'Equipment not found',
+);
+
+// noinspection MagicNumberJS,JSUnusedGlobalSymbols
+export const USED_ID_EQUIPMENT: StandardRestApiError = StandardRestApiError.create(
+  1008,
+  'Equipment id already registered in system',
+);

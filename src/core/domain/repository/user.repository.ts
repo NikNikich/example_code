@@ -124,4 +124,8 @@ export class UserRepository extends Repository<User> {
   async getListNotDeleteUser(): Promise<User[]> {
     return this.find({ where: { deletedAt: IsNull() }, relations: ['role'] });
   }
+
+  async getUserByIdNotDelete(id: number): Promise<User | undefined> {
+    return this.findOne({ where: { id, deletedAt: IsNull() } });
+  }
 }

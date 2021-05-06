@@ -71,6 +71,7 @@ export class User extends BaseEntity {
   @Column({ nullable: true })
   position: string;
 
+  @ApiModelProperty({ type: Role, nullable: true })
   @ManyToOne(
     () => Role,
     role => role.users,
@@ -79,12 +80,21 @@ export class User extends BaseEntity {
   @JoinColumn()
   role: Role;
 
+  @Exclude()
   @OneToMany(
     () => Equipment,
-    equipment => equipment.user,
+    equipment => equipment.manager,
     { nullable: true },
   )
-  equipment: Equipment[];
+  equipmentManagers: Equipment[];
+
+  @Exclude()
+  @OneToMany(
+    () => Equipment,
+    equipment => equipment.engineer,
+    { nullable: true },
+  )
+  equipmentEngineers: Equipment[];
 
   @ApiModelProperty({
     type: 'Date',

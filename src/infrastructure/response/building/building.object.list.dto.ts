@@ -1,6 +1,6 @@
 import { ApiModelProperty } from '@nestjs/swagger';
 
-export class EquipmentObjectListDto {
+export class BuildingObjectListDto {
   @ApiModelProperty({ type: 'number' })
   id: number;
 
