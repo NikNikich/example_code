@@ -36,6 +36,7 @@ import { NumberIdDto } from '../documentation/shared/number.id.dto';
 import { UpdateAdminUserDto } from '../documentation/user/update.admin.user.dto';
 import { CreateAdminUserDto } from '../documentation/user/create.admin.user.dto';
 import { plainToClass } from 'class-transformer';
+import { UpdatePasswordDto } from '../documentation/user/update.password.dto';
 
 @ApiUseTags('users')
 @Controller('users')
@@ -67,6 +68,21 @@ export class UserController {
       await this.userService.createAdminUser(createAdminUserDto, requestId),
     );
     return plainToClass(MeResponse, meResponse);
+  }
+
+  @Post('/me/password')
+  @Auth()
+  @ApiResponse({ status: HttpStatus.OK, type: SignInResponse })
+  @ApiOperation({ title: 'Поменять пароль' })
+  async updatePassword(
+    @GetRequestId() requestId: string,
+    @GetUser() user: User,
+    @Body(ValidationPipe) updatePasswordDto: UpdatePasswordDto,
+  ): Promise<SignInResponse> {
+    return new SignInResponse(
+      requestId,
+      await this.userService.updateMePassword(user, updatePasswordDto),
+    );
   }
 
   @Post('/sms')
