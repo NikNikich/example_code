@@ -26,8 +26,6 @@ export class EquipmentController {
   // TODO сделать нормально гард ролей юзера
   @Get()
   @Auth([UserRolesEnum.ADMIN])
-  /*@UseGuards(AuthGuard())
-  @ApiBearerAuth()*/
   @ApiResponse({ status: HttpStatus.OK, isArray: true, type: Equipment })
   @ApiOperation({ title: 'Список оборудование' })
   async equipmentList(@GetUser() user: User): Promise<Equipment[]> {
