@@ -1,8 +1,8 @@
 import { ApiModelProperty } from '@nestjs/swagger';
 import { IsEnum, IsNumber, ValidateNested } from 'class-validator';
 import { EquipmentUseStatusEnum } from '../../../../shared/equipment.use.status.enum';
-import { DadataObjectDto } from './dadata.object.dto';
 import { Type } from 'class-transformer';
+import { DadataObjectDto } from './dadata.object.dto';
 export class AddUserEquipmentDto {
   @IsNumber()
   @ApiModelProperty({

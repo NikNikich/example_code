@@ -38,6 +38,7 @@ import { CreateAdminUserDto } from '../documentation/user/create.admin.user.dto'
 import { plainToClass } from 'class-transformer';
 import { AddUserEquipmentDto } from '../documentation/user/add.user.equipment.dto';
 import { AddEquipmentResponse } from '../../../response/user/add.equipment.response';
+import { UpdatePasswordDto } from '../documentation/user/update.password.dto';
 
 @ApiUseTags('users')
 @Controller('users')
@@ -84,24 +85,6 @@ export class UserController {
     return plainToClass(MeResponse, meResponse);
   }
 
-  @Put(':id/equipment/add')
-  @Auth([UserRolesEnum.ADMIN])
-  @ApiResponse({ status: HttpStatus.OK, type: AddEquipmentResponse })
-  @ApiOperation({ title: 'Добавить оборудование к пользователю' })
-  async addEquipment(
-    @GetRequestId() requestId: string,
-    @Param(
-      new ValidationPipe({
-        transform: true,
-      }),
-    )
-    idDto: NumberIdDto,
-    @Body(ValidationPipe) addUserEquipmentDto: AddUserEquipmentDto,
-  ): Promise<AddEquipmentResponse> {
-    await this.userService.addUserEquipment(idDto, addUserEquipmentDto);
-    return new AddEquipmentResponse(requestId);
-  }
-
   @Post()
   @Auth([UserRolesEnum.ADMIN])
   @ApiResponse({ status: HttpStatus.OK, type: MeResponse })
@@ -117,10 +100,25 @@ export class UserController {
     return plainToClass(MeResponse, meResponse);
   }
 
+  @Post('/me/password')
+  @Auth()
+  @ApiResponse({ status: HttpStatus.OK, type: SignInResponse })
+  @ApiOperation({ title: 'Поменять пароль' })
+  async updatePassword(
+    @GetRequestId() requestId: string,
+    @GetUser() user: User,
+    @Body(ValidationPipe) updatePasswordDto: UpdatePasswordDto,
+  ): Promise<SignInResponse> {
+    return new SignInResponse(
+      requestId,
+      await this.userService.updateMePassword(user, updatePasswordDto),
+    );
+  }
+
   @Delete('/:id')
   @Auth([UserRolesEnum.ADMIN])
   @ApiResponse({ status: HttpStatus.OK, type: LogoutResponse })
-  @ApiOperation({ title: 'Изменение пользователя администратором' })
+  @ApiOperation({ title: 'Удаление пользователя администратором' })
   async deleteUser(
     @GetRequestId() requestId: string,
     @Param(ValidationPipe) idDto: NumberIdDto,
@@ -181,7 +179,7 @@ export class UserController {
       await this.userService.signUpByEmail(requestId, signUpByEmailRequestDto),
     );
   }
-  [UserRolesEnum.ADMIN];
+
   @Post('/signin/email')
   @ApiResponse({ status: HttpStatus.CREATED, type: SignInResponse })
   @ApiOperation({
@@ -257,6 +255,24 @@ export class UserController {
     const user = await this.userService.getUserById(idDto);
     const meResponse = new MeResponse(requestId, user);
     return plainToClass(MeResponse, meResponse);
+  }
+
+  @Put(':id/equipment')
+  @Auth([UserRolesEnum.ADMIN])
+  @ApiResponse({ status: HttpStatus.OK, type: AddEquipmentResponse })
+  @ApiOperation({ title: 'Добавить оборудование к пользователю' })
+  async addEquipment(
+    @GetRequestId() requestId: string,
+    @Param(
+      new ValidationPipe({
+        transform: true,
+      }),
+    )
+    idDto: NumberIdDto,
+    @Body(ValidationPipe) addUserEquipmentDto: AddUserEquipmentDto,
+  ): Promise<AddEquipmentResponse> {
+    await this.userService.addUserEquipment(idDto, addUserEquipmentDto);
+    return new AddEquipmentResponse(requestId);
   }
 
   @Put('/:id')

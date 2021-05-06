@@ -42,6 +42,7 @@ import * as generator from 'generate-password';
 import { AddUserEquipmentDto } from '../../infrastructure/presenter/rest-api/documentation/user/add.user.equipment.dto';
 import { EquipmentRepository } from '../../core/domain/repository/equipment.repository';
 import { BuildingRepository } from '../../core/domain/repository/building.repository';
+import { UpdatePasswordDto } from '../../infrastructure/presenter/rest-api/documentation/user/update.password.dto';
 
 const REPEAT_SMS_TIME_MS: number = config.get('sms.minRepeatTime');
 const emailTransport = new EmailTransport();
@@ -293,6 +294,22 @@ export class UserService {
     );
   }
 
+  async updateMePassword(
+    user: User,
+    passwordUpdateDto: UpdatePasswordDto,
+  ): Promise<SingInResponseDto> {
+    ErrorIf.isFalse(
+      await this.comparePassword(user, passwordUpdateDto.oldPassword),
+      INVALID_CREDENTIALS,
+    );
+    const updateUser = await this.userRepository.updatePassword(
+      user,
+      passwordUpdateDto.password,
+    );
+    const token = await this.generateJwtToken(updateUser);
+    return { token };
+  }
+
   async passwordReset(
     requestId: string,
     passwordResetRequestDto: PasswordResetDto,
@@ -451,7 +468,7 @@ export class UserService {
     idDto: NumberIdDto,
     addUserEquipmentDto: AddUserEquipmentDto,
   ): Promise<void> {
-    const user = await this.userRepository.findOne({ id: idDto.id });
+    const user = await this.userRepository.findOne(idDto.id);
     ErrorIf.isEmpty(user, USER_NOT_FOUND);
     const equipment = await this.equipmentRepository.findOne(
       addUserEquipmentDto.equipmentId,
