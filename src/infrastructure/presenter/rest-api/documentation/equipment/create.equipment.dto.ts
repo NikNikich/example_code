@@ -63,6 +63,7 @@ export class CreateEquipmentDto {
   })
   dateInitialization: Date;
 
+  @IsString()
   @ApiModelProperty({
     type: 'string',
     example: 'sdfdsfe23aqwq',
@@ -70,6 +71,7 @@ export class CreateEquipmentDto {
   })
   SNComponent1: string;
 
+  @IsString()
   @ApiModelProperty({
     type: 'string',
     example: 'sdfdsfe23aqwq',
@@ -77,6 +79,7 @@ export class CreateEquipmentDto {
   })
   SNComponent2: string;
 
+  @IsString()
   @ApiModelProperty({
     type: 'string',
     example: 'sdfdsfe23aqwq',
@@ -84,6 +87,7 @@ export class CreateEquipmentDto {
   })
   SNComponent3: string;
 
+  @IsString()
   @ApiModelProperty({
     type: 'string',
     example: 'sdfdsfe23aqwq',
@@ -91,6 +95,7 @@ export class CreateEquipmentDto {
   })
   SNComponent4: string;
 
+  @IsString()
   @ApiModelProperty({
     type: 'string',
     example: 'sdfdsfe23aqwq',
@@ -98,6 +103,7 @@ export class CreateEquipmentDto {
   })
   SNComponent5: string;
 
+  @IsString()
   @ApiModelProperty({
     type: 'string',
     example: 'sdfdsfe23aqwq',

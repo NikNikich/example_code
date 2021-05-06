@@ -10,6 +10,7 @@ import { UpdateUserDto } from '../../infrastructure/presenter/rest-api/documenta
 import { SignInBySmsDto } from '../../infrastructure/presenter/rest-api/documentation/user/sign.in.by.sms.dto';
 import { ErrorIf } from '../../infrastructure/presenter/rest-api/errors/error.if';
 import {
+  EQUIPMENT_NOT_FOUND,
   INVALID_CREDENTIALS,
   PASSWORD_IS_EMPTY,
   SMS_TOO_OFTEN,
@@ -38,6 +39,9 @@ import { UpdateAdminUserDto } from '../../infrastructure/presenter/rest-api/docu
 import { NumberIdDto } from '../../infrastructure/presenter/rest-api/documentation/shared/number.id.dto';
 import { CreateAdminUserDto } from '../../infrastructure/presenter/rest-api/documentation/user/create.admin.user.dto';
 import * as generator from 'generate-password';
+import { AddUserEquipmentDto } from '../../infrastructure/presenter/rest-api/documentation/user/add.user.equipment.dto';
+import { EquipmentRepository } from '../../core/domain/repository/equipment.repository';
+import { BuildingRepository } from '../../core/domain/repository/building.repository';
 import { UpdatePasswordDto } from '../../infrastructure/presenter/rest-api/documentation/user/update.password.dto';
 
 const REPEAT_SMS_TIME_MS: number = config.get('sms.minRepeatTime');
@@ -54,6 +58,10 @@ export class UserService {
     private sessionRepository: SessionRepository,
 
     private jwtService: JwtService,
+
+    private equipmentRepository: EquipmentRepository,
+
+    private buildingRepository: BuildingRepository,
   ) {}
 
   private lengthPassword = 10;
@@ -455,5 +463,24 @@ export class UserService {
       ],
     };
     await emailTransport.send(emailData);
+  }
+  async addUserEquipment(
+    idDto: NumberIdDto,
+    addUserEquipmentDto: AddUserEquipmentDto,
+  ): Promise<void> {
+    const user = await this.userRepository.findOne(idDto.id);
+    ErrorIf.isEmpty(user, USER_NOT_FOUND);
+    const equipment = await this.equipmentRepository.findOne(
+      addUserEquipmentDto.equipmentId,
+    );
+    ErrorIf.isEmpty(equipment, EQUIPMENT_NOT_FOUND);
+    const building = await this.buildingRepository.getBuildingByAddress(
+      addUserEquipmentDto.address.data,
+    );
+    equipment.useStatus = addUserEquipmentDto.status;
+    equipment.owner = user;
+    equipment.building = building;
+    equipment.address = addUserEquipmentDto.address.value;
+    equipment.save();
   }
 }

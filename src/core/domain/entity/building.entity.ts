@@ -19,10 +19,22 @@ export class Building extends BaseEntity {
   type: string;
 
   @Column({ nullable: true })
+  country: string;
+
+  @Column({ nullable: true })
+  region: string;
+
+  @Column({ nullable: true })
+  area: string;
+
+  @Column({ nullable: true })
   city: string;
 
   @Column({ nullable: true })
-  address: string;
+  street: string;
+
+  @Column({ nullable: true })
+  house: string;
 
   @OneToMany(
     () => Equipment,

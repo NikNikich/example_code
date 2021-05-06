@@ -80,6 +80,7 @@ export class UpdateEquipmentDto {
   dateInitialization?: Date;
 
   @IsOptional()
+  @IsString()
   @ApiModelProperty({
     type: 'string',
     example: 'sdfdsfe23aqwq',
@@ -88,6 +89,7 @@ export class UpdateEquipmentDto {
   SNComponent1?: string;
 
   @IsOptional()
+  @IsString()
   @ApiModelProperty({
     type: 'string',
     example: 'sdfdsfe23aqwq',
@@ -96,6 +98,7 @@ export class UpdateEquipmentDto {
   SNComponent2?: string;
 
   @IsOptional()
+  @IsString()
   @ApiModelProperty({
     type: 'string',
     example: 'sdfdsfe23aqwq',
@@ -104,6 +107,7 @@ export class UpdateEquipmentDto {
   SNComponent3?: string;
 
   @IsOptional()
+  @IsString()
   @ApiModelProperty({
     type: 'string',
     example: 'sdfdsfe23aqwq',
@@ -112,6 +116,7 @@ export class UpdateEquipmentDto {
   SNComponent4?: string;
 
   @IsOptional()
+  @IsString()
   @ApiModelProperty({
     type: 'string',
     example: 'sdfdsfe23aqwq',
@@ -120,6 +125,7 @@ export class UpdateEquipmentDto {
   SNComponent5?: string;
 
   @IsOptional()
+  @IsString()
   @ApiModelProperty({
     type: 'string',
     example: 'sdfdsfe23aqwq',

@@ -36,6 +36,8 @@ import { NumberIdDto } from '../documentation/shared/number.id.dto';
 import { UpdateAdminUserDto } from '../documentation/user/update.admin.user.dto';
 import { CreateAdminUserDto } from '../documentation/user/create.admin.user.dto';
 import { plainToClass } from 'class-transformer';
+import { AddUserEquipmentDto } from '../documentation/user/add.user.equipment.dto';
+import { AddEquipmentResponse } from '../../../response/user/add.equipment.response';
 import { UpdatePasswordDto } from '../documentation/user/update.password.dto';
 
 @ApiUseTags('users')
@@ -53,6 +55,34 @@ export class UserController {
     const users = await this.userService.getListUser();
     const listUser = new ListUserResponse(requestId, users);
     return plainToClass(ListUserResponse, listUser);
+  }
+
+  @Get('/me')
+  @Auth()
+  @ApiResponse({ status: HttpStatus.OK, type: MeResponse })
+  @ApiOperation({ title: 'Информация об авторизованном юзере' })
+  async getMe(
+    @GetRequestId() requestId: string,
+    @GetUser() user: User,
+  ): Promise<MeResponse> {
+    const meResponse = new MeResponse(requestId, user);
+    return plainToClass(MeResponse, meResponse);
+  }
+
+  @Put('/me')
+  @Auth()
+  @ApiResponse({ status: HttpStatus.OK, type: MeResponse })
+  @ApiOperation({ title: 'Редактирование полей юзера' })
+  async editMyself(
+    @GetRequestId() requestId: string,
+    @GetUser() user: User,
+    @Body(ValidationPipe) userUpdateDto: UpdateUserDto,
+  ): Promise<MeResponse> {
+    const meResponse = new MeResponse(
+      requestId,
+      await this.userService.editMyself(user, userUpdateDto),
+    );
+    return plainToClass(MeResponse, meResponse);
   }
 
   @Post()
@@ -83,6 +113,18 @@ export class UserController {
       requestId,
       await this.userService.updateMePassword(user, updatePasswordDto),
     );
+  }
+
+  @Delete('/:id')
+  @Auth([UserRolesEnum.ADMIN])
+  @ApiResponse({ status: HttpStatus.OK, type: LogoutResponse })
+  @ApiOperation({ title: 'Удаление пользователя администратором' })
+  async deleteUser(
+    @GetRequestId() requestId: string,
+    @Param(ValidationPipe) idDto: NumberIdDto,
+  ): Promise<LogoutResponse> {
+    await this.userService.deleteAdminUser(idDto);
+    return new LogoutResponse(requestId, null);
   }
 
   @Post('/sms')
@@ -197,34 +239,6 @@ export class UserController {
     );
   }
 
-  @Get('/me')
-  @Auth()
-  @ApiResponse({ status: HttpStatus.OK, type: MeResponse })
-  @ApiOperation({ title: 'Информация об авторизованном юзере' })
-  async getMe(
-    @GetRequestId() requestId: string,
-    @GetUser() user: User,
-  ): Promise<MeResponse> {
-    const meResponse = new MeResponse(requestId, user);
-    return plainToClass(MeResponse, meResponse);
-  }
-
-  @Put('/me')
-  @Auth()
-  @ApiResponse({ status: HttpStatus.OK, type: MeResponse })
-  @ApiOperation({ title: 'Редактирование полей юзера' })
-  async editMyself(
-    @GetRequestId() requestId: string,
-    @GetUser() user: User,
-    @Body(ValidationPipe) userUpdateDto: UpdateUserDto,
-  ): Promise<MeResponse> {
-    const meResponse = new MeResponse(
-      requestId,
-      await this.userService.editMyself(user, userUpdateDto),
-    );
-    return plainToClass(MeResponse, meResponse);
-  }
-
   @Get('/:id')
   @Auth([UserRolesEnum.ADMIN])
   @ApiResponse({ status: HttpStatus.OK, type: MeResponse })
@@ -241,6 +255,24 @@ export class UserController {
     const user = await this.userService.getUserById(idDto);
     const meResponse = new MeResponse(requestId, user);
     return plainToClass(MeResponse, meResponse);
+  }
+
+  @Put(':id/equipment')
+  @Auth([UserRolesEnum.ADMIN])
+  @ApiResponse({ status: HttpStatus.OK, type: AddEquipmentResponse })
+  @ApiOperation({ title: 'Добавить оборудование к пользователю' })
+  async addEquipment(
+    @GetRequestId() requestId: string,
+    @Param(
+      new ValidationPipe({
+        transform: true,
+      }),
+    )
+    idDto: NumberIdDto,
+    @Body(ValidationPipe) addUserEquipmentDto: AddUserEquipmentDto,
+  ): Promise<AddEquipmentResponse> {
+    await this.userService.addUserEquipment(idDto, addUserEquipmentDto);
+    return new AddEquipmentResponse(requestId);
   }
 
   @Put('/:id')
@@ -262,17 +294,5 @@ export class UserController {
       await this.userService.updateAdminUser(idDto, userUpdateDto),
     );
     return plainToClass(MeResponse, meResponse);
-  }
-
-  @Delete('/:id')
-  @Auth([UserRolesEnum.ADMIN])
-  @ApiResponse({ status: HttpStatus.OK, type: LogoutResponse })
-  @ApiOperation({ title: 'Изменение пользователя администратором' })
-  async deleteUser(
-    @GetRequestId() requestId: string,
-    @Param(ValidationPipe) idDto: NumberIdDto,
-  ): Promise<LogoutResponse> {
-    await this.userService.deleteAdminUser(idDto);
-    return new LogoutResponse(requestId, null);
   }
 }

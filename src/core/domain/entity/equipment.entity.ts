@@ -33,6 +33,10 @@ export class Equipment extends BaseEntity {
   @Column({ nullable: true })
   servicePassword: string;
 
+  @ApiModelProperty({ type: 'string' })
+  @Column({ nullable: true })
+  address: string;
+
   @ApiModelProperty({ type: User, nullable: true })
   @ManyToOne(
     () => User,
@@ -56,6 +60,18 @@ export class Equipment extends BaseEntity {
   )
   @JoinColumn()
   manager: User;
+
+  @ApiModelProperty({ type: User, nullable: true })
+  @ManyToOne(
+    () => User,
+    user => user.equipmentOwner,
+    {
+      cascade: true,
+      nullable: true,
+    },
+  )
+  @JoinColumn()
+  owner: User;
 
   @ApiModelProperty({ type: Building, nullable: true })
   @ManyToOne(
