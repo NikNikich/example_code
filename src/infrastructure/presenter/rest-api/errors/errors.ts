@@ -45,12 +45,17 @@ export const EQUIPMENT_NOT_FOUND: StandardRestApiError = StandardRestApiError.cr
 
 // noinspection MagicNumberJS,JSUnusedGlobalSymbols
 export const USED_ID_EQUIPMENT: StandardRestApiError = StandardRestApiError.create(
-  1008,
+  1010,
   'Equipment id already registered in system',
+);
+
+export const BUILDING_NOT_FOUND: StandardRestApiError = StandardRestApiError.create(
+  1011,
+  'Building not found',
 );
 
 // noinspection MagicNumberJS,JSUnusedGlobalSymbols
 export const INVALID_ADDRESS_DATA: StandardRestApiError = StandardRestApiError.create(
-  1009,
+  1012,
   'invalid data address',
 );

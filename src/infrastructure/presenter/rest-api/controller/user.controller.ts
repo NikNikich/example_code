@@ -69,19 +69,21 @@ export class UserController {
     return plainToClass(MeResponse, meResponse);
   }
 
-  @Put('/me')
-  @Auth()
+  @Get('/:id')
+  @Auth([UserRolesEnum.ADMIN])
   @ApiResponse({ status: HttpStatus.OK, type: MeResponse })
-  @ApiOperation({ title: 'Редактирование полей юзера' })
-  async editMyself(
+  @ApiOperation({ title: 'Выдаёт данные пользователя по его id' })
+  async getUserById(
     @GetRequestId() requestId: string,
-    @GetUser() user: User,
-    @Body(ValidationPipe) userUpdateDto: UpdateUserDto,
+    @Param(
+      new ValidationPipe({
+        transform: true,
+      }),
+    )
+    idDto: NumberIdDto,
   ): Promise<MeResponse> {
-    const meResponse = new MeResponse(
-      requestId,
-      await this.userService.editMyself(user, userUpdateDto),
-    );
+    const user = await this.userService.getUserById(idDto);
+    const meResponse = new MeResponse(requestId, user);
     return plainToClass(MeResponse, meResponse);
   }
 
@@ -100,6 +102,20 @@ export class UserController {
     return plainToClass(MeResponse, meResponse);
   }
 
+  @Post('/logout')
+  @Auth()
+  @ApiResponse({ status: HttpStatus.CREATED, type: LogoutResponse })
+  @ApiOperation({
+    title: 'Деактивировать jwt токен',
+  })
+  async logout(
+    @GetRequestId() requestId: string,
+    @GetUser() user: User,
+  ): Promise<LogoutResponse> {
+    await this.userService.logout(requestId, user);
+    return new LogoutResponse(requestId, null);
+  }
+
   @Post('/me/password')
   @Auth()
   @ApiResponse({ status: HttpStatus.OK, type: SignInResponse })
@@ -115,16 +131,34 @@ export class UserController {
     );
   }
 
-  @Delete('/:id')
-  @Auth([UserRolesEnum.ADMIN])
-  @ApiResponse({ status: HttpStatus.OK, type: LogoutResponse })
-  @ApiOperation({ title: 'Удаление пользователя администратором' })
-  async deleteUser(
+  @Post('/password/reset')
+  @ApiResponse({ status: HttpStatus.CREATED, type: SignInResponse })
+  @ApiOperation({
+    title: 'Смена пароля, используя код из письма',
+  })
+  async resetPassword(
     @GetRequestId() requestId: string,
-    @Param(ValidationPipe) idDto: NumberIdDto,
-  ): Promise<LogoutResponse> {
-    await this.userService.deleteAdminUser(idDto);
-    return new LogoutResponse(requestId, null);
+    @Body(ValidationPipe) passwordResetRequestDto: PasswordResetDto,
+  ): Promise<SignInResponse> {
+    return new SignInResponse(
+      requestId,
+      await this.userService.passwordReset(requestId, passwordResetRequestDto),
+    );
+  }
+
+  @Post('/password/restore')
+  @ApiResponse({ status: HttpStatus.CREATED, type: PasswordRestoreResponse })
+  @ApiOperation({
+    title:
+      'Запрос на восстановление пароля. Если email существует в системе, то будет отправлена ссылка. ' +
+      'Если email не существует, то ничего не произойдёт.',
+  })
+  async restorePassword(
+    @GetRequestId() requestId: string,
+    @Body(ValidationPipe) passwordRestoreDto: PasswordRestoreDto,
+  ): Promise<PasswordRestoreResponse> {
+    await this.userService.passwordRestore(requestId, passwordRestoreDto);
+    return new PasswordRestoreResponse(requestId, null);
   }
 
   @Post('/sms')
@@ -195,65 +229,19 @@ export class UserController {
     );
   }
 
-  @Post('/logout')
+  @Put('/me')
   @Auth()
-  @ApiResponse({ status: HttpStatus.CREATED, type: LogoutResponse })
-  @ApiOperation({
-    title: 'Деактивировать jwt токен',
-  })
-  async logout(
+  @ApiResponse({ status: HttpStatus.OK, type: MeResponse })
+  @ApiOperation({ title: 'Редактирование полей юзера' })
+  async editMyself(
     @GetRequestId() requestId: string,
     @GetUser() user: User,
-  ): Promise<LogoutResponse> {
-    await this.userService.logout(requestId, user);
-    return new LogoutResponse(requestId, null);
-  }
-
-  @Post('/password/restore')
-  @ApiResponse({ status: HttpStatus.CREATED, type: PasswordRestoreResponse })
-  @ApiOperation({
-    title:
-      'Запрос на восстановление пароля. Если email существует в системе, то будет отправлена ссылка. ' +
-      'Если email не существует, то ничего не произойдёт.',
-  })
-  async restorePassword(
-    @GetRequestId() requestId: string,
-    @Body(ValidationPipe) passwordRestoreDto: PasswordRestoreDto,
-  ): Promise<PasswordRestoreResponse> {
-    await this.userService.passwordRestore(requestId, passwordRestoreDto);
-    return new PasswordRestoreResponse(requestId, null);
-  }
-
-  @Post('/password/reset')
-  @ApiResponse({ status: HttpStatus.CREATED, type: SignInResponse })
-  @ApiOperation({
-    title: 'Смена пароля, используя код из письма',
-  })
-  async resetPassword(
-    @GetRequestId() requestId: string,
-    @Body(ValidationPipe) passwordResetRequestDto: PasswordResetDto,
-  ): Promise<SignInResponse> {
-    return new SignInResponse(
-      requestId,
-      await this.userService.passwordReset(requestId, passwordResetRequestDto),
-    );
-  }
-
-  @Get('/:id')
-  @Auth([UserRolesEnum.ADMIN])
-  @ApiResponse({ status: HttpStatus.OK, type: MeResponse })
-  @ApiOperation({ title: 'Выдаёт данные пользователя по его id' })
-  async getUserById(
-    @GetRequestId() requestId: string,
-    @Param(
-      new ValidationPipe({
-        transform: true,
-      }),
-    )
-    idDto: NumberIdDto,
+    @Body(ValidationPipe) userUpdateDto: UpdateUserDto,
   ): Promise<MeResponse> {
-    const user = await this.userService.getUserById(idDto);
-    const meResponse = new MeResponse(requestId, user);
+    const meResponse = new MeResponse(
+      requestId,
+      await this.userService.editMyself(user, userUpdateDto),
+    );
     return plainToClass(MeResponse, meResponse);
   }
 
@@ -294,5 +282,17 @@ export class UserController {
       await this.userService.updateAdminUser(idDto, userUpdateDto),
     );
     return plainToClass(MeResponse, meResponse);
+  }
+
+  @Delete('/:id')
+  @Auth([UserRolesEnum.ADMIN])
+  @ApiResponse({ status: HttpStatus.OK, type: LogoutResponse })
+  @ApiOperation({ title: 'Удаление пользователя администратором' })
+  async deleteUser(
+    @GetRequestId() requestId: string,
+    @Param(ValidationPipe) idDto: NumberIdDto,
+  ): Promise<LogoutResponse> {
+    await this.userService.deleteAdminUser(idDto);
+    return new LogoutResponse(requestId, null);
   }
 }
