@@ -22,19 +22,21 @@ export class EquipmentService {
     private equipmentRepository: EquipmentRepository,
     private userRepository: UserRepository,
   ) {}
+  private engineerRelation = 'engineer';
+  private managerRelation = 'manager';
 
   async getActiveEquipments(user: User): Promise<Equipment[]> {
     if (user.role.name === UserRolesEnum.ADMIN) {
       return this.equipmentRepository.find({
         where: { deletedAt: IsNull() },
-        relations: ['manager', 'engineer'],
+        relations: [this.engineerRelation, this.managerRelation],
       });
     }
   }
 
   async getActiveEquipment(idDto: NumberIdDto): Promise<Equipment> {
     const equipment = await this.equipmentRepository.findOne(idDto.id, {
-      relations: ['engineer', 'manager'],
+      relations: [this.engineerRelation, this.managerRelation],
     });
     ErrorIf.isEmpty(equipment, EQUIPMENT_NOT_FOUND);
     return equipment;

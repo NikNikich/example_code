@@ -38,6 +38,7 @@ import { CreateAdminUserDto } from '../documentation/user/create.admin.user.dto'
 import { plainToClass } from 'class-transformer';
 import { AddUserEquipmentDto } from '../documentation/user/add.user.equipment.dto';
 import { AddEquipmentResponse } from '../../../response/user/add.equipment.response';
+import { UpdatePasswordDto } from '../documentation/user/update.password.dto';
 
 @ApiUseTags('users')
 @Controller('users')
@@ -97,6 +98,21 @@ export class UserController {
       await this.userService.createAdminUser(createAdminUserDto, requestId),
     );
     return plainToClass(MeResponse, meResponse);
+  }
+
+  @Post('/me/password')
+  @Auth()
+  @ApiResponse({ status: HttpStatus.OK, type: SignInResponse })
+  @ApiOperation({ title: 'Поменять пароль' })
+  async updatePassword(
+    @GetRequestId() requestId: string,
+    @GetUser() user: User,
+    @Body(ValidationPipe) updatePasswordDto: UpdatePasswordDto,
+  ): Promise<SignInResponse> {
+    return new SignInResponse(
+      requestId,
+      await this.userService.updateMePassword(user, updatePasswordDto),
+    );
   }
 
   @Delete('/:id')
@@ -163,7 +179,7 @@ export class UserController {
       await this.userService.signUpByEmail(requestId, signUpByEmailRequestDto),
     );
   }
-  [UserRolesEnum.ADMIN];
+
   @Post('/signin/email')
   @ApiResponse({ status: HttpStatus.CREATED, type: SignInResponse })
   @ApiOperation({

@@ -1,7 +1,7 @@
 import { EntityRepository, Repository } from 'typeorm';
 import { Equipment } from '../entity/equipment.entity';
 import { User } from '../entity/user.entity';
-import * as _ from 'lodash';
+import * as lodash from 'lodash';
 import { CreateEquipmentDto } from '../../../infrastructure/presenter/rest-api/documentation/equipment/create.equipment.dto';
 import { UpdateEquipmentDto } from '../../../infrastructure/presenter/rest-api/documentation/equipment/update.equipment.dto';
 
@@ -13,9 +13,9 @@ export class EquipmentRepository extends Repository<Equipment> {
     engineer: User,
   ): Promise<Equipment> {
     const equipmentNew = new Equipment();
-    _.assign(
+    lodash.assign(
       equipmentNew,
-      _.omit(createEquipmentDto, ['managerId', 'engineerId']),
+      lodash.omit(createEquipmentDto, ['managerId', 'engineerId']),
     );
     equipmentNew.manager = manager;
     equipmentNew.engineer = engineer;
@@ -38,7 +38,7 @@ export class EquipmentRepository extends Repository<Equipment> {
       listOmit.push('engineer');
       editEquipment.engineer = engineer;
     }
-    _.assign(editEquipment, _.omit(updateEquipmentDto, listOmit));
+    lodash.assign(editEquipment, lodash.omit(updateEquipmentDto, listOmit));
     return editEquipment.save();
   }
   async getEquipmentByEquipmentId(
