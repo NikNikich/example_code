@@ -44,6 +44,14 @@ export class Building extends BaseEntity {
   @Column({ nullable: true })
   house: string;
 
+  @ApiModelProperty({ type: 'string', nullable: true })
+  @Column({ nullable: true })
+  geoLat: string;
+
+  @ApiModelProperty({ type: 'string', nullable: true })
+  @Column({ nullable: true })
+  geoLon: string;
+
   @ApiModelProperty({
     type: Equipment,
     description:

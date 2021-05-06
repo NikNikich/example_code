@@ -23,6 +23,8 @@ export class BuildingRepository extends Repository<Building> {
       city: dadataData.city_with_type,
       street: dadataData.street_with_type,
       house: dadataData.house,
+      geoLon: dadataData.geo_lon,
+      geoLat: dadataData.geo_lat,
     });
     if (findBuilding) {
       return findBuilding;
