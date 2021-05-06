@@ -10,6 +10,7 @@ import {
 } from 'typeorm';
 import { Equipment } from './equipment.entity';
 import { ApiModelProperty } from '@nestjs/swagger';
+import { Exclude } from 'class-transformer';
 
 @Entity({ name: 'building' })
 export class Building extends BaseEntity {
@@ -64,12 +65,15 @@ export class Building extends BaseEntity {
   )
   equipment?: Equipment[];
 
+  @Exclude()
   @DeleteDateColumn({ type: 'timestamp' })
   public deletedAt: Date;
 
+  @Exclude()
   @CreateDateColumn({ type: 'timestamp' })
   public createdAt: Date;
 
+  @Exclude()
   @UpdateDateColumn({ type: 'timestamp' })
   public updatedAt: Date;
 }
