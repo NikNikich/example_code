@@ -1,5 +1,19 @@
-import { BaseEntity, Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  BaseEntity,
+  Column,
+  CreateDateColumn,
+  DeleteDateColumn,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  OneToMany,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
+} from 'typeorm';
 import { ApiModelProperty } from '@nestjs/swagger';
+import { Role } from './role.entity';
+import { Equipment } from './equipment.entity';
+import { Exclude } from 'class-transformer';
 
 // TODO: move API Model Properties to DTO in documentation
 @Entity()
@@ -24,15 +38,16 @@ export class User extends BaseEntity {
   @Column({ nullable: true })
   email: string;
 
+  @Exclude()
   @ApiModelProperty({ type: 'string', nullable: true })
   @Column({ nullable: true })
   password: string;
 
-  @ApiModelProperty({ type: 'string', nullable: true })
+  @Exclude()
   @Column({ nullable: true })
   resetCode: string;
 
-  @ApiModelProperty({ type: 'string', nullable: true, format: 'date-time' })
+  @Exclude()
   @Column({ nullable: true })
   resetCodeExpirationDate: Date;
 
@@ -42,14 +57,66 @@ export class User extends BaseEntity {
 
   @ApiModelProperty({ type: 'string', nullable: true })
   @Column({ nullable: true })
+  surName: string;
+
+  @ApiModelProperty({ type: 'string', nullable: true })
+  @Column({ nullable: true })
   lastName: string;
 
-  @ApiModelProperty({
-    type: 'string',
-    nullable: true,
-    format: 'date-time',
-    description: 'ISO string',
-  })
+  @ApiModelProperty({ type: 'string', nullable: true })
   @Column({ nullable: true })
-  birthday: Date;
+  organization: string;
+
+  @ApiModelProperty({ type: 'string', nullable: true })
+  @Column({ nullable: true })
+  position: string;
+
+  @ApiModelProperty({ type: Role, nullable: true })
+  @ManyToOne(
+    () => Role,
+    role => role.users,
+    {},
+  )
+  @JoinColumn()
+  role: Role;
+
+  @Exclude()
+  @OneToMany(
+    () => Equipment,
+    equipment => equipment.manager,
+    { nullable: true },
+  )
+  equipmentManagers: Equipment[];
+
+  @Exclude()
+  @OneToMany(
+    () => Equipment,
+    equipment => equipment.engineer,
+    { nullable: true },
+  )
+  equipmentEngineers: Equipment[];
+
+  @Exclude()
+  @OneToMany(
+    () => Equipment,
+    equipment => equipment.owner,
+    { nullable: true },
+  )
+  equipmentOwner: Equipment[];
+
+  @ApiModelProperty({
+    type: 'Date',
+    nullable: true,
+    description: 'Если не null, значит запись считается йдалённой',
+  })
+  @DeleteDateColumn({ type: 'timestamp' })
+  public deletedAt: Date;
+
+  @Exclude()
+  @CreateDateColumn({ type: 'timestamp' })
+  public createdAt: Date;
+
+  @Exclude()
+  @UpdateDateColumn({ type: 'timestamp' })
+  public updatedAt: Date;
 }

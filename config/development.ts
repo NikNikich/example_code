@@ -1,17 +1,17 @@
 // noinspection SpellCheckingInspection
 module.exports = {
   server: {
-    port: 3002,
+    port: 3000,
     url: 'http://localhost',
   },
   swagger: {
     scheme: 'http',
   },
   db: {
-    port: '5800',
-    host: 'localhost',
+    port: '5432',
+    host: 'postgres',
     username: 'postgres',
-    password: 'postgres',
+    password: 'HZz359kZoJWiQYGZ',
     database: 'water_loc', // GO TO README FILE
     synchronize: true,
     migrationsRun: true,
@@ -28,5 +28,17 @@ module.exports = {
   notifications: {
     sendImportant: true,
     sendCommon: true,
+  },
+  email: {
+    from: 'emailsmttp@mail.ru',
+    transport: {
+      host: 'smtp.mail.ru',
+      port: 465,
+      secure: true, // upgrade later with STARTTLS
+      auth: {
+        user: 'emailsmttp@mail.ru',
+        pass: 'rAO}UPpiyo32',
+      },
+    },
   },
 };

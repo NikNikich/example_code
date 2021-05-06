@@ -1,11 +1,5 @@
 import { ApiModelProperty } from '@nestjs/swagger';
-import {
-  IsDateString,
-  IsEmail,
-  IsOptional,
-  IsString,
-  Length,
-} from 'class-validator';
+import { IsEmail, IsOptional, IsString, Length } from 'class-validator';
 export class UpdateUserDto {
   @IsOptional()
   @IsString()
@@ -27,6 +21,15 @@ export class UpdateUserDto {
 
   @IsOptional()
   @IsString()
+  @ApiModelProperty({
+    type: 'string',
+    example: 'Котович',
+    required: false,
+  })
+  surName: string;
+
+  @IsOptional()
+  @IsString()
   @Length(6, 100)
   @ApiModelProperty({
     type: 'string',
@@ -43,15 +46,4 @@ export class UpdateUserDto {
     required: false,
   })
   email: string;
-
-  @IsOptional()
-  @IsString()
-  @IsDateString()
-  @ApiModelProperty({
-    type: 'string',
-    format: 'date-time',
-    example: '1993-08-05T14:48:00.000Z',
-    required: false,
-  })
-  birthday: string;
 }

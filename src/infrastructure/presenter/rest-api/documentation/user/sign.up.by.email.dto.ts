@@ -1,4 +1,4 @@
-import { IsNumberString, Length, IsEmail } from 'class-validator';
+import { Length, IsEmail } from 'class-validator';
 // import * as config from 'config';
 import { ApiModelProperty } from '@nestjs/swagger';
 
@@ -11,7 +11,6 @@ export class SignUpByEmailDto {
   })
   email: string;
 
-  @IsNumberString()
   @Length(6, 100)
   @ApiModelProperty({
     type: 'string',

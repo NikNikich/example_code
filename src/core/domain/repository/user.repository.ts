@@ -1,27 +1,37 @@
-import { EntityRepository, Repository } from 'typeorm';
+import { EntityRepository, IsNull, Repository } from 'typeorm';
 import { UpdateUserDto } from '../../../infrastructure/presenter/rest-api/documentation/user/update.user.dto';
-import { User } from '../entity/user.entity';
 import * as moment from 'moment';
 import { genSalt, hash } from 'bcryptjs';
+import { Role } from '../entity/role.entity';
+import { UpdateAdminUserDto } from '../../../infrastructure/presenter/rest-api/documentation/user/update.admin.user.dto';
+import * as _ from 'lodash';
+import { CreateAdminUserDto } from '../../../infrastructure/presenter/rest-api/documentation/user/create.admin.user.dto';
+import { User } from '../entity/user.entity';
 
 @EntityRepository(User)
 export class UserRepository extends Repository<User> {
-  async createUser(phone: string): Promise<User> {
+  async createUser(phone: string, role: Role): Promise<User> {
     const user = new User();
+    user.role = role || null;
     user.phone = phone;
     await user.save();
     return user;
   }
 
-  async createUserByEmail(email: string, password: string): Promise<User> {
+  async createUserByEmail(
+    email: string,
+    password: string,
+    role?: Role,
+  ): Promise<User> {
     const user = new User();
+    user.role = role || null;
     user.email = email;
     user.password = await this.hashPassword(password);
     return user.save();
   }
 
-  async findUserById(id: string): Promise<User | undefined> {
-    return User.findOne(id);
+  async findUserByIdWithDeleted(id: number): Promise<User | undefined> {
+    return User.findOne(id, { withDeleted: true, relations: ['role'] });
   }
 
   async hashPassword(password: string): Promise<string> {
@@ -36,12 +46,12 @@ export class UserRepository extends Repository<User> {
       user.firstName = userUpdateDto.firstName;
     }
 
-    if (dtoKeys.includes('lastName')) {
-      user.lastName = userUpdateDto.lastName;
+    if (dtoKeys.includes('surName')) {
+      user.surName = userUpdateDto.surName;
     }
 
-    if (dtoKeys.includes('birthday')) {
-      user.birthday = moment(userUpdateDto.birthday).toDate();
+    if (dtoKeys.includes('lastName')) {
+      user.lastName = userUpdateDto.lastName;
     }
 
     if (dtoKeys.includes('email')) {
@@ -53,6 +63,27 @@ export class UserRepository extends Repository<User> {
     }
 
     return await user.save();
+  }
+
+  async updateAdminUser(
+    user: User,
+    updateUserDto: UpdateAdminUserDto,
+  ): Promise<User> {
+    const userNew = user;
+    _.assign(userNew, updateUserDto);
+    return await userNew.save();
+  }
+
+  async createAdminUser(
+    createUserDto: CreateAdminUserDto,
+    role: Role,
+    password: string,
+  ): Promise<User> {
+    const userNew = new User();
+    _.assign(userNew, createUserDto);
+    userNew.role = role;
+    userNew.password = await this.hashPassword(password);
+    return await userNew.save();
   }
 
   async updateResetCode(user: User, resetCode: string): Promise<void> {
@@ -70,9 +101,9 @@ export class UserRepository extends Repository<User> {
     await user.save();
   }
 
-  async updatePassword(user: User, password: string): Promise<void> {
+  async updatePassword(user: User, password: string): Promise<User> {
     user.password = await this.hashPassword(password);
-    await user.save();
+    return user.save();
   }
 
   async resetSmsCode(user: User): Promise<void> {
@@ -88,5 +119,13 @@ export class UserRepository extends Repository<User> {
   async updateLastCode(user: User): Promise<void> {
     user.lastCode = moment().toDate();
     await user.save();
+  }
+
+  async getListNotDeleteUser(): Promise<User[]> {
+    return this.find({ where: { deletedAt: IsNull() }, relations: ['role'] });
+  }
+
+  async getUserByIdNotDelete(id: number): Promise<User | undefined> {
+    return this.findOne({ where: { id, deletedAt: IsNull() } });
   }
 }

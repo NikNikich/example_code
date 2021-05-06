@@ -1,43 +1,49 @@
 @NonCPS
 
-def repositoryName  = 'base_api'
-def jenkinsURL      = 'https://jenkins.citronium.com/view/Base/job/base_api_deploy/'
+def repositoryName  = 'united-water_api'
+def jenkinsURL      = 'https://jenkins.citronium.com/view/Base/job/united-water_api/'
 def chatId          = ''
 def token           = ''
 
-def imageTag        = env.BRANCH_NAME
-def ecRegistry      = "https://registry.citronium.com/v2/${repositoryName}"
-def remoteImageTag
+def branch        = env.BRANCH_NAME
+def dockerRegistry  = "registry.citronium.com/${repositoryName}"
+def imageTag
 
 node {
     try {
       stage("Checkout") {
-        checkout scm
+         git branch: "${branch}",
+          url: 'git@github.com:Citronium/united-water_api.git'
+
         def commit_hash = sh(returnStdout: true, script: "git rev-parse --short HEAD").trim()
         def now = new Date()
-        remoteImageTag = "${now.format('yyMMdd', TimeZone.getTimeZone('UTC'))}_${imageTag}_${BUILD_NUMBER}_${commit_hash}"
+        imageTag = "${now.format('yyMMdd', TimeZone.getTimeZone('UTC'))}_${branch}_${BUILD_NUMBER}_${commit_hash}"
+        imageTag = imageTag.toLowerCase()
+        imageTag = imageTag.replaceAll('/', '_')
       }
 
       stage("Start") {
-        sendMessage("☑ Build №${env.BUILD_NUMBER}: Start ${remoteImageTag} ${env.JOB_URL} ${sendChangeLogs()}")
+        sendMessage("☑ Build №${env.BUILD_NUMBER}: Start ${imageTag} ${env.JOB_URL} ${sendChangeLogs()}")
       }
 
       stage("Build") {
-        sh "docker build -t ${repositoryName}:${remoteImageTag} ."
+        sh "docker build -t ${dockerRegistry}:${imageTag} ."
       }
 
       stage("Push") {
-        docker.withRegistry(ecRegistry, 'd1eacb00-afb9-4a2c-9fb5-f4c2761c8084') {
-          docker.image("${repositoryName}:${remoteImageTag}").push(remoteImageTag)
-        }
+        sh "docker push ${dockerRegistry}:${imageTag}"
+      }
+
+      stage("Docker start at psrv5") {
+        sh "APP_VERSION=${imageTag} docker-compose -p united-water up -d"
       }
 
       stage("Finish") {
-        sendMessage("🛠✅ Build ${repositoryName} №${env.BUILD_NUMBER}: ${remoteImageTag}. Finish. Deploy: https://${jenkinsURL}/job/api_deploy/")
+        sendMessage("🛠✅ Build ${repositoryName} №${env.BUILD_NUMBER}: ${imageTag}. Finish. Deploy: https://${jenkinsURL}/job/api_deploy/")
       }
 
     } catch(e) {
-      sendMessage("🛠❌ Build ${repositoryName} №${env.BUILD_NUMBER}: Error ${remoteImageTag} ${e}")
+      sendMessage("🛠❌ Build ${repositoryName} №${env.BUILD_NUMBER}: Error ${imageTag} ${e}")
       throw e
     }
 }

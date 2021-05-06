@@ -8,6 +8,9 @@ import { UserService } from '../../application/services/user.service';
 import { JwtStrategy } from '../../core/domain/service/jwt/jwt.strategy';
 import { UserController } from '../presenter/rest-api/controller/user.controller';
 import { SessionRepository } from '../../core/domain/repository/session.repository';
+import { RoleRepository } from '../../core/domain/repository/role.repository';
+import { EquipmentRepository } from '../../core/domain/repository/equipment.repository';
+import { BuildingRepository } from '../../core/domain/repository/building.repository';
 
 @Module({
   imports: [
@@ -18,7 +21,13 @@ import { SessionRepository } from '../../core/domain/repository/session.reposito
         expiresIn: config.get('jwt.expiresIn'),
       },
     }),
-    TypeOrmModule.forFeature([UserRepository, SessionRepository]),
+    TypeOrmModule.forFeature([
+      UserRepository,
+      SessionRepository,
+      RoleRepository,
+      EquipmentRepository,
+      BuildingRepository,
+    ]),
   ],
   controllers: [UserController],
   providers: [UserService, JwtStrategy],
