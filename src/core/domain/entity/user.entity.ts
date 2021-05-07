@@ -96,7 +96,7 @@ export class User extends BaseEntity {
   )
   equipmentEngineers: Equipment[];
 
-  @Exclude()
+  @ApiModelProperty({ type: Equipment, isArray: true })
   @OneToMany(
     () => Equipment,
     equipment => equipment.owner,
