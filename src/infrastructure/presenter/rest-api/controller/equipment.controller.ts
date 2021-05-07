@@ -69,7 +69,7 @@ export class EquipmentController {
     isArray: true,
     type: GetStatusesUseDto,
   })
-  @ApiOperation({ title: 'Оборудование по id' })
+  @ApiOperation({ title: 'Список статусов использования оборудования' })
   async getUseStatusList(
     @GetRequestId() requestId: string,
   ): Promise<GetStatusesUseDto> {
