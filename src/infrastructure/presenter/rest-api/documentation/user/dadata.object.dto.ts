@@ -17,6 +17,6 @@ export class DadataObjectDto {
     description: 'Dadata data',
   })
   @Type(() => DadataDataDto)
-  @ValidateNested()
+  @ValidateNested({ each: true })
   data: DadataDataDto;
 }
