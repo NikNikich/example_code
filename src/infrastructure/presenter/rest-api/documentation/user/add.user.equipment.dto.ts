@@ -25,6 +25,6 @@ export class AddUserEquipmentDto {
     description: 'DaData validation JSON',
   })
   @Type(() => DadataObjectDto)
-  @ValidateNested()
+  @ValidateNested({ each: true })
   address: DadataObjectDto;
 }

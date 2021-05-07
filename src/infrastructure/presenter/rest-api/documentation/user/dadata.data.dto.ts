@@ -1,4 +1,4 @@
-import { IsString } from 'class-validator';
+import { IsOptional, IsString } from 'class-validator';
 import { ApiModelProperty } from '@nestjs/swagger';
 
 export class DadataDataDto {
@@ -19,12 +19,13 @@ export class DadataDataDto {
   region_with_type: string;
 
   @IsString()
+  @IsOptional()
   @ApiModelProperty({
     type: 'string',
     example: 'Зеленодольский р-н',
     required: true,
   })
-  area_with_type: string;
+  area_with_type?: string;
 
   @IsString()
   @ApiModelProperty({

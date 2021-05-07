@@ -9,21 +9,23 @@ export class BuildingRepository extends Repository<Building> {
   async getBuildingByAddress(dadataData: DadataDataDto): Promise<Building> {
     const dataOk: boolean =
       !!dadataData &&
-      !!dadataData.area_with_type &&
       !!dadataData.city_with_type &&
       !!dadataData.region_with_type &&
       !!dadataData.street_with_type &&
       !!dadataData.country &&
       !!dadataData.house;
     ErrorIf.isFalse(dataOk, INVALID_ADDRESS_DATA);
-    const findBuilding = await this.findOne({
+    const findOption = {
       country: dadataData.country,
       region: dadataData.region_with_type,
-      area: dadataData.area_with_type,
       city: dadataData.city_with_type,
       street: dadataData.street_with_type,
       house: dadataData.house,
-    });
+    };
+    if (dadataData.area_with_type) {
+      Object.assign(findOption, { area: dadataData.area_with_type });
+    }
+    const findBuilding = await this.findOne(findOption);
     if (findBuilding) {
       return findBuilding;
     }
