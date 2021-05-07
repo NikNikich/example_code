@@ -44,7 +44,8 @@ export class BuildingService {
           errorEquipment++;
         }
       }
-      const address = `${building.region} ${building.area} ${building.city} ${building.street} ${building.house}`;
+      const areaString = building.area ? ` ${building.area}` : '';
+      const address = `${building.region}${areaString} ${building.city} ${building.street} ${building.house}`;
       buildingObjectList.push(
         new BuildingObjectListDto(
           building.id,
