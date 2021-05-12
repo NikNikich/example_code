@@ -34,28 +34,29 @@ export class BuildingService {
     });
     const buildingObjectList: BuildingObjectListDto[] = [];
     for (const building of buildings) {
-      let extensionEquipment = 0;
-      let errorEquipment = 0;
-      for (const equipment of building.equipment) {
-        if (equipment.jobStatus === EquipmentJobStatusEnum.NOT_CRITICAL) {
-          extensionEquipment++;
+      if (building.equipment.length > 0) {
+        let extensionEquipment = 0;
+        let errorEquipment = 0;
+        for (const equipment of building.equipment) {
+          if (equipment.jobStatus === EquipmentJobStatusEnum.NOT_CRITICAL) {
+            extensionEquipment++;
+          }
+          if (equipment.jobStatus === EquipmentJobStatusEnum.CRITICAL) {
+            errorEquipment++;
+          }
         }
-        if (equipment.jobStatus === EquipmentJobStatusEnum.CRITICAL) {
-          errorEquipment++;
-        }
+        const address = `${building.region} ${building.area} ${building.city} ${building.street} ${building.house}`;
+        buildingObjectList.push(
+          new BuildingObjectListDto(
+            building.id,
+            building.type,
+            address,
+            building.equipment.length,
+            extensionEquipment,
+            errorEquipment,
+          ),
+        );
       }
-      const areaString = building.area ? ` ${building.area}` : '';
-      const address = `${building.region}${areaString} ${building.city} ${building.street} ${building.house}`;
-      buildingObjectList.push(
-        new BuildingObjectListDto(
-          building.id,
-          building.type,
-          address,
-          building.equipment.length,
-          extensionEquipment,
-          errorEquipment,
-        ),
-      );
     }
     return buildingObjectList;
   }

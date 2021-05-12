@@ -25,6 +25,9 @@ import { EquipmentResponseDto } from '../../../response/equipment/equipment.resp
 import { EquipmentListResponseDto } from '../../../response/equipment/equipment.list.response.dto';
 import { CreateEquipmentDto } from '../documentation/equipment/create.equipment.dto';
 import { UpdateEquipmentDto } from '../documentation/equipment/update.equipment.dto';
+import { plainToClass } from 'class-transformer';
+
+import { Equipment } from '../../../../core/domain/entity/equipment.entity';
 import { GetStatusesUseDto } from '../../../response/equipment/get.statuses.use.dto';
 
 @ApiUseTags('equipments')
@@ -44,11 +47,13 @@ export class EquipmentController {
     @GetRequestId() requestId: string,
     @GetUser() user: User,
   ): Promise<EquipmentListResponseDto> {
-    return new EquipmentListResponseDto(
+    const equipmentListResponseDto = new EquipmentListResponseDto(
       requestId,
       await this.equipmentService.getActiveEquipments(user),
     );
+    return plainToClass(EquipmentListResponseDto, equipmentListResponseDto);
   }
+
   @Post()
   @Auth([UserRolesEnum.ADMIN])
   @ApiResponse({ status: HttpStatus.OK, type: EquipmentResponseDto })
@@ -57,7 +62,7 @@ export class EquipmentController {
     @GetRequestId() requestId: string,
     @Body(ValidationPipe) createEquipmentDto: CreateEquipmentDto,
   ): Promise<EquipmentResponseDto> {
-    return new EquipmentResponseDto(
+    return this.getEquipmentResponseDto(
       requestId,
       await this.equipmentService.createEquipment(createEquipmentDto),
     );
@@ -88,7 +93,7 @@ export class EquipmentController {
     @Param(ValidationPipe) idDto: NumberIdDto,
     @Body(ValidationPipe) updateEquipmentDto: UpdateEquipmentDto,
   ): Promise<EquipmentResponseDto> {
-    return new EquipmentResponseDto(
+    return this.getEquipmentResponseDto(
       requestId,
       await this.equipmentService.editEquipment(idDto, updateEquipmentDto),
     );
@@ -106,7 +111,7 @@ export class EquipmentController {
     @GetRequestId() requestId: string,
     @Param(ValidationPipe) idDto: NumberIdDto,
   ): Promise<EquipmentResponseDto> {
-    return new EquipmentResponseDto(
+    return this.getEquipmentResponseDto(
       requestId,
       await this.equipmentService.getActiveEquipment(idDto),
     );
@@ -123,5 +128,13 @@ export class EquipmentController {
   ): Promise<DeleteBaseResponse> {
     await this.equipmentService.delete(user, idDto.id);
     return new DeleteBaseResponse(requestId, null);
+  }
+
+  private getEquipmentResponseDto(
+    requestId: string,
+    equipment: Equipment,
+  ): EquipmentResponseDto {
+    const equipmentResponseDto = new EquipmentResponseDto(requestId, equipment);
+    return plainToClass(EquipmentResponseDto, equipmentResponseDto);
   }
 }

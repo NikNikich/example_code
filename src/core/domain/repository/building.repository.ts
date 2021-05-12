@@ -36,6 +36,8 @@ export class BuildingRepository extends Repository<Building> {
     newBuilding.city = dadataData.city_with_type;
     newBuilding.street = dadataData.street_with_type;
     newBuilding.house = dadataData.house;
+    newBuilding.geoLon = dadataData.geo_lon;
+    newBuilding.geoLat = dadataData.geo_lat;
     return newBuilding.save();
   }
 }

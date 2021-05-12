@@ -50,4 +50,20 @@ export class DadataDataDto {
     required: true,
   })
   house: string;
+
+  @IsString()
+  @ApiModelProperty({
+    type: 'string',
+    example: '55.847306',
+    required: true,
+  })
+  geo_lat: string;
+
+  @IsString()
+  @ApiModelProperty({
+    type: 'string',
+    example: '48.546108',
+    required: true,
+  })
+  geo_lon: string;
 }

@@ -17,6 +17,7 @@ import { FilterBuildingDto } from '../documentation/building/filter.building.dto
 import { GetBuildingResponse } from '../../../response/building/get.building.response';
 import { NumberIdDto } from '../documentation/shared/number.id.dto';
 import { GetByIdBuildingDto } from '../../../response/building/get.by.id.building.dto';
+import { plainToClass } from 'class-transformer';
 
 @ApiUseTags('buildings')
 @Controller('buildings')
@@ -40,7 +41,8 @@ export class BuildingController {
     filter: FilterBuildingDto,
   ): Promise<GetBuildingResponse> {
     const response = await this.buildingService.getListBuilding(filter);
-    return new GetBuildingResponse(requestId, response);
+    const getBuildingResponse = new GetBuildingResponse(requestId, response);
+    return plainToClass(GetBuildingResponse, getBuildingResponse);
   }
 
   @Get(':id')
@@ -59,6 +61,7 @@ export class BuildingController {
     idDto: NumberIdDto,
   ): Promise<GetByIdBuildingDto> {
     const response = await this.buildingService.getById(idDto);
-    return new GetByIdBuildingDto(requestId, response);
+    const getByIdBuildingDto = new GetByIdBuildingDto(requestId, response);
+    return plainToClass(GetByIdBuildingDto, getByIdBuildingDto);
   }
 }
