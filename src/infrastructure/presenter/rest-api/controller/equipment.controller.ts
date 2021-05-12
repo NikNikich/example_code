@@ -28,6 +28,7 @@ import { UpdateEquipmentDto } from '../documentation/equipment/update.equipment.
 import { plainToClass } from 'class-transformer';
 
 import { Equipment } from '../../../../core/domain/entity/equipment.entity';
+import { GetStatusesUseDto } from '../../../response/equipment/get.statuses.use.dto';
 
 @ApiUseTags('equipments')
 @Controller('equipments')
@@ -64,6 +65,22 @@ export class EquipmentController {
     return this.getEquipmentResponseDto(
       requestId,
       await this.equipmentService.createEquipment(createEquipmentDto),
+    );
+  }
+
+  @Get('/statuses/use')
+  @ApiResponse({
+    status: HttpStatus.OK,
+    isArray: true,
+    type: GetStatusesUseDto,
+  })
+  @ApiOperation({ title: 'Список статусов использования оборудования' })
+  async getUseStatusList(
+    @GetRequestId() requestId: string,
+  ): Promise<GetStatusesUseDto> {
+    return new GetStatusesUseDto(
+      requestId,
+      await this.equipmentService.getUseStatusList(),
     );
   }
 
