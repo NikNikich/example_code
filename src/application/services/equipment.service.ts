@@ -15,6 +15,7 @@ import { CreateEquipmentDto } from '../../infrastructure/presenter/rest-api/docu
 import { UserRepository } from '../../core/domain/repository/user.repository';
 import { NumberIdDto } from '../../infrastructure/presenter/rest-api/documentation/shared/number.id.dto';
 import { UpdateEquipmentDto } from '../../infrastructure/presenter/rest-api/documentation/equipment/update.equipment.dto';
+import { EquipmentUseStatusEnum } from '../../infrastructure/shared/equipment.use.status.enum';
 
 @Injectable()
 export class EquipmentService {
@@ -107,5 +108,13 @@ export class EquipmentService {
       manager,
       engineer,
     );
+  }
+
+  getUseStatusList(): string[] {
+    const statusList = [];
+    for (const key in EquipmentUseStatusEnum) {
+      statusList.push(EquipmentUseStatusEnum[key]);
+    }
+    return statusList;
   }
 }

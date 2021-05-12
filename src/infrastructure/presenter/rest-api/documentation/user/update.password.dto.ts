@@ -1,5 +1,5 @@
 import { ApiModelProperty } from '@nestjs/swagger';
-import { IsOptional, IsString, Length } from 'class-validator';
+import { IsString, Length } from 'class-validator';
 export class UpdatePasswordDto {
   @IsString()
   @ApiModelProperty({
