@@ -94,7 +94,7 @@ export class Equipment extends BaseEntity {
 
   @ApiModelProperty({ type: 'timestamp', nullable: true })
   @Column({ type: 'timestamp', nullable: true })
-  dateStatus: Date;
+  dateInitialization: Date;
 
   @ApiModelProperty({ type: 'string', nullable: true })
   @Column({ nullable: true })
