@@ -41,4 +41,6 @@ module.exports = {
       },
     },
   },
+  restoreURL:
+    'https://unitedwater-webapp.psrv5.citronium.com/reset-password/RESET_CODE',
 };

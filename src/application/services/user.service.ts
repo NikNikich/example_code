@@ -260,15 +260,12 @@ export class UserService {
     const user = await this.getUserByEmail(
       passwordRestoreDto.email.toLowerCase(),
     );
-    if (!user) {
-      return;
-    }
+    ErrorIf.isEmpty(user, USER_NOT_FOUND);
 
     const resetCode = this.generateRandomString();
     await this.userRepository.updateResetCode(user, resetCode);
 
-    const resetLink =
-      'addreallink.com' + '/change_password?resetCode=' + resetCode;
+    const resetLink = `${config.get('restoreURL')}?resetCode=${resetCode}`;
     const html: string = await HtmlRender.renderResetPasswordEmail({
       resetLink,
     });
