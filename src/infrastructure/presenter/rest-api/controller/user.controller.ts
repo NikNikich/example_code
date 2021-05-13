@@ -39,6 +39,7 @@ import { plainToClass } from 'class-transformer';
 import { AddUserEquipmentDto } from '../documentation/user/add.user.equipment.dto';
 import { AddEquipmentResponse } from '../../../response/user/add.equipment.response';
 import { UpdatePasswordDto } from '../documentation/user/update.password.dto';
+import { NumberEquipmentIdDto } from '../documentation/equipment/number.equipment.id.dto';
 
 @ApiUseTags('users')
 @Controller('users')
@@ -284,9 +285,24 @@ export class UserController {
     return plainToClass(MeResponse, meResponse);
   }
 
+  @Delete('/:id/equipment/:equipmentId')
+  @Auth([UserRolesEnum.ADMIN])
+  @ApiResponse({ status: HttpStatus.OK, type: AddEquipmentResponse })
+  @ApiOperation({
+    title: 'Удаление оборудования у пользователя администратором',
+  })
+  async deleteUserEquipment(
+    @GetRequestId() requestId: string,
+    @Param(ValidationPipe) idDto: NumberIdDto,
+    @Param(ValidationPipe) equipmentIdDto: NumberEquipmentIdDto,
+  ): Promise<AddEquipmentResponse> {
+    await this.userService.deleteUserEquipment(idDto, equipmentIdDto);
+    return new AddEquipmentResponse(requestId);
+  }
+
   @Delete('/:id')
   @Auth([UserRolesEnum.ADMIN])
-  @ApiResponse({ status: HttpStatus.OK, type: LogoutResponse })
+  @ApiResponse({ status: HttpStatus.OK, type: AddEquipmentResponse })
   @ApiOperation({ title: 'Удаление пользователя администратором' })
   async deleteUser(
     @GetRequestId() requestId: string,

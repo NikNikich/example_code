@@ -43,6 +43,7 @@ import { AddUserEquipmentDto } from '../../infrastructure/presenter/rest-api/doc
 import { EquipmentRepository } from '../../core/domain/repository/equipment.repository';
 import { BuildingRepository } from '../../core/domain/repository/building.repository';
 import { UpdatePasswordDto } from '../../infrastructure/presenter/rest-api/documentation/user/update.password.dto';
+import { NumberEquipmentIdDto } from '../../infrastructure/presenter/rest-api/documentation/equipment/number.equipment.id.dto';
 
 const REPEAT_SMS_TIME_MS: number = config.get('sms.minRepeatTime');
 const emailTransport = new EmailTransport();
@@ -481,6 +482,23 @@ export class UserService {
     equipment.owner = user;
     equipment.building = building;
     equipment.address = addUserEquipmentDto.address.value;
+    equipment.save();
+  }
+
+  async deleteUserEquipment(
+    idDto: NumberIdDto,
+    equipmentIdDto: NumberEquipmentIdDto,
+  ): Promise<void> {
+    const user = await this.userRepository.findOne(idDto.id);
+    ErrorIf.isEmpty(user, USER_NOT_FOUND);
+    const equipment = await this.equipmentRepository.findOne(
+      equipmentIdDto.equipmentId,
+    );
+    ErrorIf.isEmpty(equipment, EQUIPMENT_NOT_FOUND);
+    equipment.useStatus = null;
+    equipment.owner = null;
+    equipment.building = null;
+    equipment.address = null;
     equipment.save();
   }
 }
