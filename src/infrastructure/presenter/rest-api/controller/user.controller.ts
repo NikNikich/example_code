@@ -302,7 +302,7 @@ export class UserController {
 
   @Delete('/:id')
   @Auth([UserRolesEnum.ADMIN])
-  @ApiResponse({ status: HttpStatus.OK, type: AddEquipmentResponse })
+  @ApiResponse({ status: HttpStatus.OK, type: LogoutResponse })
   @ApiOperation({ title: 'Удаление пользователя администратором' })
   async deleteUser(
     @GetRequestId() requestId: string,
