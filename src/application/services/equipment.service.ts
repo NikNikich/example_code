@@ -52,7 +52,11 @@ export class EquipmentService {
 
   async getActiveEquipment(idDto: NumberIdDto): Promise<Equipment> {
     const equipment = await this.equipmentRepository.findOne(idDto.id, {
-      relations: [this.engineerRelation, this.managerRelation],
+      relations: [
+        this.engineerRelation,
+        this.managerRelation,
+        this.ownerRelation,
+      ],
     });
     ErrorIf.isEmpty(equipment, EQUIPMENT_NOT_FOUND);
     return equipment;

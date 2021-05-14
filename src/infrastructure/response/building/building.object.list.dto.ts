@@ -5,6 +5,12 @@ export class BuildingObjectListDto {
   id: number;
 
   @ApiModelProperty({ type: 'string' })
+  geoLat: string;
+
+  @ApiModelProperty({ type: 'string' })
+  geoLon: string;
+
+  @ApiModelProperty({ type: 'string' })
   type: string;
 
   @ApiModelProperty({ type: 'string' })
@@ -26,6 +32,8 @@ export class BuildingObjectListDto {
     allEquipment: number,
     extensionEquipment: number,
     errorEquipment: number,
+    geoLat: string,
+    geoLon: string,
   ) {
     this.id = id;
     this.type = type;
@@ -33,5 +41,7 @@ export class BuildingObjectListDto {
     this.allEquipment = allEquipment;
     this.extensionEquipment = extensionEquipment;
     this.errorEquipment = errorEquipment;
+    this.geoLat = geoLat;
+    this.geoLon = geoLon;
   }
 }

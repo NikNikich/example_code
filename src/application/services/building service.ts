@@ -54,6 +54,8 @@ export class BuildingService {
             building.equipment.length,
             extensionEquipment,
             errorEquipment,
+            building.geoLat,
+            building.geoLon,
           ),
         );
       }
