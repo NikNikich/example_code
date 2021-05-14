@@ -74,6 +74,10 @@ export class UserService {
     return this.userRepository.findOne({ where: { email }, withDeleted: true });
   }
 
+  async getUserByEmailNotDeleted(email: string): Promise<User | undefined> {
+    return this.userRepository.findOne({ where: { email } });
+  }
+
   async editMyself(user: User, userUpdateDto: UpdateUserDto): Promise<User> {
     return this.userRepository.updateUser(user, userUpdateDto);
   }
@@ -257,7 +261,7 @@ export class UserService {
     requestId: string,
     passwordRestoreDto: PasswordRestoreDto,
   ): Promise<void> {
-    const user = await this.getUserByEmail(
+    const user = await this.getUserByEmailNotDeleted(
       passwordRestoreDto.email.toLowerCase(),
     );
     ErrorIf.isEmpty(user, USER_NOT_FOUND);
