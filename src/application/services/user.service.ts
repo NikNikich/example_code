@@ -495,10 +495,6 @@ export class UserService {
       equipmentIdDto.equipmentId,
     );
     ErrorIf.isEmpty(equipment, EQUIPMENT_NOT_FOUND);
-    equipment.useStatus = null;
-    equipment.owner = null;
-    equipment.building = null;
-    equipment.address = null;
-    equipment.save();
+    this.equipmentRepository.deleteOwner(equipment);
   }
 }

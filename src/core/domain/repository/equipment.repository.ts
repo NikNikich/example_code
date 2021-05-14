@@ -46,4 +46,12 @@ export class EquipmentRepository extends Repository<Equipment> {
   ): Promise<Equipment | undefined> {
     return this.findOne({ where: { equipmentId }, withDeleted: true });
   }
+
+  async deleteOwner(equipment: Equipment): Promise<void> {
+    equipment.useStatus = null;
+    equipment.owner = null;
+    equipment.building = null;
+    equipment.address = null;
+    equipment.save();
+  }
 }
