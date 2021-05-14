@@ -52,6 +52,6 @@ export class EquipmentRepository extends Repository<Equipment> {
     equipment.owner = null;
     equipment.building = null;
     equipment.address = null;
-    equipment.save();
+    await equipment.save();
   }
 }

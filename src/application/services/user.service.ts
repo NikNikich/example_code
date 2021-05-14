@@ -495,6 +495,6 @@ export class UserService {
       equipmentIdDto.equipmentId,
     );
     ErrorIf.isEmpty(equipment, EQUIPMENT_NOT_FOUND);
-    this.equipmentRepository.deleteOwner(equipment);
+    await this.equipmentRepository.deleteOwner(equipment);
   }
 }
