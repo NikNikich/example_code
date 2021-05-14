@@ -265,7 +265,7 @@ export class UserService {
     const resetCode = this.generateRandomString();
     await this.userRepository.updateResetCode(user, resetCode);
 
-    const resetLink = `${config.get('restoreURL')}?resetCode=${resetCode}`;
+    const resetLink = `${config.get('restoreURL')}/${resetCode}`;
     const html: string = await HtmlRender.renderResetPasswordEmail({
       resetLink,
     });
