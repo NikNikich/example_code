@@ -65,6 +65,7 @@ export class BuildingService {
     const building = await this.buildingRepository.findOne({
       where: { id: idDto.id },
       relations: [this.equipmentRelation],
+      loadEagerRelations: true,
     });
     ErrorIf.isEmpty(building, BUILDING_NOT_FOUND);
     return building;
