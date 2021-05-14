@@ -74,6 +74,10 @@ export class UserService {
     return this.userRepository.findOne({ where: { email }, withDeleted: true });
   }
 
+  async getUserByEmailNotDeleted(email: string): Promise<User | undefined> {
+    return this.userRepository.findOne({ where: { email } });
+  }
+
   async editMyself(user: User, userUpdateDto: UpdateUserDto): Promise<User> {
     return this.userRepository.updateUser(user, userUpdateDto);
   }
@@ -257,18 +261,15 @@ export class UserService {
     requestId: string,
     passwordRestoreDto: PasswordRestoreDto,
   ): Promise<void> {
-    const user = await this.getUserByEmail(
+    const user = await this.getUserByEmailNotDeleted(
       passwordRestoreDto.email.toLowerCase(),
     );
-    if (!user) {
-      return;
-    }
+    ErrorIf.isEmpty(user, USER_NOT_FOUND);
 
     const resetCode = this.generateRandomString();
     await this.userRepository.updateResetCode(user, resetCode);
 
-    const resetLink =
-      'addreallink.com' + '/change_password?resetCode=' + resetCode;
+    const resetLink = `${config.get('restoreURL')}/${resetCode}`;
     const html: string = await HtmlRender.renderResetPasswordEmail({
       resetLink,
     });
