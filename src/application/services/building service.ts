@@ -34,14 +34,19 @@ export class BuildingService {
     });
     const buildingObjectList: BuildingObjectListDto[] = [];
     for (const building of buildings) {
-      if (building.equipment.length > 0) {
+      const equipments = building.equipment.filter(
+        equipment => !!!equipment.deletedAt,
+      );
+      if (equipments.length > 0) {
         let extensionEquipment = 0;
         let errorEquipment = 0;
-        for (const equipment of building.equipment) {
-          if (equipment.jobStatus === EquipmentJobStatusEnum.NOT_CRITICAL) {
+        for (const buildingEquipment of equipments) {
+          if (
+            buildingEquipment.jobStatus === EquipmentJobStatusEnum.NOT_CRITICAL
+          ) {
             extensionEquipment++;
           }
-          if (equipment.jobStatus === EquipmentJobStatusEnum.CRITICAL) {
+          if (buildingEquipment.jobStatus === EquipmentJobStatusEnum.CRITICAL) {
             errorEquipment++;
           }
         }
@@ -67,6 +72,9 @@ export class BuildingService {
       relations: [this.equipmentRelation],
     });
     ErrorIf.isEmpty(building, BUILDING_NOT_FOUND);
+    building.equipment = building.equipment.filter(
+      equipment => !!!equipment.deletedAt,
+    );
     return building;
   }
 }
