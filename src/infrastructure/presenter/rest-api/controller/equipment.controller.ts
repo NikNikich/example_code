@@ -8,6 +8,7 @@ import {
   Param,
   Post,
   Put,
+  Query,
   ValidationPipe,
 } from '@nestjs/common';
 import { EquipmentService } from '../../../../application/services/equipment.service';
@@ -29,6 +30,7 @@ import { plainToClass } from 'class-transformer';
 
 import { Equipment } from '../../../../core/domain/entity/equipment.entity';
 import { GetStatusesUseDto } from '../../../response/equipment/get.statuses.use.dto';
+import { FilterEquipmentDto } from '../documentation/equipment/filter.equipment.dto';
 
 @ApiUseTags('equipments')
 @Controller('equipments')
@@ -46,10 +48,17 @@ export class EquipmentController {
   async getEquipmentList(
     @GetRequestId() requestId: string,
     @GetUser() user: User,
+    @Query(
+      new ValidationPipe({
+        whitelist: true,
+        transform: true,
+      }),
+    )
+    filter: FilterEquipmentDto,
   ): Promise<EquipmentListResponseDto> {
     const equipmentListResponseDto = new EquipmentListResponseDto(
       requestId,
-      await this.equipmentService.getActiveEquipments(user),
+      await this.equipmentService.getActiveEquipments(user, filter),
     );
     return plainToClass(EquipmentListResponseDto, equipmentListResponseDto);
   }

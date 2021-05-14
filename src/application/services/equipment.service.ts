@@ -16,6 +16,7 @@ import { UserRepository } from '../../core/domain/repository/user.repository';
 import { NumberIdDto } from '../../infrastructure/presenter/rest-api/documentation/shared/number.id.dto';
 import { UpdateEquipmentDto } from '../../infrastructure/presenter/rest-api/documentation/equipment/update.equipment.dto';
 import { EquipmentUseStatusEnum } from '../../infrastructure/shared/equipment.use.status.enum';
+import { FilterEquipmentDto } from '../../infrastructure/presenter/rest-api/documentation/equipment/filter.equipment.dto';
 
 @Injectable()
 export class EquipmentService {
@@ -25,19 +26,37 @@ export class EquipmentService {
   ) {}
   private engineerRelation = 'engineer';
   private managerRelation = 'manager';
+  private ownerRelation = 'owner';
 
-  async getActiveEquipments(user: User): Promise<Equipment[]> {
+  async getActiveEquipments(
+    user: User,
+    filter: FilterEquipmentDto,
+  ): Promise<Equipment[]> {
     if (user.role.name === UserRolesEnum.ADMIN) {
-      return this.equipmentRepository.find({
+      let equipments = await this.equipmentRepository.find({
         where: { deletedAt: IsNull() },
-        relations: [this.engineerRelation, this.managerRelation],
+        relations: [
+          this.engineerRelation,
+          this.managerRelation,
+          this.ownerRelation,
+        ],
       });
+      if (filter.notUsed) {
+        equipments = equipments.filter(equipment => !!!equipment.owner);
+      }
+      return equipments;
+    } else {
+      return [];
     }
   }
 
   async getActiveEquipment(idDto: NumberIdDto): Promise<Equipment> {
     const equipment = await this.equipmentRepository.findOne(idDto.id, {
-      relations: [this.engineerRelation, this.managerRelation],
+      relations: [
+        this.engineerRelation,
+        this.managerRelation,
+        this.ownerRelation,
+      ],
     });
     ErrorIf.isEmpty(equipment, EQUIPMENT_NOT_FOUND);
     return equipment;

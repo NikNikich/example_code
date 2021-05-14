@@ -43,6 +43,7 @@ import { AddUserEquipmentDto } from '../../infrastructure/presenter/rest-api/doc
 import { EquipmentRepository } from '../../core/domain/repository/equipment.repository';
 import { BuildingRepository } from '../../core/domain/repository/building.repository';
 import { UpdatePasswordDto } from '../../infrastructure/presenter/rest-api/documentation/user/update.password.dto';
+import { NumberEquipmentIdDto } from '../../infrastructure/presenter/rest-api/documentation/equipment/number.equipment.id.dto';
 
 const REPEAT_SMS_TIME_MS: number = config.get('sms.minRepeatTime');
 const emailTransport = new EmailTransport();
@@ -72,6 +73,10 @@ export class UserService {
 
   async getUserByEmail(email: string): Promise<User | undefined> {
     return this.userRepository.findOne({ where: { email }, withDeleted: true });
+  }
+
+  async getUserByEmailNotDeleted(email: string): Promise<User | undefined> {
+    return this.userRepository.findOne({ where: { email } });
   }
 
   async editMyself(user: User, userUpdateDto: UpdateUserDto): Promise<User> {
@@ -257,18 +262,15 @@ export class UserService {
     requestId: string,
     passwordRestoreDto: PasswordRestoreDto,
   ): Promise<void> {
-    const user = await this.getUserByEmail(
+    const user = await this.getUserByEmailNotDeleted(
       passwordRestoreDto.email.toLowerCase(),
     );
-    if (!user) {
-      return;
-    }
+    ErrorIf.isEmpty(user, USER_NOT_FOUND);
 
     const resetCode = this.generateRandomString();
     await this.userRepository.updateResetCode(user, resetCode);
 
-    const resetLink =
-      'addreallink.com' + '/change_password?resetCode=' + resetCode;
+    const resetLink = `${config.get('restoreURL')}/${resetCode}`;
     const html: string = await HtmlRender.renderResetPasswordEmail({
       resetLink,
     });
@@ -482,5 +484,18 @@ export class UserService {
     equipment.building = building;
     equipment.address = addUserEquipmentDto.address.value;
     equipment.save();
+  }
+
+  async deleteUserEquipment(
+    idDto: NumberIdDto,
+    equipmentIdDto: NumberEquipmentIdDto,
+  ): Promise<void> {
+    const user = await this.userRepository.findOne(idDto.id);
+    ErrorIf.isEmpty(user, USER_NOT_FOUND);
+    const equipment = await this.equipmentRepository.findOne(
+      equipmentIdDto.equipmentId,
+    );
+    ErrorIf.isEmpty(equipment, EQUIPMENT_NOT_FOUND);
+    await this.equipmentRepository.deleteOwner(equipment);
   }
 }

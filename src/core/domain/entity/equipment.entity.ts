@@ -69,6 +69,7 @@ export class Equipment extends BaseEntity {
     {
       cascade: true,
       nullable: true,
+      eager: true,
     },
   )
   @JoinColumn()
