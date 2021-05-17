@@ -129,17 +129,8 @@ export class UserService {
       role,
       password,
     );
-    const html = `${config.get('siteAddress')} password: ${password}`;
-    const content: Buffer = await PdfRender.renderPdf(html);
-    this.sendEmail(
-      requestId,
-      newUser,
-      html,
-      content,
-      'New Registration',
-      'Hello, My friend. Your password in ours site',
-    );
-    return user;
+    await this.sendRestoreEmail(requestId, newUser);
+    return newUser;
   }
 
   async createUserByPhone(phone: string): Promise<User> {
@@ -267,33 +258,7 @@ export class UserService {
     );
     ErrorIf.isEmpty(user, USER_NOT_FOUND);
 
-    const resetCode = this.generateRandomString();
-    await this.userRepository.updateResetCode(user, resetCode);
-
-    const resetLink = `${config.get('restoreURL')}/${resetCode}`;
-    const html: string = await HtmlRender.renderResetPasswordEmail({
-      resetLink,
-    });
-
-    const pdfHtml: string = await HtmlRender.renderGiftCertificate({
-      resetLink,
-    });
-    const content: Buffer = await PdfRender.renderPdf(pdfHtml);
-
-    this.sendEmail(
-      requestId,
-      user,
-      html,
-      content,
-      'Reset Password',
-      'Hello! Reset link is here!',
-    );
-
-    await Notifications.send(
-      '🔑 Password restore from EMAIL +' + user.email + ' UserId: ' + user.id,
-      false,
-      requestId,
-    );
+    await this.sendRestoreEmail(requestId, user);
   }
 
   async updateMePassword(
@@ -497,5 +462,35 @@ export class UserService {
     );
     ErrorIf.isEmpty(equipment, EQUIPMENT_NOT_FOUND);
     await this.equipmentRepository.deleteOwner(equipment);
+  }
+
+  async sendRestoreEmail(requestId: string, user: User): Promise<void> {
+    const resetCode = this.generateRandomString();
+    await this.userRepository.updateResetCode(user, resetCode);
+
+    const resetLink = `${config.get('restoreURL')}/${resetCode}`;
+    const html: string = await HtmlRender.renderResetPasswordEmail({
+      resetLink,
+    });
+
+    const pdfHtml: string = await HtmlRender.renderGiftCertificate({
+      resetLink,
+    });
+    const content: Buffer = await PdfRender.renderPdf(pdfHtml);
+
+    this.sendEmail(
+      requestId,
+      user,
+      html,
+      content,
+      'Reset Password',
+      'Hello! Reset link is here!',
+    );
+
+    await Notifications.send(
+      '🔑 Password restore from EMAIL +' + user.email + ' UserId: ' + user.id,
+      false,
+      requestId,
+    );
   }
 }
