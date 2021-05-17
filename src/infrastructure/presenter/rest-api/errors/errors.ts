@@ -59,3 +59,8 @@ export const INVALID_ADDRESS_DATA: StandardRestApiError = StandardRestApiError.c
   1012,
   'invalid data address',
 );
+
+export const INVALID_BOOLEAN_DATA: StandardRestApiError = StandardRestApiError.create(
+  1013,
+  'Value is not a boolean',
+);
