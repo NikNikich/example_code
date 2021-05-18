@@ -55,4 +55,21 @@ export class EquipmentRepository extends Repository<Equipment> {
     equipment.address = null;
     await equipment.save();
   }
+
+  async deleteOwnerFromEquipments(user: User): Promise<void> {
+    const equipments = await this.find({ where: { owner: user } });
+    if (equipments.length === 0) {
+      return;
+    }
+    for (const equipment of equipments) {
+      if (equipment.useStatus === EquipmentUseStatusEnum.BUY) {
+        equipment.deletedAt = new Date();
+      }
+      equipment.useStatus = EquipmentUseStatusEnum.OTHER;
+      equipment.owner = null;
+      equipment.building = null;
+      equipment.address = null;
+    }
+    await this.save(equipments);
+  }
 }

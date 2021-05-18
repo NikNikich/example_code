@@ -106,6 +106,7 @@ export class UserService {
   async deleteAdminUser(idDto: NumberIdDto): Promise<void> {
     const user = await this.userRepository.findOne(idDto.id);
     ErrorIf.isEmpty(user, USER_NOT_FOUND);
+    await this.equipmentRepository.deleteOwnerFromEquipments(user);
     user.softRemove();
   }
 
