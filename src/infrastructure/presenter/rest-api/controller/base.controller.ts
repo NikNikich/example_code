@@ -26,11 +26,16 @@ import { NumberIdDto } from '../documentation/shared/number.id.dto';
 import { LimitOffsetDto } from '../documentation/shared/limit.offset.dto';
 import { Auth } from '../../../../core/common/decorators/auth';
 import { UserRolesEnum } from '../../../shared/user.roles.enum';
+import { SocketService } from '../../../../application/services/socket.service';
+import { MessageBaseDto } from '../documentation/base/message.base.dto';
 
 @ApiUseTags('bases')
 @Controller('bases')
 export class BaseController {
-  constructor(private baseService: BaseService) {}
+  constructor(
+    private baseService: BaseService,
+    private socketService: SocketService,
+  ) {}
 
   @Post('/')
   @Auth([UserRolesEnum.ADMIN])
@@ -69,6 +74,18 @@ export class BaseController {
   ): Promise<GetManyBaseResponse> {
     const response = await this.baseService.getMany(limitOffset, direction);
     return new GetManyBaseResponse(requestId, response);
+  }
+
+  @Put('/message')
+  @Auth([UserRolesEnum.ADMIN])
+  @ApiResponse({ status: HttpStatus.OK, type: DeleteBaseResponse })
+  @ApiOperation({ title: 'Использовать вэбсокет для проверки' })
+  async message(
+    @GetRequestId() requestId: string,
+    @Body(ValidationPipe) messageBaseDto: MessageBaseDto,
+  ): Promise<DeleteBaseResponse> {
+    await this.socketService.setMessages(messageBaseDto.message);
+    return new DeleteBaseResponse(requestId, null);
   }
 
   @Put('/:id')
