@@ -6,9 +6,7 @@ import { SocketClientActionEnum } from '../../infrastructure/transport/const/soc
 @WebSocketGateway()
 export class SocketService {
   private static logger = new Logger('SocketManager');
-
   private static sockets: Socket[] = [];
-  private static connectedUsers: { [socketId: string]: number } = {};
 
   public sendMessages(payload: string): void {
     const userSockets: Socket[] | undefined = SocketService.sockets;
@@ -31,8 +29,9 @@ export class SocketService {
   }
 
   public static handleConnection(client: Socket): void {
-    SocketService.sockets.push(client);
-    this.connectedUsers[client.id] = 1;
+    if (!SocketService.sockets.find(socket => socket === client)) {
+      SocketService.sockets.push(client);
+    }
     this.logger.log(`Client connected: ${client.id}`);
   }
 }
