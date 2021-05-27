@@ -7,6 +7,7 @@ import { UserRepository } from '../../core/domain/repository/user.repository';
 import { PassportModule } from '@nestjs/passport';
 import { JwtModule } from '@nestjs/jwt';
 import * as config from 'config';
+import { SocketService } from '../../application/services/socket.service';
 
 @Module({
   imports: [
@@ -20,7 +21,7 @@ import * as config from 'config';
     TypeOrmModule.forFeature([EquipmentRepository, UserRepository]),
   ],
   controllers: [EquipmentController],
-  providers: [EquipmentService],
+  providers: [EquipmentService, SocketService],
   exports: [],
 })
 export class EquipmentModule {}

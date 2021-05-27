@@ -31,11 +31,16 @@ import { plainToClass } from 'class-transformer';
 import { Equipment } from '../../../../core/domain/entity/equipment.entity';
 import { GetStatusesUseDto } from '../../../response/equipment/get.statuses.use.dto';
 import { FilterEquipmentDto } from '../documentation/equipment/filter.equipment.dto';
+import { MessageBaseDto } from '../documentation/base/message.base.dto';
+import { SocketService } from '../../../../application/services/socket.service';
 
 @ApiUseTags('equipments')
 @Controller('equipments')
 export class EquipmentController {
-  constructor(private equipmentService: EquipmentService) {}
+  constructor(
+    private equipmentService: EquipmentService,
+    private socketService: SocketService,
+  ) {}
 
   @Get()
   @Auth()
@@ -91,6 +96,18 @@ export class EquipmentController {
       requestId,
       await this.equipmentService.getUseStatusList(),
     );
+  }
+
+  @Put('/alarm')
+  @Auth([UserRolesEnum.ADMIN])
+  @ApiResponse({ status: HttpStatus.OK, type: DeleteBaseResponse })
+  @ApiOperation({ title: 'Послать сообщение об ошибке оборудования' })
+  async message(
+    @GetRequestId() requestId: string,
+    @Body(ValidationPipe) messageBaseDto: MessageBaseDto,
+  ): Promise<DeleteBaseResponse> {
+    await this.socketService.sendMessages(messageBaseDto.message);
+    return new DeleteBaseResponse(requestId, null);
   }
 
   @Put('/:id')

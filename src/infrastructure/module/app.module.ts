@@ -10,6 +10,7 @@ import { AllExceptionsFilter } from '../presenter/rest-api/errors/all.exception.
 import { routerLogger } from '../presenter/rest-api/router.logger';
 import { EquipmentModule } from './equipment.module';
 import { BuildingModule } from './building.module';
+import { WebsocketTransport } from '../transport/websocket.transport';
 
 @Module({
   imports: [
@@ -26,6 +27,7 @@ import { BuildingModule } from './building.module';
       provide: APP_FILTER,
       useClass: AllExceptionsFilter,
     },
+    WebsocketTransport,
   ],
 })
 export class AppModule implements NestModule {

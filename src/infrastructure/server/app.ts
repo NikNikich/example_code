@@ -44,8 +44,7 @@ export async function bootstrap(): Promise<void> {
 
   await app.listen(port);
   await Notifications.send('⚡️✅ Start for ' + uptime(), false);
-
-  app.useWebSocketAdapter(new WebsocketTransport(app, true));
+  setupSocket(app);
   await Notifications.send('⚡️✅ Websocket start for ' + uptime(), false);
 
   logger.log(
@@ -79,4 +78,11 @@ export async function bootstrap(): Promise<void> {
     await Notifications.send(message, true);
     process.exit(1);
   });
+
+  function setupSocket(app: INestApplication): void {
+    const socketTransport: WebsocketTransport = app.get<WebsocketTransport>(
+      WebsocketTransport,
+    );
+    socketTransport.listen(app).then();
+  }
 }

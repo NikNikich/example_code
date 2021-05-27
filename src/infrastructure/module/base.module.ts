@@ -13,7 +13,6 @@ import { SessionRepository } from '../../core/domain/repository/session.reposito
 import { RoleRepository } from '../../core/domain/repository/role.repository';
 import { EquipmentRepository } from '../../core/domain/repository/equipment.repository';
 import { BuildingRepository } from '../../core/domain/repository/building.repository';
-import { SocketService } from '../../application/services/socket.service';
 
 @Module({
   imports: [
@@ -34,7 +33,7 @@ import { SocketService } from '../../application/services/socket.service';
     ]),
   ],
   controllers: [BaseController],
-  providers: [UserService, JwtStrategy, BaseService, SocketService],
+  providers: [UserService, JwtStrategy, BaseService],
   exports: [JwtStrategy, PassportModule],
 })
 export class BaseModule {}
