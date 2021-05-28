@@ -98,7 +98,7 @@ export class EquipmentController {
     );
   }
 
-  @Put('/alarm')
+  @Post('/alarm')
   @Auth([UserRolesEnum.ADMIN])
   @ApiResponse({ status: HttpStatus.OK, type: DeleteBaseResponse })
   @ApiOperation({ title: 'Послать сообщение об ошибке оборудования' })

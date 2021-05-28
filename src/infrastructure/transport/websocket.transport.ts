@@ -23,4 +23,8 @@ export class WebsocketTransport {
       this.logger.log(e);
     }
   }
+
+  public async SayToAll(event: string, message: string): Promise<void> {
+    this.socketIOServer.emit(event, message);
+  }
 }

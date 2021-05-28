@@ -8,6 +8,7 @@ import { PassportModule } from '@nestjs/passport';
 import { JwtModule } from '@nestjs/jwt';
 import * as config from 'config';
 import { SocketService } from '../../application/services/socket.service';
+import { WebsocketTransport } from '../transport/websocket.transport';
 
 @Module({
   imports: [
@@ -21,7 +22,7 @@ import { SocketService } from '../../application/services/socket.service';
     TypeOrmModule.forFeature([EquipmentRepository, UserRepository]),
   ],
   controllers: [EquipmentController],
-  providers: [EquipmentService, SocketService],
+  providers: [EquipmentService, SocketService, WebsocketTransport],
   exports: [],
 })
 export class EquipmentModule {}
