@@ -7,6 +7,7 @@ import {
   Param,
   Post,
   Put,
+  Query,
   ValidationPipe,
 } from '@nestjs/common';
 import { UserService } from '../../../../application/services/user.service';
@@ -40,6 +41,8 @@ import { AddUserEquipmentDto } from '../documentation/user/add.user.equipment.dt
 import { AddEquipmentResponse } from '../../../response/user/add.equipment.response';
 import { UpdatePasswordDto } from '../documentation/user/update.password.dto';
 import { NumberEquipmentIdDto } from '../documentation/equipment/number.equipment.id.dto';
+import { GetRolesUserResponse } from '../../../response/user/get.roles.user.response';
+import { FilterUserDto } from '../documentation/user/filter.user.dto';
 
 @ApiUseTags('users')
 @Controller('users')
@@ -52,8 +55,15 @@ export class UserController {
   @ApiOperation({ title: 'Вывести список пользователей' })
   async getListUser(
     @GetRequestId() requestId: string,
+    @Query(
+      new ValidationPipe({
+        whitelist: true,
+        transform: true,
+      }),
+    )
+    filter: FilterUserDto,
   ): Promise<ListUserResponse> {
-    const users = await this.userService.getListUser();
+    const users = await this.userService.getListUser(filter);
     const listUser = new ListUserResponse(requestId, users);
     return plainToClass(ListUserResponse, listUser);
   }
@@ -68,6 +78,19 @@ export class UserController {
   ): Promise<MeResponse> {
     const meResponse = new MeResponse(requestId, user);
     return plainToClass(MeResponse, meResponse);
+  }
+
+  @Get('/roles')
+  @Auth([UserRolesEnum.ADMIN])
+  @ApiResponse({ status: HttpStatus.OK, type: GetRolesUserResponse })
+  @ApiOperation({ title: 'Список ролей' })
+  async getRoles(
+    @GetRequestId() requestId: string,
+  ): Promise<GetRolesUserResponse> {
+    return new GetRolesUserResponse(
+      requestId,
+      await this.userService.getUserRoles(),
+    );
   }
 
   @Get('/:id')
