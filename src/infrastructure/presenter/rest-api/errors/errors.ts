@@ -64,3 +64,8 @@ export const INVALID_BOOLEAN_DATA: StandardRestApiError = StandardRestApiError.c
   1013,
   'Value is not a boolean',
 );
+
+export const ROLE_NOT_FOUND: StandardRestApiError = StandardRestApiError.create(
+  1014,
+  'Role not found',
+);

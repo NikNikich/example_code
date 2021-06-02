@@ -13,6 +13,7 @@ import {
   EQUIPMENT_NOT_FOUND,
   INVALID_CREDENTIALS,
   PASSWORD_IS_EMPTY,
+  ROLE_NOT_FOUND,
   SMS_TOO_OFTEN,
   USED_EMAIL,
   USER_NOT_FOUND,
@@ -44,6 +45,8 @@ import { EquipmentRepository } from '../../core/domain/repository/equipment.repo
 import { BuildingRepository } from '../../core/domain/repository/building.repository';
 import { UpdatePasswordDto } from '../../infrastructure/presenter/rest-api/documentation/user/update.password.dto';
 import { NumberEquipmentIdDto } from '../../infrastructure/presenter/rest-api/documentation/equipment/number.equipment.id.dto';
+import { Role } from '../../core/domain/entity/role.entity';
+import { FilterUserDto } from '../../infrastructure/presenter/rest-api/documentation/user/filter.user.dto';
 
 const REPEAT_SMS_TIME_MS: number = config.get('sms.minRepeatTime');
 const emailTransport = new EmailTransport();
@@ -312,12 +315,21 @@ export class UserService {
     return user;
   }
 
+  async getUserRoles(): Promise<Role[]> {
+    return this.roleRepository.find();
+  }
+
   async getUserByResetCode(resetCode: string): Promise<User | undefined> {
     return this.userRepository.findOne({ where: { resetCode } });
   }
 
-  async getListUser(): Promise<User[]> {
-    return this.userRepository.getListNotDeleteUser();
+  async getListUser(filter: FilterUserDto): Promise<User[]> {
+    let role: Role = null;
+    if (filter && filter.roleId) {
+      role = await this.roleRepository.findOne(filter.roleId);
+      ErrorIf.isEmpty(role, ROLE_NOT_FOUND);
+    }
+    return this.userRepository.getListNotDeleteUser(role);
   }
 
   async generateSmsCode(): Promise<string> {
