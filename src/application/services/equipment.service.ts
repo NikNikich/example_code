@@ -27,6 +27,7 @@ export class EquipmentService {
   private engineerRelation = 'engineer';
   private managerRelation = 'manager';
   private ownerRelation = 'owner';
+  private buildingRelation = 'building';
 
   async getActiveEquipments(
     user: User,
@@ -53,6 +54,7 @@ export class EquipmentService {
   async getActiveEquipment(idDto: NumberIdDto): Promise<Equipment> {
     const equipment = await this.equipmentRepository.findOne(idDto.id, {
       relations: [
+        this.buildingRelation,
         this.engineerRelation,
         this.managerRelation,
         this.ownerRelation,

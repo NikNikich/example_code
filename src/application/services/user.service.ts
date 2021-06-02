@@ -455,7 +455,7 @@ export class UserService {
     );
     ErrorIf.isEmpty(equipment, EQUIPMENT_NOT_FOUND);
     const building = await this.buildingRepository.getBuildingByAddress(
-      addUserEquipmentDto.address.data,
+      addUserEquipmentDto.address,
     );
     equipment.useStatus = addUserEquipmentDto.status;
     equipment.owner = user;

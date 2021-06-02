@@ -53,6 +53,10 @@ export class Building extends BaseEntity {
   @Column({ nullable: true })
   geoLon: string;
 
+  @ApiModelProperty({ type: 'json', nullable: true })
+  @Column({ type: 'json', nullable: true })
+  dadataJson: Object;
+
   @ApiModelProperty({
     type: Equipment,
     description:
