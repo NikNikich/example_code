@@ -28,6 +28,7 @@ export class DadataDataDto {
   area_with_type?: string;
 
   @IsString()
+  @IsOptional()
   @ApiModelProperty({
     type: 'string',
     example: 'г Зеленодольск',

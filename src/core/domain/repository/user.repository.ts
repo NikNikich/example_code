@@ -1,4 +1,4 @@
-import { EntityRepository, IsNull, Repository } from 'typeorm';
+import { EntityRepository, FindConditions, IsNull, Repository } from 'typeorm';
 import { UpdateUserDto } from '../../../infrastructure/presenter/rest-api/documentation/user/update.user.dto';
 import * as moment from 'moment';
 import { genSalt, hash } from 'bcryptjs';
@@ -124,9 +124,13 @@ export class UserRepository extends Repository<User> {
     await user.save();
   }
 
-  async getListNotDeleteUser(): Promise<User[]> {
+  async getListNotDeleteUser(role?: Role): Promise<User[]> {
+    const where: FindConditions<User> = { deletedAt: IsNull() };
+    if (role) {
+      where.role = role;
+    }
     return this.find({
-      where: { deletedAt: IsNull() },
+      where,
       relations: ['role', 'equipmentOwner'],
     });
   }
