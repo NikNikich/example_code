@@ -50,7 +50,7 @@ export class BuildingService {
             errorEquipment++;
           }
         }
-        const address = `${building.region} ${building.area} ${building.city} ${building.street} ${building.house}`;
+        let address = building.equipment[0].address;
         buildingObjectList.push(
           new BuildingObjectListDto(
             building.id,

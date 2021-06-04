@@ -1,5 +1,6 @@
 import { ApiModelProperty } from '@nestjs/swagger';
 import CustomResponse from '../custom.response';
+import { User } from '../../../core/domain/entity/user.entity';
 
 export class SingInResponseDto {
   @ApiModelProperty({
@@ -8,6 +9,9 @@ export class SingInResponseDto {
     nullable: false,
   })
   public readonly token: string;
+
+  @ApiModelProperty({ type: User })
+  user: User;
 }
 
 export class SignInResponse extends CustomResponse {

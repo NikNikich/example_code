@@ -196,7 +196,7 @@ export class UserService {
     await this.userRepository.resetSmsCode(user);
 
     const token = await this.generateJwtToken(user);
-    return { token };
+    return { user, token };
   }
 
   async signInByEmail(
@@ -220,7 +220,7 @@ export class UserService {
       requestId,
     );
     const token = await this.generateJwtToken(user);
-    return { token };
+    return { user, token };
   }
 
   generateRandomString(): string {
@@ -278,7 +278,7 @@ export class UserService {
       passwordUpdateDto.password,
     );
     const token = await this.generateJwtToken(updateUser);
-    return { token };
+    return { user, token };
   }
 
   async passwordReset(
@@ -306,7 +306,7 @@ export class UserService {
     );
 
     const token = await this.generateJwtToken(user);
-    return { token };
+    return { user, token };
   }
 
   async getUserById(idDto: NumberIdDto): Promise<User> {
@@ -377,7 +377,7 @@ export class UserService {
       );
     }
     const token = await this.generateJwtToken(user);
-    return { token };
+    return { user, token };
   }
 
   async backdoorCheck(
