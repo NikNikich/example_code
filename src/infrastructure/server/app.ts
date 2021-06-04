@@ -7,6 +7,7 @@ import { generateInstanceId } from '../shared/instance';
 import { Notifications } from '../transport/notifications.transport';
 import { INestApplication, Logger } from '@nestjs/common';
 import { uptime } from '../shared/uptime';
+import { WebsocketTransport } from '../transport/websocket.transport';
 
 process.env.INSTANCE = generateInstanceId();
 
@@ -43,6 +44,8 @@ export async function bootstrap(): Promise<void> {
 
   await app.listen(port);
   await Notifications.send('⚡️✅ Start for ' + uptime(), false);
+  setupSocket(app);
+  await Notifications.send('⚡️✅ Websocket start for ' + uptime(), false);
 
   logger.log(
     `Swagger: ${config.get('server.url')}:${config.get(
@@ -75,4 +78,11 @@ export async function bootstrap(): Promise<void> {
     await Notifications.send(message, true);
     process.exit(1);
   });
+
+  function setupSocket(app: INestApplication): void {
+    const socketTransport: WebsocketTransport = app.get<WebsocketTransport>(
+      WebsocketTransport,
+    );
+    socketTransport.listen(app).then();
+  }
 }

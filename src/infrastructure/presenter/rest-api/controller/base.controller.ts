@@ -58,8 +58,6 @@ export class BaseController {
 
   @Get('/')
   @Auth([UserRolesEnum.ADMIN])
-  /* @UseGuards(AuthGuard())
-  @ApiBearerAuth()*/
   @ApiResponse({ status: HttpStatus.OK, type: GetManyBaseResponse })
   @ApiOperation({ title: 'Получить список Base' })
   async getMany(
