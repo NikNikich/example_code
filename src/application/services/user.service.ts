@@ -75,11 +75,18 @@ export class UserService {
   }
 
   async getUserByEmail(email: string): Promise<User | undefined> {
-    return this.userRepository.findOne({ where: { email }, withDeleted: true });
+    return this.userRepository.findOne({
+      where: { email },
+      withDeleted: true,
+      relations: ['role'],
+    });
   }
 
   async getUserByEmailNotDeleted(email: string): Promise<User | undefined> {
-    return this.userRepository.findOne({ where: { email } });
+    return this.userRepository.findOne({
+      where: { email },
+      relations: ['role'],
+    });
   }
 
   async editMyself(user: User, userUpdateDto: UpdateUserDto): Promise<User> {
@@ -367,7 +374,7 @@ export class UserService {
     signUpByEmailRequestDto: SignUpByEmailDto,
   ): Promise<SingInResponseDto> {
     const { email, password } = signUpByEmailRequestDto;
-    let user: User | undefined = await this.getUserByEmail(email);
+    let user: User | undefined = await this.getUserByEmailNotDeleted(email);
     if (!user) {
       user = await this.createUserByEmail(email, password);
       await Notifications.send(
