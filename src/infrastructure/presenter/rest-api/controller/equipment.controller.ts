@@ -20,7 +20,6 @@ import { GetRequestId } from '../../../decorators/get.request.id.decorator';
 import { NumberIdDto } from '../documentation/shared/number.id.dto';
 
 import { Auth } from '../../../../core/common/decorators/auth';
-import { UserRolesEnum } from '../../../shared/user.roles.enum';
 
 import { EquipmentResponseDto } from '../../../response/equipment/equipment.response.dto';
 import { EquipmentListResponseDto } from '../../../response/equipment/equipment.list.response.dto';
@@ -69,7 +68,7 @@ export class EquipmentController {
   }
 
   @Post()
-  @Auth([UserRolesEnum.ADMIN])
+  @Auth()
   @ApiResponse({ status: HttpStatus.OK, type: EquipmentResponseDto })
   @ApiOperation({ title: 'Создание оборудования администратором' })
   async createEquipment(
@@ -99,7 +98,7 @@ export class EquipmentController {
   }
 
   @Post('/alarm')
-  @Auth([UserRolesEnum.ADMIN])
+  @Auth()
   @ApiResponse({ status: HttpStatus.OK, type: DeleteBaseResponse })
   @ApiOperation({ title: 'Послать сообщение об ошибке оборудования' })
   async message(
@@ -111,7 +110,7 @@ export class EquipmentController {
   }
 
   @Put('/:id')
-  @Auth([UserRolesEnum.ADMIN])
+  @Auth()
   @ApiResponse({ status: HttpStatus.OK, type: EquipmentResponseDto })
   @ApiOperation({ title: 'Изменение оборудования администратором' })
   async editEquipment(
@@ -144,7 +143,7 @@ export class EquipmentController {
   }
 
   @Delete('/:id')
-  @Auth([UserRolesEnum.ADMIN])
+  @Auth()
   @ApiResponse({ status: HttpStatus.OK, type: DeleteBaseResponse })
   @ApiOperation({ title: 'Удалить оборудование' })
   async delete(

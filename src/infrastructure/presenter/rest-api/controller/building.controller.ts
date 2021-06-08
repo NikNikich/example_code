@@ -8,7 +8,6 @@ import {
   ValidationPipe,
 } from '@nestjs/common';
 import { Auth } from '../../../../core/common/decorators/auth';
-import { UserRolesEnum } from '../../../shared/user.roles.enum';
 
 import { GetRequestId } from '../../../decorators/get.request.id.decorator';
 
@@ -25,7 +24,7 @@ export class BuildingController {
   constructor(private buildingService: BuildingService) {}
 
   @Get()
-  @Auth([UserRolesEnum.ADMIN])
+  @Auth()
   @ApiResponse({ status: HttpStatus.OK, type: GetBuildingResponse })
   @ApiOperation({
     title: 'Получить список зданий, отфильтрованных по региону и городу',
@@ -46,7 +45,7 @@ export class BuildingController {
   }
 
   @Get(':id')
-  @Auth([UserRolesEnum.ADMIN])
+  @Auth()
   @ApiResponse({ status: HttpStatus.OK, type: GetByIdBuildingDto })
   @ApiOperation({
     title: 'Получить здание по id',
