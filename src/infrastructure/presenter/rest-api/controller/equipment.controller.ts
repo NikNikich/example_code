@@ -20,7 +20,7 @@ import { GetRequestId } from '../../../decorators/get.request.id.decorator';
 import { NumberIdDto } from '../documentation/shared/number.id.dto';
 
 import { Auth } from '../../../../core/common/decorators/auth';
-import { UserRolesEnum } from '../../../shared/user.roles.enum';
+import { UserRolesEnum } from '../../../shared/enum/user.roles.enum';
 
 import { EquipmentResponseDto } from '../../../response/equipment/equipment.response.dto';
 import { EquipmentListResponseDto } from '../../../response/equipment/equipment.list.response.dto';

@@ -1,4 +1,4 @@
-import { UserRolesEnum } from '../../../infrastructure/shared/user.roles.enum';
+import { UserRolesEnum } from '../../../infrastructure/shared/enum/user.roles.enum';
 import { applyDecorators, UseGuards } from '@nestjs/common';
 import { AllowRoles } from './Roles';
 import { ApiBearerAuth } from '@nestjs/swagger';

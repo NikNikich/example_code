@@ -10,12 +10,12 @@ import {
   USER_NOT_FOUND,
 } from '../../infrastructure/presenter/rest-api/errors/errors';
 import { IsNull } from 'typeorm';
-import { UserRolesEnum } from '../../infrastructure/shared/user.roles.enum';
+import { UserRolesEnum } from '../../infrastructure/shared/enum/user.roles.enum';
 import { CreateEquipmentDto } from '../../infrastructure/presenter/rest-api/documentation/equipment/create.equipment.dto';
 import { UserRepository } from '../../core/domain/repository/user.repository';
 import { NumberIdDto } from '../../infrastructure/presenter/rest-api/documentation/shared/number.id.dto';
 import { UpdateEquipmentDto } from '../../infrastructure/presenter/rest-api/documentation/equipment/update.equipment.dto';
-import { EquipmentUseStatusEnum } from '../../infrastructure/shared/equipment.use.status.enum';
+import { EquipmentUseStatusEnum } from '../../infrastructure/shared/enum/equipment.use.status.enum';
 import { FilterEquipmentDto } from '../../infrastructure/presenter/rest-api/documentation/equipment/filter.equipment.dto';
 
 @Injectable()

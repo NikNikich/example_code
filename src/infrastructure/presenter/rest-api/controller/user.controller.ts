@@ -31,7 +31,7 @@ import { SignInByEmailDto } from '../documentation/user/sign.in.by.email.dto';
 import { SignUpByEmailDto } from '../documentation/user/sign.up.by.email.dto';
 import { MILLISECONDS_IN_SECOND } from '../../../shared/constants';
 import { Auth } from '../../../../core/common/decorators/auth';
-import { UserRolesEnum } from '../../../shared/user.roles.enum';
+import { UserRolesEnum } from '../../../shared/enum/user.roles.enum';
 import { ListUserResponse } from '../../../response/user/list.user.response';
 import { NumberIdDto } from '../documentation/shared/number.id.dto';
 import { UpdateAdminUserDto } from '../documentation/user/update.admin.user.dto';

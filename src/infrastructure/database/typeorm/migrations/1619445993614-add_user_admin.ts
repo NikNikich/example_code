@@ -2,7 +2,7 @@ import { genSalt, hash } from 'bcryptjs';
 import { getConnection, MigrationInterface } from 'typeorm';
 import { User } from '../../../../core/domain/entity/user.entity';
 import { Role } from '../../../../core/domain/entity/role.entity';
-import { UserRolesEnum } from '../../../shared/user.roles.enum';
+import { UserRolesEnum } from '../../../shared/enum/user.roles.enum';
 
 export class addUserAdmin1619445993614 implements MigrationInterface {
   public async up(): Promise<any> {

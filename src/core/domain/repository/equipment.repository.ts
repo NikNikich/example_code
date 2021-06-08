@@ -4,7 +4,7 @@ import { User } from '../entity/user.entity';
 import * as lodash from 'lodash';
 import { CreateEquipmentDto } from '../../../infrastructure/presenter/rest-api/documentation/equipment/create.equipment.dto';
 import { UpdateEquipmentDto } from '../../../infrastructure/presenter/rest-api/documentation/equipment/update.equipment.dto';
-import { EquipmentUseStatusEnum } from '../../../infrastructure/shared/equipment.use.status.enum';
+import { EquipmentUseStatusEnum } from '../../../infrastructure/shared/enum/equipment.use.status.enum';
 
 @EntityRepository(Equipment)
 export class EquipmentRepository extends Repository<Equipment> {

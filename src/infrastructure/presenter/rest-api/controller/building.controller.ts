@@ -8,7 +8,7 @@ import {
   ValidationPipe,
 } from '@nestjs/common';
 import { Auth } from '../../../../core/common/decorators/auth';
-import { UserRolesEnum } from '../../../shared/user.roles.enum';
+import { UserRolesEnum } from '../../../shared/enum/user.roles.enum';
 
 import { GetRequestId } from '../../../decorators/get.request.id.decorator';
 

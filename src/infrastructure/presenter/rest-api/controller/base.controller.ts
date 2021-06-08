@@ -25,7 +25,7 @@ import { DirectionSortingDto } from '../documentation/shared/direction.sorting.d
 import { NumberIdDto } from '../documentation/shared/number.id.dto';
 import { LimitOffsetDto } from '../documentation/shared/limit.offset.dto';
 import { Auth } from '../../../../core/common/decorators/auth';
-import { UserRolesEnum } from '../../../shared/user.roles.enum';
+import { UserRolesEnum } from '../../../shared/enum/user.roles.enum';
 
 @ApiUseTags('bases')
 @Controller('bases')

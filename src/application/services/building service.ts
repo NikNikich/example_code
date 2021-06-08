@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { BuildingRepository } from '../../core/domain/repository/building.repository';
 import { FilterBuildingDto } from '../../infrastructure/presenter/rest-api/documentation/building/filter.building.dto';
 import { BuildingObjectListDto } from '../../infrastructure/response/building/building.object.list.dto';
-import { EquipmentJobStatusEnum } from '../../infrastructure/shared/equipment.job.status.enum';
+import { EquipmentJobStatusEnum } from '../../infrastructure/shared/enum/equipment.job.status.enum';
 import { Building } from '../../core/domain/entity/building.entity';
 import { NumberIdDto } from '../../infrastructure/presenter/rest-api/documentation/shared/number.id.dto';
 import { ErrorIf } from '../../infrastructure/presenter/rest-api/errors/error.if';
@@ -50,7 +50,7 @@ export class BuildingService {
             errorEquipment++;
           }
         }
-        let address = building.equipment[0].address;
+        const address = building.equipment[0].address;
         buildingObjectList.push(
           new BuildingObjectListDto(
             building.id,
