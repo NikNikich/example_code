@@ -75,11 +75,18 @@ export class UserService {
   }
 
   async getUserByEmail(email: string): Promise<User | undefined> {
-    return this.userRepository.findOne({ where: { email }, withDeleted: true });
+    return this.userRepository.findOne({
+      where: { email },
+      withDeleted: true,
+      relations: ['role'],
+    });
   }
 
   async getUserByEmailNotDeleted(email: string): Promise<User | undefined> {
-    return this.userRepository.findOne({ where: { email } });
+    return this.userRepository.findOne({
+      where: { email },
+      relations: ['role'],
+    });
   }
 
   async editMyself(user: User, userUpdateDto: UpdateUserDto): Promise<User> {
@@ -196,7 +203,7 @@ export class UserService {
     await this.userRepository.resetSmsCode(user);
 
     const token = await this.generateJwtToken(user);
-    return { token };
+    return { user, token };
   }
 
   async signInByEmail(
@@ -220,7 +227,7 @@ export class UserService {
       requestId,
     );
     const token = await this.generateJwtToken(user);
-    return { token };
+    return { user, token };
   }
 
   generateRandomString(): string {
@@ -278,7 +285,7 @@ export class UserService {
       passwordUpdateDto.password,
     );
     const token = await this.generateJwtToken(updateUser);
-    return { token };
+    return { user, token };
   }
 
   async passwordReset(
@@ -306,7 +313,7 @@ export class UserService {
     );
 
     const token = await this.generateJwtToken(user);
-    return { token };
+    return { user, token };
   }
 
   async getUserById(idDto: NumberIdDto): Promise<User> {
@@ -367,7 +374,7 @@ export class UserService {
     signUpByEmailRequestDto: SignUpByEmailDto,
   ): Promise<SingInResponseDto> {
     const { email, password } = signUpByEmailRequestDto;
-    let user: User | undefined = await this.getUserByEmail(email);
+    let user: User | undefined = await this.getUserByEmailNotDeleted(email);
     if (!user) {
       user = await this.createUserByEmail(email, password);
       await Notifications.send(
@@ -377,7 +384,7 @@ export class UserService {
       );
     }
     const token = await this.generateJwtToken(user);
-    return { token };
+    return { user, token };
   }
 
   async backdoorCheck(
