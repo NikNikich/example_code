@@ -50,7 +50,7 @@ export class UserController {
   constructor(private userService: UserService) {}
 
   @Get('')
-  @Auth([UserRolesEnum.ADMIN])
+  @Auth()
   @ApiResponse({ status: HttpStatus.OK, type: ListUserResponse })
   @ApiOperation({ title: 'Вывести список пользователей' })
   async getListUser(
@@ -81,7 +81,7 @@ export class UserController {
   }
 
   @Get('/roles')
-  @Auth([UserRolesEnum.ADMIN])
+  @Auth()
   @ApiResponse({ status: HttpStatus.OK, type: GetRolesUserResponse })
   @ApiOperation({ title: 'Список ролей' })
   async getRoles(
@@ -94,7 +94,7 @@ export class UserController {
   }
 
   @Get('/:id')
-  @Auth([UserRolesEnum.ADMIN])
+  @Auth()
   @ApiResponse({ status: HttpStatus.OK, type: MeResponse })
   @ApiOperation({ title: 'Выдаёт данные пользователя по его id' })
   async getUserById(
@@ -112,7 +112,7 @@ export class UserController {
   }
 
   @Post()
-  @Auth([UserRolesEnum.ADMIN])
+  @Auth()
   @ApiResponse({ status: HttpStatus.OK, type: MeResponse })
   @ApiOperation({ title: 'Создание пользователя администратором' })
   async createAdminUser(
@@ -270,7 +270,7 @@ export class UserController {
   }
 
   @Put(':id/equipment')
-  @Auth([UserRolesEnum.ADMIN])
+  @Auth()
   @ApiResponse({ status: HttpStatus.OK, type: AddEquipmentResponse })
   @ApiOperation({ title: 'Добавить оборудование к пользователю' })
   async addEquipment(
@@ -288,7 +288,7 @@ export class UserController {
   }
 
   @Put('/:id')
-  @Auth([UserRolesEnum.ADMIN])
+  @Auth()
   @ApiResponse({ status: HttpStatus.OK, type: MeResponse })
   @ApiOperation({ title: 'Изменение пользователя администратором' })
   async editUser(
@@ -309,7 +309,7 @@ export class UserController {
   }
 
   @Delete('/:id/equipment/:equipmentId')
-  @Auth([UserRolesEnum.ADMIN])
+  @Auth()
   @ApiResponse({ status: HttpStatus.OK, type: AddEquipmentResponse })
   @ApiOperation({
     title: 'Удаление оборудования у пользователя администратором',
@@ -324,7 +324,7 @@ export class UserController {
   }
 
   @Delete('/:id')
-  @Auth([UserRolesEnum.ADMIN])
+  @Auth()
   @ApiResponse({ status: HttpStatus.OK, type: LogoutResponse })
   @ApiOperation({ title: 'Удаление пользователя администратором' })
   async deleteUser(

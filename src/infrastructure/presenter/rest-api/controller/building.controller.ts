@@ -25,7 +25,7 @@ export class BuildingController {
   constructor(private buildingService: BuildingService) {}
 
   @Get()
-  @Auth([UserRolesEnum.ADMIN])
+  @Auth()
   @ApiResponse({ status: HttpStatus.OK, type: GetBuildingResponse })
   @ApiOperation({
     title: 'Получить список зданий, отфильтрованных по региону и городу',
@@ -46,7 +46,7 @@ export class BuildingController {
   }
 
   @Get(':id')
-  @Auth([UserRolesEnum.ADMIN])
+  @Auth()
   @ApiResponse({ status: HttpStatus.OK, type: GetByIdBuildingDto })
   @ApiOperation({
     title: 'Получить здание по id',

@@ -69,7 +69,7 @@ export class EquipmentController {
   }
 
   @Post()
-  @Auth([UserRolesEnum.ADMIN])
+  @Auth()
   @ApiResponse({ status: HttpStatus.OK, type: EquipmentResponseDto })
   @ApiOperation({ title: 'Создание оборудования администратором' })
   async createEquipment(
@@ -99,7 +99,7 @@ export class EquipmentController {
   }
 
   @Post('/alarm')
-  @Auth([UserRolesEnum.ADMIN])
+  @Auth()
   @ApiResponse({ status: HttpStatus.OK, type: DeleteBaseResponse })
   @ApiOperation({ title: 'Послать сообщение об ошибке оборудования' })
   async message(
@@ -111,7 +111,7 @@ export class EquipmentController {
   }
 
   @Put('/:id')
-  @Auth([UserRolesEnum.ADMIN])
+  @Auth()
   @ApiResponse({ status: HttpStatus.OK, type: EquipmentResponseDto })
   @ApiOperation({ title: 'Изменение оборудования администратором' })
   async editEquipment(
@@ -144,7 +144,7 @@ export class EquipmentController {
   }
 
   @Delete('/:id')
-  @Auth([UserRolesEnum.ADMIN])
+  @Auth()
   @ApiResponse({ status: HttpStatus.OK, type: DeleteBaseResponse })
   @ApiOperation({ title: 'Удалить оборудование' })
   async delete(

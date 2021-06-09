@@ -1,15 +1,18 @@
 import { ApiModelProperty } from '@nestjs/swagger';
 import {
   IsEmail,
+  IsInt,
   IsOptional,
   IsString,
   MaxLength,
+  Min,
   MinLength,
 } from 'class-validator';
 import {
   MAX_PHONE_NUMBER_LENGTH,
   MIN_PHONE_NUMBER_LENGTH,
 } from './sign.in.by.sms.dto';
+import { MIN_ID_POSTGRES } from '../../../../shared/constants';
 export class CreateAdminUserDto {
   @IsString()
   @ApiModelProperty({
@@ -70,4 +73,14 @@ export class CreateAdminUserDto {
     required: true,
   })
   position: string;
+
+  @IsInt()
+  @Min(MIN_ID_POSTGRES)
+  @ApiModelProperty({
+    description: 'id роли',
+    type: 'number',
+    example: '',
+    required: true,
+  })
+  roleId: number;
 }
