@@ -92,7 +92,7 @@ export class UserService {
   ): Promise<User> {
     const user = await this.userRepository.findOne(
       { id: idDto.id },
-      { withDeleted: true },
+      { withDeleted: true, relations: ['role'] },
     );
     ErrorIf.isEmpty(user, USER_NOT_FOUND);
     if (userUpdateDto.email) {
@@ -103,7 +103,14 @@ export class UserService {
         ErrorIf.isExist(userEmail, USED_EMAIL);
       }
     }
-    return this.userRepository.updateAdminUser(user, userUpdateDto);
+    if (userUpdateDto.roleId) {
+      const role = await this.roleRepository.findOne(userUpdateDto.roleId);
+      ErrorIf.isEmpty(role, ROLE_NOT_FOUND);
+      delete userUpdateDto.roleId;
+      return this.userRepository.updateAdminUser(user, userUpdateDto, role);
+    } else {
+      return this.userRepository.updateAdminUser(user, userUpdateDto);
+    }
   }
 
   async deleteAdminUser(idDto: NumberIdDto): Promise<void> {
@@ -121,12 +128,11 @@ export class UserService {
       createAdminUserDto.email.toLowerCase(),
     );
     ErrorIf.isExist(user, USED_EMAIL);
+    const role = await this.roleRepository.findOne(createAdminUserDto.roleId);
+    ErrorIf.isEmpty(role, ROLE_NOT_FOUND);
     const password = generator.generate({
       length: this.lengthPassword,
       numbers: true,
-    });
-    const role = await this.roleRepository.findOne({
-      where: { name: UserRolesEnum.USER },
     });
     const newUser = await this.userRepository.createAdminUser(
       createAdminUserDto,
