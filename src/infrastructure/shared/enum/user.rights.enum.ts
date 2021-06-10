@@ -4,4 +4,6 @@ export enum UserRightsEnum {
   EQUIPMENT_READ = 'equipmentRead',
   USER_WRIGHT = 'userWright',
   USER_READ = 'userRead',
+  EQUIPMENT_SETTINGS_WRIGHT = 'equipmentSettingsWright',
+  EQUIPMENT_SETTINGS_READ = 'equipmentSettingsRead',
 }
