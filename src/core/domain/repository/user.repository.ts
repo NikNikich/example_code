@@ -71,9 +71,13 @@ export class UserRepository extends Repository<User> {
   async updateAdminUser(
     user: User,
     updateUserDto: UpdateAdminUserDto,
+    role?: Role,
   ): Promise<User> {
     const userNew = user;
     _.assign(userNew, updateUserDto);
+    if (role) {
+      userNew.role = role;
+    }
     return await userNew.save();
   }
 
