@@ -2,7 +2,7 @@ import { getConnection, MigrationInterface } from 'typeorm';
 import { Role } from '../../../../core/domain/entity/role.entity';
 import { UserRolesEnum } from '../../../shared/user.roles.enum';
 
-export class addNewRoles1619446003614 implements MigrationInterface {
+export class addNewRoles1619446003615 implements MigrationInterface {
   private dataStatus = [
     { name: UserRolesEnum.CLIENT },
     { name: UserRolesEnum.CLIENT_SERVICE },

@@ -1,10 +1,10 @@
 export enum UserRolesEnum {
-  ADMIN = 'administrator',
-  MANUFACTURER = 'manufacturer',
-  MANUFACTURER_SERVICE = 'manufacturerService',
-  DEALER = 'dealer',
-  DEALER_SERVICE = 'dealerService',
-  CLIENT = 'client',
-  CLIENT_SERVICE = 'clientService',
+  ADMIN = 'Супер Админ',
+  MANUFACTURER = 'Производитель',
+  MANUFACTURER_SERVICE = 'Сервис производителя',
+  DEALER = 'Дилер',
+  DEALER_SERVICE = 'Сервис Дилера',
+  CLIENT = 'Клиент',
+  CLIENT_SERVICE = 'Сервис Клиента',
   USER = 'user',
 }
