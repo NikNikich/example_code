@@ -20,7 +20,6 @@ import { GetRequestId } from '../../../decorators/get.request.id.decorator';
 import { NumberIdDto } from '../documentation/shared/number.id.dto';
 
 import { Auth } from '../../../../core/common/decorators/auth';
-import { UserRolesEnum } from '../../../shared/enum/user.roles.enum';
 
 import { EquipmentResponseDto } from '../../../response/equipment/equipment.response.dto';
 import { EquipmentListResponseDto } from '../../../response/equipment/equipment.list.response.dto';
@@ -33,6 +32,7 @@ import { GetStatusesUseDto } from '../../../response/equipment/get.statuses.use.
 import { FilterEquipmentDto } from '../documentation/equipment/filter.equipment.dto';
 import { MessageBaseDto } from '../documentation/base/message.base.dto';
 import { SocketService } from '../../../../application/services/socket.service';
+import { UserRightsEnum } from '../../../shared/enum/user.rights.enum';
 
 @ApiUseTags('equipments')
 @Controller('equipments')
@@ -43,7 +43,7 @@ export class EquipmentController {
   ) {}
 
   @Get()
-  @Auth()
+  @Auth([UserRightsEnum.EQUIPMENT_READ])
   @ApiResponse({
     status: HttpStatus.OK,
     isArray: true,
@@ -69,7 +69,7 @@ export class EquipmentController {
   }
 
   @Post()
-  @Auth()
+  @Auth([UserRightsEnum.EQUIPMENT_WRIGHT])
   @ApiResponse({ status: HttpStatus.OK, type: EquipmentResponseDto })
   @ApiOperation({ title: 'Создание оборудования администратором' })
   async createEquipment(
@@ -83,6 +83,7 @@ export class EquipmentController {
   }
 
   @Get('/statuses/use')
+  @Auth([UserRightsEnum.EQUIPMENT_WRIGHT])
   @ApiResponse({
     status: HttpStatus.OK,
     isArray: true,
@@ -111,7 +112,7 @@ export class EquipmentController {
   }
 
   @Put('/:id')
-  @Auth()
+  @Auth([UserRightsEnum.EQUIPMENT_WRIGHT])
   @ApiResponse({ status: HttpStatus.OK, type: EquipmentResponseDto })
   @ApiOperation({ title: 'Изменение оборудования администратором' })
   async editEquipment(
@@ -126,7 +127,7 @@ export class EquipmentController {
   }
 
   @Get('/:id')
-  @Auth()
+  @Auth([UserRightsEnum.EQUIPMENT_READ])
   @ApiResponse({
     status: HttpStatus.OK,
     isArray: true,
@@ -144,7 +145,7 @@ export class EquipmentController {
   }
 
   @Delete('/:id')
-  @Auth()
+  @Auth([UserRightsEnum.EQUIPMENT_WRIGHT])
   @ApiResponse({ status: HttpStatus.OK, type: DeleteBaseResponse })
   @ApiOperation({ title: 'Удалить оборудование' })
   async delete(

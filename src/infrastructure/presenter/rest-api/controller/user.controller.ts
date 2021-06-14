@@ -31,7 +31,6 @@ import { SignInByEmailDto } from '../documentation/user/sign.in.by.email.dto';
 import { SignUpByEmailDto } from '../documentation/user/sign.up.by.email.dto';
 import { MILLISECONDS_IN_SECOND } from '../../../shared/constants';
 import { Auth } from '../../../../core/common/decorators/auth';
-import { UserRolesEnum } from '../../../shared/enum/user.roles.enum';
 import { ListUserResponse } from '../../../response/user/list.user.response';
 import { NumberIdDto } from '../documentation/shared/number.id.dto';
 import { UpdateAdminUserDto } from '../documentation/user/update.admin.user.dto';
@@ -43,6 +42,7 @@ import { UpdatePasswordDto } from '../documentation/user/update.password.dto';
 import { NumberEquipmentIdDto } from '../documentation/equipment/number.equipment.id.dto';
 import { GetRolesUserResponse } from '../../../response/user/get.roles.user.response';
 import { FilterUserDto } from '../documentation/user/filter.user.dto';
+import { UserRightsEnum } from '../../../shared/enum/user.rights.enum';
 
 @ApiUseTags('users')
 @Controller('users')
@@ -50,7 +50,7 @@ export class UserController {
   constructor(private userService: UserService) {}
 
   @Get('')
-  @Auth()
+  @Auth([UserRightsEnum.USER_READ])
   @ApiResponse({ status: HttpStatus.OK, type: ListUserResponse })
   @ApiOperation({ title: 'Вывести список пользователей' })
   async getListUser(
@@ -81,7 +81,7 @@ export class UserController {
   }
 
   @Get('/roles')
-  @Auth()
+  @Auth([UserRightsEnum.USER_WRIGHT])
   @ApiResponse({ status: HttpStatus.OK, type: GetRolesUserResponse })
   @ApiOperation({ title: 'Список ролей' })
   async getRoles(
@@ -94,7 +94,7 @@ export class UserController {
   }
 
   @Get('/:id')
-  @Auth()
+  @Auth([UserRightsEnum.USER_READ])
   @ApiResponse({ status: HttpStatus.OK, type: MeResponse })
   @ApiOperation({ title: 'Выдаёт данные пользователя по его id' })
   async getUserById(
@@ -112,7 +112,7 @@ export class UserController {
   }
 
   @Post()
-  @Auth()
+  @Auth([UserRightsEnum.USER_READ])
   @ApiResponse({ status: HttpStatus.OK, type: MeResponse })
   @ApiOperation({ title: 'Создание пользователя администратором' })
   async createAdminUser(
@@ -270,7 +270,7 @@ export class UserController {
   }
 
   @Put(':id/equipment')
-  @Auth()
+  @Auth([UserRightsEnum.USER_WRIGHT])
   @ApiResponse({ status: HttpStatus.OK, type: AddEquipmentResponse })
   @ApiOperation({ title: 'Добавить оборудование к пользователю' })
   async addEquipment(
@@ -288,7 +288,7 @@ export class UserController {
   }
 
   @Put('/:id')
-  @Auth()
+  @Auth([UserRightsEnum.USER_WRIGHT])
   @ApiResponse({ status: HttpStatus.OK, type: MeResponse })
   @ApiOperation({ title: 'Изменение пользователя администратором' })
   async editUser(
@@ -309,7 +309,7 @@ export class UserController {
   }
 
   @Delete('/:id/equipment/:equipmentId')
-  @Auth()
+  @Auth([UserRightsEnum.USER_WRIGHT])
   @ApiResponse({ status: HttpStatus.OK, type: AddEquipmentResponse })
   @ApiOperation({
     title: 'Удаление оборудования у пользователя администратором',
@@ -324,7 +324,7 @@ export class UserController {
   }
 
   @Delete('/:id')
-  @Auth()
+  @Auth([UserRightsEnum.USER_WRIGHT])
   @ApiResponse({ status: HttpStatus.OK, type: LogoutResponse })
   @ApiOperation({ title: 'Удаление пользователя администратором' })
   async deleteUser(

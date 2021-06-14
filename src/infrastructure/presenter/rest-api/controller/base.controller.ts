@@ -25,7 +25,7 @@ import { DirectionSortingDto } from '../documentation/shared/direction.sorting.d
 import { NumberIdDto } from '../documentation/shared/number.id.dto';
 import { LimitOffsetDto } from '../documentation/shared/limit.offset.dto';
 import { Auth } from '../../../../core/common/decorators/auth';
-import { UserRolesEnum } from '../../../shared/enum/user.roles.enum';
+import { UserRightsEnum } from '../../../shared/enum/user.rights.enum';
 
 @ApiUseTags('bases')
 @Controller('bases')
@@ -33,7 +33,7 @@ export class BaseController {
   constructor(private baseService: BaseService) {}
 
   @Post('/')
-  @Auth()
+  @Auth([UserRightsEnum.ALL])
   @ApiResponse({ status: HttpStatus.CREATED, type: CreateBaseResponse })
   @ApiOperation({ title: 'Создать Base' })
   async create(
@@ -45,7 +45,7 @@ export class BaseController {
   }
 
   @Get('/:id')
-  @Auth()
+  @Auth([UserRightsEnum.ALL])
   @ApiResponse({ status: HttpStatus.OK, type: GetBaseResponse })
   @ApiOperation({ title: 'Получить Base' })
   async get(
@@ -57,7 +57,7 @@ export class BaseController {
   }
 
   @Get('/')
-  @Auth()
+  @Auth([UserRightsEnum.ALL])
   @ApiResponse({ status: HttpStatus.OK, type: GetManyBaseResponse })
   @ApiOperation({ title: 'Получить список Base' })
   async getMany(
@@ -70,7 +70,7 @@ export class BaseController {
   }
 
   @Put('/:id')
-  @Auth()
+  @Auth([UserRightsEnum.ALL])
   @ApiResponse({ status: HttpStatus.OK, type: UpdateBaseResponse })
   @ApiOperation({ title: 'Получить Base' })
   async update(
@@ -83,7 +83,7 @@ export class BaseController {
   }
 
   @Delete('/:id')
-  @Auth()
+  @Auth([UserRightsEnum.ALL])
   @ApiResponse({ status: HttpStatus.OK, type: DeleteBaseResponse })
   @ApiOperation({ title: 'Удалить Base' })
   async delete(
