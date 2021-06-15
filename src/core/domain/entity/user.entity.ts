@@ -7,6 +7,7 @@ import {
   JoinColumn,
   ManyToOne,
   OneToMany,
+  OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
@@ -79,6 +80,14 @@ export class User extends BaseEntity {
   )
   @JoinColumn()
   role: Role;
+
+  @Exclude()
+  @OneToOne(
+    () => User,
+    (user: User) => user.id,
+  )
+  @JoinColumn()
+  parent?: User;
 
   @Exclude()
   @OneToMany(

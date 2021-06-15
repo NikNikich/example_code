@@ -6,6 +6,7 @@ import {
   Entity,
   JoinColumn,
   ManyToOne,
+  OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
@@ -120,6 +121,14 @@ export class Equipment extends BaseEntity {
   @ApiModelProperty({ type: 'string', nullable: true })
   @Column({ nullable: true })
   SNComponent6: string;
+
+  @Exclude()
+  @OneToOne(
+    () => User,
+    (user: User) => user.id,
+  )
+  @JoinColumn()
+  parent?: User;
 
   @Exclude()
   @DeleteDateColumn({ type: 'timestamp', nullable: true })
