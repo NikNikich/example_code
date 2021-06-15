@@ -55,6 +55,7 @@ export class Building extends BaseEntity {
 
   @ApiModelProperty({ type: 'json', nullable: true })
   @Column({ type: 'json', nullable: true })
+  // eslint-disable-next-line @typescript-eslint/ban-types
   dadataJson: Object;
 
   @ApiModelProperty({

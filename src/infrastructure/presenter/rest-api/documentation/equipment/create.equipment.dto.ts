@@ -1,6 +1,6 @@
 import { ApiModelProperty } from '@nestjs/swagger';
 import { IsDate, IsEnum, IsInt, IsString } from 'class-validator';
-import { EquipmentUseStatusEnum } from '../../../../shared/equipment.use.status.enum';
+import { EquipmentUseStatusEnum } from '../../../../shared/enum/equipment.use.status.enum';
 import { Type } from 'class-transformer';
 
 export class CreateEquipmentDto {

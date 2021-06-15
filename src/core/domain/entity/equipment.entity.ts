@@ -12,9 +12,9 @@ import {
 } from 'typeorm';
 import { User } from './user.entity';
 import { Building } from './building.entity';
-import { EquipmentJobStatusEnum } from '../../../infrastructure/shared/equipment.job.status.enum';
+import { EquipmentJobStatusEnum } from '../../../infrastructure/shared/enum/equipment.job.status.enum';
 import { ApiModelProperty } from '@nestjs/swagger';
-import { EquipmentUseStatusEnum } from '../../../infrastructure/shared/equipment.use.status.enum';
+import { EquipmentUseStatusEnum } from '../../../infrastructure/shared/enum/equipment.use.status.enum';
 import { Exclude } from 'class-transformer';
 
 @Entity({ name: 'equipment' })

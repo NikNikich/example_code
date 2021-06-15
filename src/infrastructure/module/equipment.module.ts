@@ -9,6 +9,7 @@ import { JwtModule } from '@nestjs/jwt';
 import * as config from 'config';
 import { SocketService } from '../../application/services/socket.service';
 import { WebsocketTransport } from '../transport/websocket.transport';
+import { RoleRepository } from '../../core/domain/repository/role.repository';
 
 @Module({
   imports: [
@@ -19,7 +20,11 @@ import { WebsocketTransport } from '../transport/websocket.transport';
         expiresIn: config.get('jwt.expiresIn'),
       },
     }),
-    TypeOrmModule.forFeature([EquipmentRepository, UserRepository]),
+    TypeOrmModule.forFeature([
+      EquipmentRepository,
+      UserRepository,
+      RoleRepository,
+    ]),
   ],
   controllers: [EquipmentController],
   providers: [EquipmentService, SocketService, WebsocketTransport],

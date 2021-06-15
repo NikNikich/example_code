@@ -10,6 +10,8 @@ import {
 } from '../../../response/settings/settings.response';
 import * as config from 'config';
 import path = require('path');
+import { Auth } from '../../../../core/common/decorators/auth';
+import { UserRightsEnum } from '../../../shared/enum/user.rights.enum';
 
 @ApiUseTags('root')
 @Controller()
@@ -17,6 +19,7 @@ export class AppController {
   constructor(private readonly appService: AppService) {}
 
   @Get()
+  @Auth([UserRightsEnum.ALL])
   @ApiResponse({ status: HttpStatus.OK, type: RootResponse })
   @ApiOperation({
     title: 'Служебная информация для разработчиков',
@@ -30,6 +33,7 @@ export class AppController {
     description: '',
   })
   @Get('/privacy')
+  @Auth([UserRightsEnum.ALL])
   @ApiResponse({ status: HttpStatus.OK })
   async getPrivacy(@Res() res: Response): Promise<void> {
     res.sendFile(path.join(__dirname, '/../static/privacy.html'));
@@ -40,12 +44,14 @@ export class AppController {
     description: '',
   })
   @Get('/terms')
+  @Auth([UserRightsEnum.ALL])
   @ApiResponse({ status: HttpStatus.OK })
   async getTerm(@Res() res: Response): Promise<void> {
     res.sendFile(path.join(__dirname, '/../static/terms.html'));
   }
 
   @Get('/settings')
+  @Auth([UserRightsEnum.ALL])
   @ApiResponse({ status: HttpStatus.OK, type: SettingsResponse })
   @ApiOperation({
     title: 'Get start settings',
