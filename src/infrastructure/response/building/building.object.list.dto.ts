@@ -1,4 +1,5 @@
 import { ApiModelProperty } from '@nestjs/swagger';
+import { IsString } from 'class-validator';
 
 export class BuildingObjectListDto {
   @ApiModelProperty({ type: 'number' })
@@ -25,6 +26,24 @@ export class BuildingObjectListDto {
   @ApiModelProperty({ type: 'number' })
   errorEquipment: number;
 
+  @IsString()
+  @ApiModelProperty({
+    type: 'string',
+  })
+  region: string | null;
+
+  @IsString()
+  @ApiModelProperty({
+    type: 'string',
+  })
+  area: string | null;
+
+  @IsString()
+  @ApiModelProperty({
+    type: 'string',
+  })
+  city: string | null;
+
   constructor(
     id: number,
     type: string | undefined,
@@ -34,6 +53,9 @@ export class BuildingObjectListDto {
     errorEquipment: number,
     geoLat: string,
     geoLon: string,
+    region: string | null,
+    area: string | null,
+    city: string | null,
   ) {
     this.id = id;
     this.type = type;
@@ -43,5 +65,8 @@ export class BuildingObjectListDto {
     this.errorEquipment = errorEquipment;
     this.geoLat = geoLat;
     this.geoLon = geoLon;
+    this.city = city;
+    this.area = area;
+    this.region = region;
   }
 }
