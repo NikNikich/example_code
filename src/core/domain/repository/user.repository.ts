@@ -7,6 +7,7 @@ import { UpdateAdminUserDto } from '../../../infrastructure/presenter/rest-api/d
 import * as _ from 'lodash';
 import { CreateAdminUserDto } from '../../../infrastructure/presenter/rest-api/documentation/user/create.admin.user.dto';
 import { User } from '../entity/user.entity';
+import { UserRolesEnum } from '../../../infrastructure/shared/enum/user.roles.enum';
 
 @EntityRepository(User)
 export class UserRepository extends Repository<User> {
@@ -85,11 +86,13 @@ export class UserRepository extends Repository<User> {
     createUserDto: CreateAdminUserDto,
     role: Role,
     password: string,
+    parent: User,
   ): Promise<User> {
     const userNew = new User();
     _.assign(userNew, createUserDto);
     userNew.role = role;
     userNew.password = await this.hashPassword(password);
+    userNew.parent = parent;
     return await userNew.save();
   }
 
@@ -128,10 +131,13 @@ export class UserRepository extends Repository<User> {
     await user.save();
   }
 
-  async getListNotDeleteUser(role?: Role): Promise<User[]> {
+  async getListNotDeleteUser(parent: User, role?: Role): Promise<User[]> {
     const where: FindConditions<User> = { deletedAt: IsNull() };
     if (role) {
       where.role = role;
+    }
+    if (parent.role.name !== UserRolesEnum.ADMIN) {
+      where.parent = parent;
     }
     return this.find({
       where,

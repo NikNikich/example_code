@@ -54,6 +54,7 @@ export class UserController {
   @ApiResponse({ status: HttpStatus.OK, type: ListUserResponse })
   @ApiOperation({ title: 'Вывести список пользователей' })
   async getListUser(
+    @GetUser() user: User,
     @GetRequestId() requestId: string,
     @Query(
       new ValidationPipe({
@@ -63,7 +64,7 @@ export class UserController {
     )
     filter: FilterUserDto,
   ): Promise<ListUserResponse> {
-    const users = await this.userService.getListUser(filter);
+    const users = await this.userService.getListUser(filter, user);
     const listUser = new ListUserResponse(requestId, users);
     return plainToClass(ListUserResponse, listUser);
   }
@@ -85,11 +86,12 @@ export class UserController {
   @ApiResponse({ status: HttpStatus.OK, type: GetRolesUserResponse })
   @ApiOperation({ title: 'Список ролей' })
   async getRoles(
+    @GetUser() user: User,
     @GetRequestId() requestId: string,
   ): Promise<GetRolesUserResponse> {
     return new GetRolesUserResponse(
       requestId,
-      await this.userService.getUserRoles(),
+      await this.userService.getUserRoles(user),
     );
   }
 
@@ -99,6 +101,7 @@ export class UserController {
   @ApiOperation({ title: 'Выдаёт данные пользователя по его id' })
   async getUserById(
     @GetRequestId() requestId: string,
+    @GetUser() user: User,
     @Param(
       new ValidationPipe({
         transform: true,
@@ -106,22 +109,27 @@ export class UserController {
     )
     idDto: NumberIdDto,
   ): Promise<MeResponse> {
-    const user = await this.userService.getUserById(idDto);
-    const meResponse = new MeResponse(requestId, user);
+    const userResponse = await this.userService.getUserById(idDto, user);
+    const meResponse = new MeResponse(requestId, userResponse);
     return plainToClass(MeResponse, meResponse);
   }
 
   @Post()
-  @Auth([UserRightsEnum.USER_READ])
+  @Auth([UserRightsEnum.USER_WRIGHT])
   @ApiResponse({ status: HttpStatus.OK, type: MeResponse })
   @ApiOperation({ title: 'Создание пользователя администратором' })
   async createAdminUser(
+    @GetUser() user: User,
     @GetRequestId() requestId: string,
     @Body(ValidationPipe) createAdminUserDto: CreateAdminUserDto,
   ): Promise<MeResponse> {
     const meResponse = new MeResponse(
       requestId,
-      await this.userService.createAdminUser(createAdminUserDto, requestId),
+      await this.userService.createAdminUser(
+        createAdminUserDto,
+        requestId,
+        user,
+      ),
     );
     return plainToClass(MeResponse, meResponse);
   }
@@ -275,6 +283,7 @@ export class UserController {
   @ApiOperation({ title: 'Добавить оборудование к пользователю' })
   async addEquipment(
     @GetRequestId() requestId: string,
+    @GetUser() user: User,
     @Param(
       new ValidationPipe({
         transform: true,
@@ -283,7 +292,7 @@ export class UserController {
     idDto: NumberIdDto,
     @Body(ValidationPipe) addUserEquipmentDto: AddUserEquipmentDto,
   ): Promise<AddEquipmentResponse> {
-    await this.userService.addUserEquipment(idDto, addUserEquipmentDto);
+    await this.userService.addUserEquipment(idDto, addUserEquipmentDto, user);
     return new AddEquipmentResponse(requestId);
   }
 
@@ -293,6 +302,7 @@ export class UserController {
   @ApiOperation({ title: 'Изменение пользователя администратором' })
   async editUser(
     @GetRequestId() requestId: string,
+    @GetUser() user: User,
     @Param(
       new ValidationPipe({
         transform: true,
@@ -303,7 +313,7 @@ export class UserController {
   ): Promise<MeResponse> {
     const meResponse = new MeResponse(
       requestId,
-      await this.userService.updateAdminUser(idDto, userUpdateDto),
+      await this.userService.updateAdminUser(idDto, userUpdateDto, user),
     );
     return plainToClass(MeResponse, meResponse);
   }
@@ -315,11 +325,12 @@ export class UserController {
     title: 'Удаление оборудования у пользователя администратором',
   })
   async deleteUserEquipment(
+    @GetUser() user: User,
     @GetRequestId() requestId: string,
     @Param(ValidationPipe) idDto: NumberIdDto,
     @Param(ValidationPipe) equipmentIdDto: NumberEquipmentIdDto,
   ): Promise<AddEquipmentResponse> {
-    await this.userService.deleteUserEquipment(idDto, equipmentIdDto);
+    await this.userService.deleteUserEquipment(idDto, equipmentIdDto, user);
     return new AddEquipmentResponse(requestId);
   }
 
@@ -330,8 +341,9 @@ export class UserController {
   async deleteUser(
     @GetRequestId() requestId: string,
     @Param(ValidationPipe) idDto: NumberIdDto,
+    @GetUser() user: User,
   ): Promise<LogoutResponse> {
-    await this.userService.deleteAdminUser(idDto);
+    await this.userService.deleteAdminUser(idDto, user);
     return new LogoutResponse(requestId, null);
   }
 }
