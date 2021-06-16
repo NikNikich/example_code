@@ -82,7 +82,7 @@ export const NOT_CREATE_USER: StandardRestApiError = StandardRestApiError.create
 
 export const NOT_CHANGE_EQUIPMENT: StandardRestApiError = StandardRestApiError.create(
   1017,
-  'You cannot change this equipment',
+  'You cannot change or view this equipment',
 );
 
 export const NOT_CREATE_EQUIPMENT: StandardRestApiError = StandardRestApiError.create(

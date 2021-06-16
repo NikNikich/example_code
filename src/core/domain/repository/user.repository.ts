@@ -8,6 +8,7 @@ import * as _ from 'lodash';
 import { CreateAdminUserDto } from '../../../infrastructure/presenter/rest-api/documentation/user/create.admin.user.dto';
 import { User } from '../entity/user.entity';
 import { UserRolesEnum } from '../../../infrastructure/shared/enum/user.roles.enum';
+import { Equipment } from '../entity/equipment.entity';
 
 @EntityRepository(User)
 export class UserRepository extends Repository<User> {
@@ -147,5 +148,38 @@ export class UserRepository extends Repository<User> {
 
   async getUserByIdNotDelete(id: number): Promise<User | undefined> {
     return this.findOne({ where: { id, deletedAt: IsNull() } });
+  }
+
+  async isRightToEquipmentView(
+    user: User,
+    equipment: Equipment,
+  ): Promise<boolean> {
+    let boolean = true;
+    if (user.role.name === UserRolesEnum.CLIENT_SERVICE) {
+      const parent = await this.getParentUser(user);
+      boolean = equipment.owner.id === parent.id;
+    }
+    if (user.role.name === UserRolesEnum.CLIENT) {
+      boolean = equipment.owner.id === user.id;
+    }
+    if (user.role.name === UserRolesEnum.DEALER_SERVICE) {
+      const parent = await this.getParentUser(user);
+      boolean = equipment.manager.id === parent.id;
+    }
+    if (user.role.name === UserRolesEnum.DEALER) {
+      boolean = equipment.manager.id === user.id;
+    }
+    if (user.role.name === UserRolesEnum.MANUFACTURER) {
+      boolean = equipment.parent.id === user.id;
+    }
+    if (user.role.name === UserRolesEnum.MANUFACTURER_SERVICE) {
+      boolean = equipment.engineer.id === user.id;
+    }
+    return boolean;
+  }
+
+  async getParentUser(user: User): Promise<User> {
+    const userFind = await this.findOne(user.id, { relations: ['parent'] });
+    return userFind.parent;
   }
 }
