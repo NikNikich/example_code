@@ -17,6 +17,7 @@ import { GetBuildingResponse } from '../../../response/building/get.building.res
 import { NumberIdDto } from '../documentation/shared/number.id.dto';
 import { GetByIdBuildingDto } from '../../../response/building/get.by.id.building.dto';
 import { plainToClass } from 'class-transformer';
+import { UserRightsEnum } from '../../../shared/enum/user.rights.enum';
 
 @ApiUseTags('buildings')
 @Controller('buildings')
@@ -24,7 +25,7 @@ export class BuildingController {
   constructor(private buildingService: BuildingService) {}
 
   @Get()
-  @Auth()
+  @Auth([UserRightsEnum.EQUIPMENT_READ])
   @ApiResponse({ status: HttpStatus.OK, type: GetBuildingResponse })
   @ApiOperation({
     title: 'Получить список зданий, отфильтрованных по региону и городу',
@@ -45,7 +46,7 @@ export class BuildingController {
   }
 
   @Get(':id')
-  @Auth()
+  @Auth([UserRightsEnum.EQUIPMENT_READ])
   @ApiResponse({ status: HttpStatus.OK, type: GetByIdBuildingDto })
   @ApiOperation({
     title: 'Получить здание по id',

@@ -2,12 +2,15 @@ import {
   BaseEntity,
   Column,
   Entity,
+  JoinTable,
+  ManyToMany,
   OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
-import { UserRolesEnum } from '../../../infrastructure/shared/user.roles.enum';
+import { UserRolesEnum } from '../../../infrastructure/shared/enum/user.roles.enum';
 
 import { User } from './user.entity';
+import { Right } from './right.entity';
 
 @Entity({ name: 'role' })
 export class Role extends BaseEntity {
@@ -23,4 +26,11 @@ export class Role extends BaseEntity {
     { nullable: true },
   )
   users: User[];
+
+  @ManyToMany(
+    () => Right,
+    right => right.roles,
+  )
+  @JoinTable({ name: 'role_right' })
+  rights: Right[];
 }

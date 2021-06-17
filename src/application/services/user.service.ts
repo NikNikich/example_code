@@ -35,7 +35,7 @@ import { Session } from '../../core/domain/entity/session.entity';
 import { SignUpByEmailDto } from '../../infrastructure/presenter/rest-api/documentation/user/sign.up.by.email.dto';
 import { SingInResponseDto } from '../../infrastructure/response/user/sign.in.response';
 import { RoleRepository } from '../../core/domain/repository/role.repository';
-import { UserRolesEnum } from '../../infrastructure/shared/user.roles.enum';
+import { UserRolesEnum } from '../../infrastructure/shared/enum/user.roles.enum';
 import { UpdateAdminUserDto } from '../../infrastructure/presenter/rest-api/documentation/user/update.admin.user.dto';
 import { NumberIdDto } from '../../infrastructure/presenter/rest-api/documentation/shared/number.id.dto';
 import { CreateAdminUserDto } from '../../infrastructure/presenter/rest-api/documentation/user/create.admin.user.dto';

@@ -11,10 +11,12 @@ import { routerLogger } from '../presenter/rest-api/router.logger';
 import { EquipmentModule } from './equipment.module';
 import { BuildingModule } from './building.module';
 import { WebsocketTransport } from '../transport/websocket.transport';
+import { RoleRepository } from '../../core/domain/repository/role.repository';
 
 @Module({
   imports: [
     TypeOrmModule.forRoot(typeOrmConfig),
+    TypeOrmModule.forFeature([RoleRepository]),
     UserModule,
     EquipmentModule,
     BaseModule,

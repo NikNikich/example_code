@@ -7,6 +7,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { BuildingRepository } from '../../core/domain/repository/building.repository';
 import { BuildingController } from '../presenter/rest-api/controller/building.controller';
 import { BuildingService } from '../../application/services/building service';
+import { RoleRepository } from '../../core/domain/repository/role.repository';
 
 @Module({
   imports: [
@@ -17,7 +18,7 @@ import { BuildingService } from '../../application/services/building service';
         expiresIn: config.get('jwt.expiresIn'),
       },
     }),
-    TypeOrmModule.forFeature([BuildingRepository]),
+    TypeOrmModule.forFeature([BuildingRepository, RoleRepository]),
   ],
   controllers: [BuildingController],
   providers: [BuildingService],
