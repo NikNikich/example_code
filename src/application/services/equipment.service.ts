@@ -17,12 +17,15 @@ import { NumberIdDto } from '../../infrastructure/presenter/rest-api/documentati
 import { UpdateEquipmentDto } from '../../infrastructure/presenter/rest-api/documentation/equipment/update.equipment.dto';
 import { EquipmentUseStatusEnum } from '../../infrastructure/shared/enum/equipment.use.status.enum';
 import { FilterEquipmentDto } from '../../infrastructure/presenter/rest-api/documentation/equipment/filter.equipment.dto';
+import { RoleRepository } from '../../core/domain/repository/role.repository';
+import { UserRightsEnum } from '../../infrastructure/shared/enum/user.rights.enum';
 
 @Injectable()
 export class EquipmentService {
   constructor(
     private equipmentRepository: EquipmentRepository,
     private userRepository: UserRepository,
+    private roleRepository: RoleRepository,
   ) {}
   private engineerRelation = 'engineer';
   private managerRelation = 'manager';
@@ -97,6 +100,7 @@ export class EquipmentService {
   async editEquipment(
     idDto: NumberIdDto,
     updateEquipmentDto: UpdateEquipmentDto,
+    user: User,
   ): Promise<Equipment> {
     const equipment = await this.equipmentRepository.findOne(idDto.id);
     ErrorIf.isEmpty(equipment, EQUIPMENT_NOT_FOUND);
@@ -123,12 +127,34 @@ export class EquipmentService {
         USED_ID_EQUIPMENT,
       );
     }
-    return this.equipmentRepository.updateEquipment(
-      equipment,
-      updateEquipmentDto,
-      manager,
-      engineer,
+    const limitedWright = await this.isLimitedWright(user);
+    if (limitedWright) {
+      return this.equipmentRepository.updateLimitedEquipment(
+        equipment,
+        engineer,
+      );
+    } else {
+      return this.equipmentRepository.updateEquipment(
+        equipment,
+        updateEquipmentDto,
+        manager,
+        engineer,
+      );
+    }
+  }
+  async isLimitedWright(user: User): Promise<boolean> {
+    const rights = await this.roleRepository.getRights(user.role);
+    const roleLimitedWrightEquipment = rights.find(
+      right => right === UserRightsEnum.EQUIPMENT_LIMITED_WRIGHT,
     );
+    const roleWrightEquipment = rights.find(
+      right => right === UserRightsEnum.EQUIPMENT_SETTINGS_WRIGHT,
+    );
+    if (roleLimitedWrightEquipment && !roleWrightEquipment) {
+      return true;
+    } else {
+      return false;
+    }
   }
 
   getUseStatusList(): string[] {

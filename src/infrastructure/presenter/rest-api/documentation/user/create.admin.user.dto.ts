@@ -79,7 +79,7 @@ export class CreateAdminUserDto {
   @ApiModelProperty({
     description: 'id роли',
     type: 'number',
-    example: '',
+    example: 2,
     required: true,
   })
   roleId: number;
