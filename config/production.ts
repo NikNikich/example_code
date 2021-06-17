@@ -30,14 +30,17 @@ module.exports = {
     sendCommon: true,
   },
   email: {
-    from: 'emailsmttp@mail.ru',
+    from: 'lk@watwell.ru',
     transport: {
-      host: 'smtp.mail.ru',
+      host: 'mail.watwell.ru',
       port: 465,
       secure: true, // upgrade later with STARTTLS
       auth: {
-        user: 'emailsmttp@mail.ru',
-        pass: 'rAO}UPpiyo32',
+        user: 'lk@watwell.ru',
+        pass: 'W9r5W5e3',
+      },
+      tls: {
+        rejectUnauthorized: false,
       },
     },
   },
