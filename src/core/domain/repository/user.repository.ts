@@ -154,25 +154,36 @@ export class UserRepository extends Repository<User> {
     user: User,
     equipment: Equipment,
   ): Promise<boolean> {
-    let boolean = true;
-    if (user.role.name === UserRolesEnum.CLIENT_SERVICE) {
+    let boolean = false;
+    if (equipment.owner && user.role.name === UserRolesEnum.CLIENT_SERVICE) {
       const parent = await this.getParentUser(user);
-      boolean = equipment.owner.id === parent.id;
+      if (parent) {
+        boolean = equipment.owner.id === parent.id;
+      } else {
+        boolean = false;
+      }
     }
-    if (user.role.name === UserRolesEnum.CLIENT) {
+    if (equipment.owner && user.role.name === UserRolesEnum.CLIENT) {
+      console.log('Client');
       boolean = equipment.owner.id === user.id;
     }
-    if (user.role.name === UserRolesEnum.DEALER_SERVICE) {
+    if (equipment.engineer && user.role.name === UserRolesEnum.DEALER_SERVICE) {
       boolean = equipment.engineer.id === user.id;
     }
-    if (user.role.name === UserRolesEnum.DEALER) {
+    if (equipment.manager && user.role.name === UserRolesEnum.DEALER) {
       boolean = equipment.manager.id === user.id;
     }
-    if (user.role.name === UserRolesEnum.MANUFACTURER) {
+    if (equipment.parent && user.role.name === UserRolesEnum.MANUFACTURER) {
       boolean = equipment.parent.id === user.id;
     }
-    if (user.role.name === UserRolesEnum.MANUFACTURER_SERVICE) {
+    if (
+      equipment.engineer &&
+      user.role.name === UserRolesEnum.MANUFACTURER_SERVICE
+    ) {
       boolean = equipment.engineer.id === user.id;
+    }
+    if (user.role.name === UserRolesEnum.ADMIN) {
+      boolean = true;
     }
     return boolean;
   }

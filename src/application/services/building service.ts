@@ -11,6 +11,7 @@ import { EquipmentRepository } from '../../core/domain/repository/equipment.repo
 import { Equipment } from '../../core/domain/entity/equipment.entity';
 import { UserRepository } from '../../core/domain/repository/user.repository';
 import { User } from '../../core/domain/entity/user.entity';
+import { FindConditions } from 'typeorm/find-options/FindConditions';
 
 @Injectable()
 export class BuildingService {
@@ -57,13 +58,10 @@ export class BuildingService {
     });
     const buildingObjectList: BuildingObjectListDto[] = [];
     for (const building of buildings) {
-      const equipments = building.equipment.filter(
-        async equipment =>
-          await this.isRightEquipmentViewInList(
-            user,
-            equipmentsFind,
-            equipment,
-          ),
+      const equipments: Equipment[] = await this.getFilterEquipments(
+        user,
+        building,
+        equipmentsFind,
       );
       if (equipments.length > 0) {
         let extensionEquipment = 0;
@@ -106,21 +104,52 @@ export class BuildingService {
       loadEagerRelations: true,
     });
     ErrorIf.isEmpty(building, BUILDING_NOT_FOUND);
-    //TODO еределать по айди оборудования
-    const equipmentsFind = await this.equipmentRepository.find({
-      relations: [
-        this.buildingRelation,
-        this.engineerRelation,
-        this.managerRelation,
-        this.ownerRelation,
-        this.parentRelation,
-      ],
-    });
-    building.equipment = building.equipment.filter(
-      async equipment =>
-        await this.isRightEquipmentViewInList(user, equipmentsFind, equipment),
-    );
+    if (building.equipment && building.equipment.length > 0) {
+      const where: FindConditions<Equipment>[] = [];
+      const equipmentIds = building.equipment.map(
+        equipmentOne => equipmentOne.id,
+      );
+      for (const equipmentId of equipmentIds) {
+        where.push({ id: equipmentId });
+      }
+      const equipmentsFind = await this.equipmentRepository.find({
+        where,
+        relations: [
+          this.buildingRelation,
+          this.engineerRelation,
+          this.managerRelation,
+          this.ownerRelation,
+          this.parentRelation,
+        ],
+      });
+      building.equipment = await this.getFilterEquipments(
+        user,
+        building,
+        equipmentsFind,
+      );
+    }
     return building;
+  }
+
+  async getFilterEquipments(
+    user: User,
+    building: Building,
+    equipmentList: Equipment[],
+  ): Promise<Equipment[]> {
+    const returnEquipments: Equipment[] = [];
+    await Promise.all(
+      building.equipment.map(async equipment => {
+        const boolean = await this.isRightEquipmentViewInList(
+          user,
+          equipmentList,
+          equipment,
+        );
+        if (boolean) {
+          returnEquipments.push(equipment);
+        }
+      }),
+    );
+    return returnEquipments;
   }
 
   async isRightEquipmentViewInList(
@@ -132,12 +161,12 @@ export class BuildingService {
       equipmentOne => equipmentOne.id === equipment.id,
     );
     if (equipmentFind) {
-      return (
+      const boolean =
         (await this.userRepository.isRightToEquipmentView(
           user,
           equipmentFind,
-        )) && !!!equipment.deletedAt
-      );
+        )) && !!!equipment.deletedAt;
+      return boolean;
     } else {
       return false;
     }

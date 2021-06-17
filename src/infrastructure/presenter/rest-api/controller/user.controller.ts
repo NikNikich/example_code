@@ -82,7 +82,7 @@ export class UserController {
   }
 
   @Get('/roles')
-  @Auth([UserRightsEnum.USER_WRIGHT])
+  @Auth([UserRightsEnum.USER_READ])
   @ApiResponse({ status: HttpStatus.OK, type: GetRolesUserResponse })
   @ApiOperation({ title: 'Список ролей' })
   async getRoles(
