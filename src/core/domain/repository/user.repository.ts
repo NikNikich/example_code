@@ -163,8 +163,7 @@ export class UserRepository extends Repository<User> {
       boolean = equipment.owner.id === user.id;
     }
     if (user.role.name === UserRolesEnum.DEALER_SERVICE) {
-      const parent = await this.getParentUser(user);
-      boolean = equipment.manager.id === parent.id;
+      boolean = equipment.engineer.id === user.id;
     }
     if (user.role.name === UserRolesEnum.DEALER) {
       boolean = equipment.manager.id === user.id;

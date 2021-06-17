@@ -84,7 +84,7 @@ export class BuildingService {
             building.id,
             building.type,
             address,
-            building.equipment.length,
+            equipments.length,
             extensionEquipment,
             errorEquipment,
             building.geoLat,
@@ -133,8 +133,10 @@ export class BuildingService {
     );
     if (equipmentFind) {
       return (
-        this.userRepository.isRightToEquipmentView(user, equipmentFind) &&
-        !!!equipment.deletedAt
+        (await this.userRepository.isRightToEquipmentView(
+          user,
+          equipmentFind,
+        )) && !!!equipment.deletedAt
       );
     } else {
       return false;

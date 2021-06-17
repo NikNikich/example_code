@@ -190,7 +190,7 @@ export class EquipmentService {
       where['owner'] = user;
     }
     if (user.role.name === UserRolesEnum.DEALER_SERVICE) {
-      where['manager'] = await this.getParentUser(user);
+      where['engineer'] = user;
     }
     if (user.role.name === UserRolesEnum.DEALER) {
       where['manager'] = user;
