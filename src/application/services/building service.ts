@@ -61,6 +61,9 @@ export class BuildingService {
             errorEquipment,
             building.geoLat,
             building.geoLon,
+            building.region,
+            building.area,
+            building.city,
           ),
         );
       }

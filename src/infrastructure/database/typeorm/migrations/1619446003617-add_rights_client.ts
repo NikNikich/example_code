@@ -38,16 +38,6 @@ export class addRightsClient1619446003617 implements MigrationInterface {
           rightId: findRightEquipmentSettingsReadId[0],
         });
       }
-      const findRightEquipmentSettingsWrightId = await this.findRightEquipmentSettingsWrightId();
-      if (
-        findRightEquipmentSettingsWrightId &&
-        findRightEquipmentSettingsWrightId.length > 0
-      ) {
-        values.push({
-          roleId: findClient[0],
-          rightId: findRightEquipmentSettingsWrightId[0],
-        });
-      }
       await getConnection()
         .createQueryBuilder()
         .insert()
@@ -78,15 +68,6 @@ export class addRightsClient1619446003617 implements MigrationInterface {
     const manager = getConnection().manager;
     return manager.query(
       `SELECT r.id FROM "right" AS r WHERE r."name" = '${UserRightsEnum.USER_READ}'`,
-    );
-  }
-
-  private async findRightEquipmentSettingsWrightId(): Promise<
-    Right[] | undefined
-  > {
-    const manager = getConnection().manager;
-    return manager.query(
-      `SELECT r.id FROM "right" AS r WHERE r."name" = '${UserRightsEnum.EQUIPMENT_SETTINGS_WRIGHT}'`,
     );
   }
 
