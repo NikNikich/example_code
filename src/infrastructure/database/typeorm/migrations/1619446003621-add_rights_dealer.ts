@@ -28,13 +28,6 @@ export class addRightsDealer1619446003621 implements MigrationInterface {
           rightId: findRightEquipmentReadId[0],
         });
       }
-      const findRightEquipmentWriteId = await this.findRightEquipmentWriteId();
-      if (findRightEquipmentWriteId && findRightEquipmentWriteId.length > 0) {
-        values.push({
-          roleId: findDealer[0],
-          rightId: findRightEquipmentWriteId[0],
-        });
-      }
       const findRightEquipmentSettingsReadId = await this.findRightEquipmentSettingsReadId();
       if (
         findRightEquipmentSettingsReadId &&
@@ -111,13 +104,6 @@ export class addRightsDealer1619446003621 implements MigrationInterface {
     const manager = getConnection().manager;
     return manager.query(
       `SELECT r.id FROM "right" AS r WHERE r."name" = '${UserRightsEnum.EQUIPMENT_READ}'`,
-    );
-  }
-
-  private async findRightEquipmentWriteId(): Promise<Right[] | undefined> {
-    const manager = getConnection().manager;
-    return manager.query(
-      `SELECT r.id FROM "right" AS r WHERE r."name" = '${UserRightsEnum.EQUIPMENT_WRIGHT}'`,
     );
   }
 }
