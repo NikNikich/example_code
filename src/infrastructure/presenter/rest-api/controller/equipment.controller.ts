@@ -84,7 +84,7 @@ export class EquipmentController {
   }
 
   @Get('/statuses/use')
-  @Auth([UserRightsEnum.EQUIPMENT_WRIGHT])
+  @Auth([UserRightsEnum.USER_WRIGHT])
   @ApiResponse({
     status: HttpStatus.OK,
     isArray: true,
