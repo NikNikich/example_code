@@ -113,7 +113,10 @@ export class EquipmentController {
   }
 
   @Put('/:id')
-  @Auth([UserRightsEnum.EQUIPMENT_WRIGHT])
+  @Auth([
+    UserRightsEnum.EQUIPMENT_WRIGHT,
+    UserRightsEnum.EQUIPMENT_LIMITED_WRIGHT,
+  ])
   @ApiResponse({ status: HttpStatus.OK, type: EquipmentResponseDto })
   @ApiOperation({ title: 'Изменение оборудования администратором' })
   async editEquipment(

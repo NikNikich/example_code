@@ -18,6 +18,8 @@ import { NumberIdDto } from '../../infrastructure/presenter/rest-api/documentati
 import { UpdateEquipmentDto } from '../../infrastructure/presenter/rest-api/documentation/equipment/update.equipment.dto';
 import { EquipmentUseStatusEnum } from '../../infrastructure/shared/enum/equipment.use.status.enum';
 import { FilterEquipmentDto } from '../../infrastructure/presenter/rest-api/documentation/equipment/filter.equipment.dto';
+import { RoleRepository } from '../../core/domain/repository/role.repository';
+import { UserRightsEnum } from '../../infrastructure/shared/enum/user.rights.enum';
 import { FindConditions } from 'typeorm/find-options/FindConditions';
 import { plainToClass } from 'class-transformer';
 
@@ -26,6 +28,7 @@ export class EquipmentService {
   constructor(
     private equipmentRepository: EquipmentRepository,
     private userRepository: UserRepository,
+    private roleRepository: RoleRepository,
   ) {}
   private engineerRelation = 'engineer';
   private managerRelation = 'manager';
@@ -110,13 +113,13 @@ export class EquipmentService {
   async editEquipment(
     idDto: NumberIdDto,
     updateEquipmentDto: UpdateEquipmentDto,
-    parent: User,
+    user: User,
   ): Promise<Equipment> {
     const equipment = await this.equipmentRepository.findOne(idDto.id, {
       relations: [this.parentRelation],
     });
     ErrorIf.isEmpty(equipment, EQUIPMENT_NOT_FOUND);
-    this.isRightToEdit(parent, equipment);
+    this.isRightToEdit(user, equipment);
     let engineer: User;
     let manager: User;
     if (updateEquipmentDto.engineerId) {
@@ -140,12 +143,34 @@ export class EquipmentService {
         USED_ID_EQUIPMENT,
       );
     }
-    return this.equipmentRepository.updateEquipment(
-      equipment,
-      updateEquipmentDto,
-      manager,
-      engineer,
+    const limitedWright = await this.isLimitedWright(user);
+    if (limitedWright) {
+      return this.equipmentRepository.updateLimitedEquipment(
+        equipment,
+        engineer,
+      );
+    } else {
+      return this.equipmentRepository.updateEquipment(
+        equipment,
+        updateEquipmentDto,
+        manager,
+        engineer,
+      );
+    }
+  }
+  async isLimitedWright(user: User): Promise<boolean> {
+    const rights = await this.roleRepository.getRights(user.role);
+    const roleLimitedWrightEquipment = rights.find(
+      right => right === UserRightsEnum.EQUIPMENT_LIMITED_WRIGHT,
     );
+    const roleWrightEquipment = rights.find(
+      right => right === UserRightsEnum.EQUIPMENT_SETTINGS_WRIGHT,
+    );
+    if (roleLimitedWrightEquipment && !roleWrightEquipment) {
+      return true;
+    } else {
+      return false;
+    }
   }
 
   getUseStatusList(): string[] {
@@ -178,6 +203,7 @@ export class EquipmentService {
     }
     return where;
   }
+  parent;
 
   async isRightToGet(user: User, equipment: Equipment): Promise<void> {
     const boolean = await this.userRepository.isRightToEquipmentView(

@@ -44,6 +44,19 @@ export class EquipmentRepository extends Repository<Equipment> {
     lodash.assign(editEquipment, lodash.omit(updateEquipmentDto, listOmit));
     return editEquipment.save();
   }
+
+  async updateLimitedEquipment(
+    equipment: Equipment,
+    engineer?: User,
+  ): Promise<Equipment> {
+    if (engineer) {
+      equipment.engineer = engineer;
+      return equipment.save();
+    } else {
+      return equipment;
+    }
+  }
+
   async getEquipmentByEquipmentId(
     equipmentId: string,
   ): Promise<Equipment | undefined> {
