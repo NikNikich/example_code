@@ -9,7 +9,12 @@ export class WebsocketTransport {
   private socketIOServer: Server;
 
   public async listen(app: INestApplication): Promise<void> {
-    this.socketIOServer = new Server(app.getHttpServer());
+    this.socketIOServer = new Server(app.getHttpServer(), {
+      cors: {
+        origin: '*',
+        methods: ['GET', 'POST', 'PUT', 'DELETE'],
+      },
+    });
 
     try {
       this.socketIOServer.on('connection', async socket => {
