@@ -7,6 +7,7 @@ import { UpdateAdminUserDto } from '../../../infrastructure/presenter/rest-api/d
 import * as _ from 'lodash';
 import { CreateAdminUserDto } from '../../../infrastructure/presenter/rest-api/documentation/user/create.admin.user.dto';
 import { User } from '../entity/user.entity';
+import { UserRolesEnum } from '../../../infrastructure/shared/enum/user.roles.enum';
 
 @EntityRepository(User)
 export class UserRepository extends Repository<User> {
@@ -45,18 +46,19 @@ export class UserRepository extends Repository<User> {
   async updateUser(user: User, userUpdateDto: UpdateUserDto): Promise<User> {
     const dtoKeys: string[] = Object.keys(userUpdateDto);
 
-    if (dtoKeys.includes('firstName')) {
-      user.firstName = userUpdateDto.firstName;
-    }
+    if (user.role.name === UserRolesEnum.ADMIN) {
+      if (dtoKeys.includes('firstName')) {
+        user.firstName = userUpdateDto.firstName;
+      }
 
-    if (dtoKeys.includes('surName')) {
-      user.surName = userUpdateDto.surName;
-    }
+      if (dtoKeys.includes('surName')) {
+        user.surName = userUpdateDto.surName;
+      }
 
-    if (dtoKeys.includes('lastName')) {
-      user.lastName = userUpdateDto.lastName;
+      if (dtoKeys.includes('lastName')) {
+        user.lastName = userUpdateDto.lastName;
+      }
     }
-
     if (dtoKeys.includes('email')) {
       user.email = userUpdateDto.email.toLowerCase();
     }
