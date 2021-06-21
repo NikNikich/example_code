@@ -222,7 +222,8 @@ export class EquipmentService {
 
   isRightToEdit(parent: User, equipment: Equipment): void {
     ErrorIf.isFalse(
-      parent.id === equipment.parent.id ||
+      !equipment.parent ||
+        parent.id === equipment.parent.id ||
         parent.role.name === UserRolesEnum.ADMIN,
       NOT_CHANGE_EQUIPMENT,
     );
