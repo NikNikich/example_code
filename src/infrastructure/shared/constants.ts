@@ -23,7 +23,8 @@ export const VISIBLE_ROLES = (): { [name: string]: UserRolesEnum[] } => {
   visible[UserRolesEnum.DEALER] = [
     UserRolesEnum.DEALER_SERVICE,
     UserRolesEnum.CLIENT,
+    UserRolesEnum.CLIENT_SERVICE,
   ];
-  visible[UserRolesEnum.DEALER] = [UserRolesEnum.CLIENT_SERVICE];
+  visible[UserRolesEnum.CLIENT] = [UserRolesEnum.CLIENT_SERVICE];
   return visible;
 };
