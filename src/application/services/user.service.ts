@@ -547,7 +547,7 @@ export class UserService {
 
   async getEditUserById(parent: User, id: number): Promise<User> {
     const user = await this.userRepository.findOne(id, {
-      relations: ['parent'],
+      relations: ['parent', 'role'],
     });
     ErrorIf.isEmpty(user, USER_NOT_FOUND);
     this.isRightToEdit(parent, user);
