@@ -556,7 +556,9 @@ export class UserService {
 
   isRightToEdit(parent: User, user: User): void {
     ErrorIf.isFalse(
-      parent.id === user.parent.id || parent.role.name === UserRolesEnum.ADMIN,
+      !user.parent ||
+        parent.id === user.parent.id ||
+        parent.role.name === UserRolesEnum.ADMIN,
       NOT_CHANGE_USER,
     );
   }
