@@ -488,6 +488,13 @@ export class UserService {
     );
     equipment.useStatus = addUserEquipmentDto.status;
     equipment.owner = user;
+    if (
+      user.role.name === UserRolesEnum.MANUFACTURER ||
+      user.role.name === UserRolesEnum.DEALER
+    ) {
+      equipment.engineer = user;
+      equipment.manager = user;
+    }
     equipment.building = building;
     equipment.address = addUserEquipmentDto.address.value;
     equipment.save();
