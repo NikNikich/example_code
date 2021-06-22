@@ -1,5 +1,16 @@
 import { ApiModelProperty } from '@nestjs/swagger';
-import { IsEmail, IsOptional, IsString, Length } from 'class-validator';
+import {
+  IsEmail,
+  IsOptional,
+  IsString,
+  Length,
+  MaxLength,
+  MinLength,
+} from 'class-validator';
+import {
+  MAX_PHONE_NUMBER_LENGTH,
+  MIN_PHONE_NUMBER_LENGTH,
+} from './sign.in.by.sms.dto';
 export class UpdateUserDto {
   @IsOptional()
   @IsString()
@@ -8,7 +19,7 @@ export class UpdateUserDto {
     example: 'Кот',
     required: false,
   })
-  firstName: string;
+  firstName?: string;
 
   @IsOptional()
   @IsString()
@@ -17,7 +28,7 @@ export class UpdateUserDto {
     example: 'Простоквашин',
     required: false,
   })
-  lastName: string;
+  lastName?: string;
 
   @IsOptional()
   @IsString()
@@ -26,7 +37,7 @@ export class UpdateUserDto {
     example: 'Котович',
     required: false,
   })
-  surName: string;
+  surName?: string;
 
   @IsOptional()
   @IsString()
@@ -36,7 +47,7 @@ export class UpdateUserDto {
     example: '123456',
     required: true,
   })
-  password: string;
+  password?: string;
 
   @IsOptional()
   @IsEmail()
@@ -45,5 +56,16 @@ export class UpdateUserDto {
     example: 'test@test.com',
     required: false,
   })
-  email: string;
+  email?: string;
+
+  @IsString()
+  @IsOptional()
+  @MinLength(MIN_PHONE_NUMBER_LENGTH)
+  @MaxLength(MAX_PHONE_NUMBER_LENGTH)
+  @ApiModelProperty({
+    type: 'string',
+    example: '12345678',
+    required: false,
+  })
+  phone?: string;
 }

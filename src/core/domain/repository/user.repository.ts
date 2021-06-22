@@ -65,6 +65,10 @@ export class UserRepository extends Repository<User> {
       user.password = await this.hashPassword(userUpdateDto.password);
     }
 
+    if (dtoKeys.includes('phone')) {
+      user.phone = userUpdateDto.phone;
+    }
+
     return await user.save();
   }
 
