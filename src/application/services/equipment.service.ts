@@ -40,23 +40,21 @@ export class EquipmentService {
     user: User,
     filter: FilterEquipmentDto,
   ): Promise<Equipment[]> {
-    const where: FindConditions<Equipment> = await this.getWhereOption(user);
-    if (user.role.name === UserRolesEnum.ADMIN) {
-      let equipments = await this.equipmentRepository.find({
-        where,
-        relations: [
-          this.engineerRelation,
-          this.managerRelation,
-          this.ownerRelation,
-        ],
-      });
-      if (filter.notUsed) {
-        equipments = equipments.filter(equipment => !!!equipment.owner);
-      }
-      return equipments;
-    } else {
-      return [];
+    const where:
+      | FindConditions<Equipment>
+      | FindConditions<Equipment>[] = await this.getWhereOption(user);
+    let equipments = await this.equipmentRepository.find({
+      where,
+      relations: [
+        this.engineerRelation,
+        this.managerRelation,
+        this.ownerRelation,
+      ],
+    });
+    if (filter.notUsed) {
+      equipments = equipments.filter(equipment => !!!equipment.owner);
     }
+    return equipments;
   }
 
   async getActiveEquipment(idDto: NumberIdDto, user: User): Promise<Equipment> {
@@ -181,7 +179,15 @@ export class EquipmentService {
     return statusList;
   }
 
-  async getWhereOption(user: User): Promise<FindConditions<Equipment>> {
+  async getWhereOption(
+    user: User,
+  ): Promise<FindConditions<Equipment> | FindConditions<Equipment>[]> {
+    if (user.role.name === UserRolesEnum.MANUFACTURER) {
+      return [
+        { deletedAt: IsNull(), parent: user },
+        { deletedAt: IsNull(), owner: user },
+      ];
+    }
     const where: FindConditions<Equipment> = { deletedAt: IsNull() };
     if (user.role.name === UserRolesEnum.CLIENT_SERVICE) {
       where['owner'] = await this.getParentUser(user);
@@ -194,9 +200,6 @@ export class EquipmentService {
     }
     if (user.role.name === UserRolesEnum.DEALER) {
       where['manager'] = user;
-    }
-    if (user.role.name === UserRolesEnum.MANUFACTURER) {
-      where['parent'] = user;
     }
     if (user.role.name === UserRolesEnum.MANUFACTURER_SERVICE) {
       where['engineer'] = user;

@@ -336,7 +336,7 @@ export class UserService {
   async getUserById(idDto: NumberIdDto, parent: User): Promise<User> {
     const user = await this.userRepository.findUserByIdWithDeleted(idDto.id);
     ErrorIf.isEmpty(user, USER_NOT_FOUND);
-    return this.getEditUserById(parent, idDto.id);
+    return this.getUserByIdWithEquipment(parent, idDto.id);
   }
 
   async getUserRoles(user: User): Promise<Role[]> {
@@ -548,6 +548,15 @@ export class UserService {
   async getEditUserById(parent: User, id: number): Promise<User> {
     const user = await this.userRepository.findOne(id, {
       relations: ['parent', 'role'],
+    });
+    ErrorIf.isEmpty(user, USER_NOT_FOUND);
+    this.isRightToEdit(parent, user);
+    return user;
+  }
+
+  async getUserByIdWithEquipment(parent: User, id: number): Promise<User> {
+    const user = await this.userRepository.findOne(id, {
+      relations: ['role', 'equipmentOwner', 'parent'],
     });
     ErrorIf.isEmpty(user, USER_NOT_FOUND);
     this.isRightToEdit(parent, user);
