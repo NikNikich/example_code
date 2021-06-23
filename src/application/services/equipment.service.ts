@@ -61,7 +61,7 @@ export class EquipmentService {
           equipment => !!!equipment.owner || equipment.owner.id === user.id,
         );
       }
-      if (filter.andMy) {
+      if (!filter.notUsed && filter.andMy) {
         equipments = equipments.filter(
           equipment => !!equipment.owner && equipment.owner.id === user.id,
         );
