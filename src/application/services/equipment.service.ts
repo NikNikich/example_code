@@ -9,6 +9,7 @@ import {
   OBJECT_NOT_FOUND,
   USED_ID_EQUIPMENT,
   USER_NOT_FOUND,
+  USER_PARENT_NOT_FOUND,
 } from '../../infrastructure/presenter/rest-api/errors/errors';
 import { IsNull } from 'typeorm';
 import { UserRolesEnum } from '../../infrastructure/shared/enum/user.roles.enum';
@@ -51,8 +52,15 @@ export class EquipmentService {
         this.ownerRelation,
       ],
     });
-    if (filter.notUsed) {
-      equipments = equipments.filter(equipment => !!!equipment.owner);
+    if (equipments.length > 0) {
+      if (filter.notUsed && !filter.andMy) {
+        equipments = equipments.filter(equipment => !!!equipment.owner);
+      }
+      if (filter.notUsed && filter.andMy) {
+        equipments = equipments.filter(
+          equipment => !!!equipment.owner || equipment.owner.id === user.id,
+        );
+      }
     }
     return equipments;
   }
@@ -117,7 +125,7 @@ export class EquipmentService {
       relations: [this.parentRelation],
     });
     ErrorIf.isEmpty(equipment, EQUIPMENT_NOT_FOUND);
-    this.isRightToEdit(user, equipment);
+    await this.isRightToEdit(user, equipment);
     let engineer: User;
     let manager: User;
     if (updateEquipmentDto.engineerId) {
@@ -181,12 +189,15 @@ export class EquipmentService {
     const where: FindConditions<Equipment> = { deletedAt: IsNull() };
     if (user.role.name === UserRolesEnum.MANUFACTURER) {
       return [
-        { deletedAt: IsNull(), parent: user },
-        { deletedAt: IsNull(), owner: user },
+        { ...where, parent: user, owner: IsNull() },
+        { ...where, owner: user },
+        { ...where, manager: user },
       ];
     }
     if (user.role.name === UserRolesEnum.CLIENT_SERVICE) {
-      where['owner'] = await this.getParentUser(user);
+      const parent = await this.getParentUser(user);
+      ErrorIf.isEmpty(parent, USER_PARENT_NOT_FOUND);
+      where['owner'] = parent;
     }
     if (user.role.name === UserRolesEnum.CLIENT) {
       where['owner'] = user;
@@ -195,7 +206,10 @@ export class EquipmentService {
       where['engineer'] = user;
     }
     if (user.role.name === UserRolesEnum.DEALER) {
-      where['manager'] = user;
+      return [
+        { ...where, owner: user },
+        { ...where, manager: user },
+      ];
     }
     if (user.role.name === UserRolesEnum.MANUFACTURER_SERVICE) {
       where['engineer'] = user;
@@ -219,12 +233,11 @@ export class EquipmentService {
     return userFind.parent;
   }
 
-  isRightToEdit(parent: User, equipment: Equipment): void {
-    ErrorIf.isFalse(
-      !equipment.parent ||
-        parent.id === equipment.parent.id ||
-        parent.role.name === UserRolesEnum.ADMIN,
-      NOT_CHANGE_EQUIPMENT,
+  async isRightToEdit(parent: User, equipment: Equipment): Promise<void> {
+    const boolean = await this.userRepository.isRightToEquipmentEdit(
+      parent,
+      equipment,
     );
+    ErrorIf.isFalse(boolean, NOT_CHANGE_EQUIPMENT);
   }
 }

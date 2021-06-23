@@ -169,7 +169,6 @@ export class UserRepository extends Repository<User> {
       }
     }
     if (equipment.owner && user.role.name === UserRolesEnum.CLIENT) {
-      console.log('Client');
       boolean = equipment.owner.id === user.id;
     }
     if (equipment.engineer && user.role.name === UserRolesEnum.DEALER_SERVICE) {
@@ -178,8 +177,12 @@ export class UserRepository extends Repository<User> {
     if (equipment.manager && user.role.name === UserRolesEnum.DEALER) {
       boolean = equipment.manager.id === user.id;
     }
-    if (equipment.parent && user.role.name === UserRolesEnum.MANUFACTURER) {
-      boolean = equipment.parent.id === user.id;
+    if (user.role.name === UserRolesEnum.MANUFACTURER) {
+      const booleanOwner = !!equipment.owner && equipment.owner.id === user.id;
+      const booleanParent = !equipment.owner && equipment.parent.id === user.id;
+      const booleanManager =
+        !!equipment.manager && equipment.manager.id === user.id;
+      boolean = booleanOwner || booleanManager || booleanParent;
     }
     if (
       equipment.engineer &&
@@ -189,6 +192,22 @@ export class UserRepository extends Repository<User> {
     }
     if (user.role.name === UserRolesEnum.ADMIN) {
       boolean = true;
+    }
+    return boolean;
+  }
+
+  async isRightToEquipmentEdit(
+    user: User,
+    equipment: Equipment,
+  ): Promise<boolean> {
+    let boolean = false;
+    if (
+      user.role &&
+      (user.role.name === UserRolesEnum.DEALER ||
+        user.role.name === UserRolesEnum.MANUFACTURER ||
+        user.role.name === UserRolesEnum.ADMIN)
+    ) {
+      boolean = await this.isRightToEquipmentView(user, equipment);
     }
     return boolean;
   }

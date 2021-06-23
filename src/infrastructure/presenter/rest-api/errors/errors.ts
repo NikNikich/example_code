@@ -89,3 +89,8 @@ export const NOT_CREATE_EQUIPMENT: StandardRestApiError = StandardRestApiError.c
   1018,
   'You are wrong to create equipment.',
 );
+
+export const USER_PARENT_NOT_FOUND: StandardRestApiError = StandardRestApiError.create(
+  1019,
+  'User parent not found',
+);
