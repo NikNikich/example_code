@@ -262,7 +262,7 @@ export class UserController {
   }
 
   @Put('/me')
-  @Auth()
+  @Auth([UserRightsEnum.USER_WRIGHT, UserRightsEnum.PROFILE_LIMITED_WRIGHT])
   @ApiResponse({ status: HttpStatus.OK, type: MeResponse })
   @ApiOperation({ title: 'Редактирование полей юзера' })
   async editMyself(

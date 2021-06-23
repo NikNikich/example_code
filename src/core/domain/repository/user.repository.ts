@@ -47,24 +47,29 @@ export class UserRepository extends Repository<User> {
   async updateUser(user: User, userUpdateDto: UpdateUserDto): Promise<User> {
     const dtoKeys: string[] = Object.keys(userUpdateDto);
 
-    if (dtoKeys.includes('firstName')) {
-      user.firstName = userUpdateDto.firstName;
-    }
+    if (user.role.name === UserRolesEnum.ADMIN) {
+      if (dtoKeys.includes('firstName')) {
+        user.firstName = userUpdateDto.firstName;
+      }
 
-    if (dtoKeys.includes('surName')) {
-      user.surName = userUpdateDto.surName;
-    }
+      if (dtoKeys.includes('surName')) {
+        user.surName = userUpdateDto.surName;
+      }
 
-    if (dtoKeys.includes('lastName')) {
-      user.lastName = userUpdateDto.lastName;
+      if (dtoKeys.includes('lastName')) {
+        user.lastName = userUpdateDto.lastName;
+      }
     }
-
     if (dtoKeys.includes('email')) {
       user.email = userUpdateDto.email.toLowerCase();
     }
 
     if (dtoKeys.includes('password')) {
       user.password = await this.hashPassword(userUpdateDto.password);
+    }
+
+    if (dtoKeys.includes('phone')) {
+      user.phone = userUpdateDto.phone;
     }
 
     return await user.save();
