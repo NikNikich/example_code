@@ -6,7 +6,6 @@ import {
   Entity,
   JoinColumn,
   ManyToOne,
-  OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
@@ -123,7 +122,7 @@ export class Equipment extends BaseEntity {
   SNComponent6: string;
 
   @Exclude()
-  @OneToOne(
+  @ManyToOne(
     () => User,
     (user: User) => user.id,
   )

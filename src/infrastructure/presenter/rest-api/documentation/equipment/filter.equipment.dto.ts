@@ -9,4 +9,10 @@ export class FilterEquipmentDto {
   @Transform(value => isTrue(value))
   @ApiModelProperty({ type: 'boolean', example: false, required: false })
   notUsed: boolean;
+
+  @IsOptional()
+  @IsBoolean()
+  @Transform(value => isTrue(value))
+  @ApiModelProperty({ type: 'boolean', example: false, required: false })
+  AndMy: boolean;
 }

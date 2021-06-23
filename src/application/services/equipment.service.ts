@@ -164,11 +164,7 @@ export class EquipmentService {
     const roleWrightEquipment = rights.find(
       right => right === UserRightsEnum.EQUIPMENT_SETTINGS_WRIGHT,
     );
-    if (roleLimitedWrightEquipment && !roleWrightEquipment) {
-      return true;
-    } else {
-      return false;
-    }
+    return roleLimitedWrightEquipment && !roleWrightEquipment;
   }
 
   getUseStatusList(): string[] {
@@ -182,13 +178,13 @@ export class EquipmentService {
   async getWhereOption(
     user: User,
   ): Promise<FindConditions<Equipment> | FindConditions<Equipment>[]> {
+    const where: FindConditions<Equipment> = { deletedAt: IsNull() };
     if (user.role.name === UserRolesEnum.MANUFACTURER) {
       return [
         { deletedAt: IsNull(), parent: user },
         { deletedAt: IsNull(), owner: user },
       ];
     }
-    const where: FindConditions<Equipment> = { deletedAt: IsNull() };
     if (user.role.name === UserRolesEnum.CLIENT_SERVICE) {
       where['owner'] = await this.getParentUser(user);
     }
