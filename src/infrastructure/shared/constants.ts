@@ -6,7 +6,6 @@ export const MILLISECONDS_IN_SECOND = 1000;
 export const VISIBLE_ROLES = (): { [name: string]: UserRolesEnum[] } => {
   const visible = {};
   visible[UserRolesEnum.ADMIN] = [
-    UserRolesEnum.ADMIN,
     UserRolesEnum.USER,
     UserRolesEnum.DEALER,
     UserRolesEnum.DEALER_SERVICE,
