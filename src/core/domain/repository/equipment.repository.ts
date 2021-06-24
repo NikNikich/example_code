@@ -63,9 +63,11 @@ export class EquipmentRepository extends Repository<Equipment> {
     return this.findOne({ where: { equipmentId }, withDeleted: true });
   }
 
-  async deleteOwner(equipment: Equipment): Promise<void> {
+  async deleteOwner(parent: User, equipment: Equipment): Promise<void> {
     equipment.useStatus = EquipmentUseStatusEnum.OTHER;
-    equipment.owner = null;
+    equipment.manager = parent;
+    equipment.engineer = parent;
+    equipment.owner = parent;
     equipment.building = null;
     equipment.address = null;
     await equipment.save();

@@ -510,7 +510,7 @@ export class UserService {
       equipmentIdDto.equipmentId,
     );
     ErrorIf.isEmpty(equipment, EQUIPMENT_NOT_FOUND);
-    await this.equipmentRepository.deleteOwner(equipment);
+    await this.equipmentRepository.deleteOwner(parent, equipment);
   }
 
   async sendRestoreEmail(requestId: string, user: User): Promise<void> {
