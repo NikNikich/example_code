@@ -18,6 +18,8 @@ import { NumberIdDto } from '../documentation/shared/number.id.dto';
 import { GetByIdBuildingDto } from '../../../response/building/get.by.id.building.dto';
 import { plainToClass } from 'class-transformer';
 import { UserRightsEnum } from '../../../shared/enum/user.rights.enum';
+import { GetUser } from '../../../decorators/get.user.decorator';
+import { User } from '../../../../core/domain/entity/user.entity';
 
 @ApiUseTags('buildings')
 @Controller('buildings')
@@ -32,6 +34,7 @@ export class BuildingController {
   })
   async get(
     @GetRequestId() requestId: string,
+    @GetUser() user: User,
     @Query(
       new ValidationPipe({
         whitelist: true,
@@ -40,7 +43,7 @@ export class BuildingController {
     )
     filter: FilterBuildingDto,
   ): Promise<GetBuildingResponse> {
-    const response = await this.buildingService.getListBuilding(filter);
+    const response = await this.buildingService.getListBuilding(filter, user);
     const getBuildingResponse = new GetBuildingResponse(requestId, response);
     return plainToClass(GetBuildingResponse, getBuildingResponse);
   }
@@ -53,6 +56,7 @@ export class BuildingController {
   })
   async getById(
     @GetRequestId() requestId: string,
+    @GetUser() user: User,
     @Param(
       new ValidationPipe({
         transform: true,
@@ -60,7 +64,7 @@ export class BuildingController {
     )
     idDto: NumberIdDto,
   ): Promise<GetByIdBuildingDto> {
-    const response = await this.buildingService.getById(idDto);
+    const response = await this.buildingService.getById(idDto, user);
     const getByIdBuildingDto = new GetByIdBuildingDto(requestId, response);
     return plainToClass(GetByIdBuildingDto, getByIdBuildingDto);
   }

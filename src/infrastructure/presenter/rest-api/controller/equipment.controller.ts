@@ -74,11 +74,12 @@ export class EquipmentController {
   @ApiOperation({ title: 'Создание оборудования администратором' })
   async createEquipment(
     @GetRequestId() requestId: string,
+    @GetUser() user: User,
     @Body(ValidationPipe) createEquipmentDto: CreateEquipmentDto,
   ): Promise<EquipmentResponseDto> {
     return this.getEquipmentResponseDto(
       requestId,
-      await this.equipmentService.createEquipment(createEquipmentDto),
+      await this.equipmentService.createEquipment(createEquipmentDto, user),
     );
   }
 
@@ -144,11 +145,12 @@ export class EquipmentController {
   @ApiOperation({ title: 'Оборудование по id' })
   async getEquipment(
     @GetRequestId() requestId: string,
+    @GetUser() user: User,
     @Param(ValidationPipe) idDto: NumberIdDto,
   ): Promise<EquipmentResponseDto> {
     return this.getEquipmentResponseDto(
       requestId,
-      await this.equipmentService.getActiveEquipment(idDto),
+      await this.equipmentService.getActiveEquipment(idDto, user),
     );
   }
 

@@ -4,7 +4,7 @@ import { HttpStatus, INestApplication } from '@nestjs/common';
 import { AppModule } from '../src/infrastructure/module/app.module';
 import * as config from 'config';
 import { SMS_TOO_OFTEN } from '../src/infrastructure/presenter/rest-api/errors/errors';
-import { GenderEnum } from '../src/infrastructure/shared/gender.enum';
+import { GenderEnum } from '../src/infrastructure/shared/enum/gender.enum';
 
 const randomPhoneGeneration = () => {
   const min = 100000000000;

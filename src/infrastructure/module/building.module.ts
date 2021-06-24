@@ -8,6 +8,8 @@ import { BuildingRepository } from '../../core/domain/repository/building.reposi
 import { BuildingController } from '../presenter/rest-api/controller/building.controller';
 import { BuildingService } from '../../application/services/building service';
 import { RoleRepository } from '../../core/domain/repository/role.repository';
+import { EquipmentRepository } from '../../core/domain/repository/equipment.repository';
+import { UserRepository } from '../../core/domain/repository/user.repository';
 
 @Module({
   imports: [
@@ -18,7 +20,12 @@ import { RoleRepository } from '../../core/domain/repository/role.repository';
         expiresIn: config.get('jwt.expiresIn'),
       },
     }),
-    TypeOrmModule.forFeature([BuildingRepository, RoleRepository]),
+    TypeOrmModule.forFeature([
+      BuildingRepository,
+      RoleRepository,
+      EquipmentRepository,
+      UserRepository,
+    ]),
   ],
   controllers: [BuildingController],
   providers: [BuildingService],

@@ -12,6 +12,7 @@ export class EquipmentRepository extends Repository<Equipment> {
     createEquipmentDto: CreateEquipmentDto,
     manager: User,
     engineer: User,
+    parent: User,
   ): Promise<Equipment> {
     const equipmentNew = new Equipment();
     lodash.assign(
@@ -20,6 +21,7 @@ export class EquipmentRepository extends Repository<Equipment> {
     );
     equipmentNew.manager = manager;
     equipmentNew.engineer = engineer;
+    equipmentNew.parent = parent;
     return await equipmentNew.save();
   }
 
