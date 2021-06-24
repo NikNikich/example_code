@@ -69,3 +69,28 @@ export const ROLE_NOT_FOUND: StandardRestApiError = StandardRestApiError.create(
   1014,
   'Role not found',
 );
+
+export const NOT_CHANGE_USER: StandardRestApiError = StandardRestApiError.create(
+  1015,
+  'You cannot change or view this user.',
+);
+
+export const NOT_CREATE_USER: StandardRestApiError = StandardRestApiError.create(
+  1016,
+  'You are wrong to create user.',
+);
+
+export const NOT_CHANGE_EQUIPMENT: StandardRestApiError = StandardRestApiError.create(
+  1017,
+  'You cannot change or view this equipment',
+);
+
+export const NOT_CREATE_EQUIPMENT: StandardRestApiError = StandardRestApiError.create(
+  1018,
+  'You are wrong to create equipment.',
+);
+
+export const USER_PARENT_NOT_FOUND: StandardRestApiError = StandardRestApiError.create(
+  1019,
+  'User parent not found',
+);

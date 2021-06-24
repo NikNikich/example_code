@@ -122,6 +122,14 @@ export class Equipment extends BaseEntity {
   SNComponent6: string;
 
   @Exclude()
+  @ManyToOne(
+    () => User,
+    (user: User) => user.id,
+  )
+  @JoinColumn()
+  parent?: User;
+
+  @Exclude()
   @DeleteDateColumn({ type: 'timestamp', nullable: true })
   public deletedAt: Date;
 

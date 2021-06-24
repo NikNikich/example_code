@@ -5,9 +5,11 @@ import { Equipment } from '../../core/domain/entity/equipment.entity';
 import { ErrorIf } from '../../infrastructure/presenter/rest-api/errors/error.if';
 import {
   EQUIPMENT_NOT_FOUND,
+  NOT_CHANGE_EQUIPMENT,
   OBJECT_NOT_FOUND,
   USED_ID_EQUIPMENT,
   USER_NOT_FOUND,
+  USER_PARENT_NOT_FOUND,
 } from '../../infrastructure/presenter/rest-api/errors/errors';
 import { IsNull } from 'typeorm';
 import { UserRolesEnum } from '../../infrastructure/shared/enum/user.roles.enum';
@@ -19,6 +21,8 @@ import { EquipmentUseStatusEnum } from '../../infrastructure/shared/enum/equipme
 import { FilterEquipmentDto } from '../../infrastructure/presenter/rest-api/documentation/equipment/filter.equipment.dto';
 import { RoleRepository } from '../../core/domain/repository/role.repository';
 import { UserRightsEnum } from '../../infrastructure/shared/enum/user.rights.enum';
+import { FindConditions } from 'typeorm/find-options/FindConditions';
+import { plainToClass } from 'class-transformer';
 
 @Injectable()
 export class EquipmentService {
@@ -30,54 +34,73 @@ export class EquipmentService {
   private engineerRelation = 'engineer';
   private managerRelation = 'manager';
   private ownerRelation = 'owner';
+  private parentRelation = 'parent';
   private buildingRelation = 'building';
 
   async getActiveEquipments(
     user: User,
     filter: FilterEquipmentDto,
   ): Promise<Equipment[]> {
-    if (user.role.name === UserRolesEnum.ADMIN) {
-      let equipments = await this.equipmentRepository.find({
-        where: { deletedAt: IsNull() },
-        relations: [
-          this.engineerRelation,
-          this.managerRelation,
-          this.ownerRelation,
-        ],
-      });
-      if (filter.notUsed) {
+    const where:
+      | FindConditions<Equipment>
+      | FindConditions<Equipment>[] = await this.getWhereOption(user);
+    let equipments = await this.equipmentRepository.find({
+      where,
+      relations: [
+        this.engineerRelation,
+        this.managerRelation,
+        this.ownerRelation,
+      ],
+    });
+    if (equipments.length > 0) {
+      if (filter.notUsed && !filter.andMy) {
         equipments = equipments.filter(equipment => !!!equipment.owner);
       }
-      return equipments;
-    } else {
-      return [];
+      if (filter.notUsed && filter.andMy) {
+        equipments = equipments.filter(
+          equipment => !!!equipment.owner || equipment.owner.id === user.id,
+        );
+      }
+      if (!filter.notUsed && filter.andMy) {
+        equipments = equipments.filter(
+          equipment => !!equipment.owner && equipment.owner.id === user.id,
+        );
+      }
     }
+    return equipments;
   }
 
-  async getActiveEquipment(idDto: NumberIdDto): Promise<Equipment> {
+  async getActiveEquipment(idDto: NumberIdDto, user: User): Promise<Equipment> {
     const equipment = await this.equipmentRepository.findOne(idDto.id, {
       relations: [
         this.buildingRelation,
         this.engineerRelation,
         this.managerRelation,
         this.ownerRelation,
+        this.parentRelation,
       ],
     });
     ErrorIf.isEmpty(equipment, EQUIPMENT_NOT_FOUND);
-    return equipment;
+    await this.isRightToGet(user, equipment);
+    return plainToClass(Equipment, equipment);
   }
 
   async delete(user: User, id: number): Promise<void> {
-    const equipment = await this.equipmentRepository.findOne({
-      id,
-      deletedAt: IsNull(),
-    });
+    const equipment = await this.equipmentRepository.findOne(
+      {
+        id,
+        deletedAt: IsNull(),
+      },
+      { relations: [this.parentRelation] },
+    );
     ErrorIf.isEmpty(equipment, OBJECT_NOT_FOUND);
+    this.isRightToEdit(user, equipment);
     await this.equipmentRepository.softDelete(equipment.id);
   }
 
   async createEquipment(
     createEquipmentDto: CreateEquipmentDto,
+    parent: User,
   ): Promise<Equipment> {
     const engineer = await this.userRepository.getUserByIdNotDelete(
       createEquipmentDto.engineerId,
@@ -94,6 +117,7 @@ export class EquipmentService {
       createEquipmentDto,
       manager,
       engineer,
+      parent,
     );
   }
 
@@ -102,8 +126,11 @@ export class EquipmentService {
     updateEquipmentDto: UpdateEquipmentDto,
     user: User,
   ): Promise<Equipment> {
-    const equipment = await this.equipmentRepository.findOne(idDto.id);
+    const equipment = await this.equipmentRepository.findOne(idDto.id, {
+      relations: [this.parentRelation],
+    });
     ErrorIf.isEmpty(equipment, EQUIPMENT_NOT_FOUND);
+    await this.isRightToEdit(user, equipment);
     let engineer: User;
     let manager: User;
     if (updateEquipmentDto.engineerId) {
@@ -150,11 +177,7 @@ export class EquipmentService {
     const roleWrightEquipment = rights.find(
       right => right === UserRightsEnum.EQUIPMENT_SETTINGS_WRIGHT,
     );
-    if (roleLimitedWrightEquipment && !roleWrightEquipment) {
-      return true;
-    } else {
-      return false;
-    }
+    return roleLimitedWrightEquipment && !roleWrightEquipment;
   }
 
   getUseStatusList(): string[] {
@@ -163,5 +186,63 @@ export class EquipmentService {
       statusList.push(EquipmentUseStatusEnum[key]);
     }
     return statusList;
+  }
+
+  async getWhereOption(
+    user: User,
+  ): Promise<FindConditions<Equipment> | FindConditions<Equipment>[]> {
+    const where: FindConditions<Equipment> = { deletedAt: IsNull() };
+    if (user.role.name === UserRolesEnum.MANUFACTURER) {
+      return [
+        { ...where, parent: user, owner: IsNull() },
+        { ...where, owner: user },
+        { ...where, manager: user },
+      ];
+    }
+    if (user.role.name === UserRolesEnum.CLIENT_SERVICE) {
+      const parent = await this.getParentUser(user);
+      ErrorIf.isEmpty(parent, USER_PARENT_NOT_FOUND);
+      where['owner'] = parent;
+    }
+    if (user.role.name === UserRolesEnum.CLIENT) {
+      where['owner'] = user;
+    }
+    if (user.role.name === UserRolesEnum.DEALER_SERVICE) {
+      where['engineer'] = user;
+    }
+    if (user.role.name === UserRolesEnum.DEALER) {
+      return [
+        { ...where, owner: user },
+        { ...where, manager: user },
+      ];
+    }
+    if (user.role.name === UserRolesEnum.MANUFACTURER_SERVICE) {
+      where['engineer'] = user;
+    }
+    return where;
+  }
+  parent;
+
+  async isRightToGet(user: User, equipment: Equipment): Promise<void> {
+    const boolean = await this.userRepository.isRightToEquipmentView(
+      user,
+      equipment,
+    );
+    ErrorIf.isFalse(boolean, NOT_CHANGE_EQUIPMENT);
+  }
+
+  async getParentUser(user: User): Promise<User> {
+    const userFind = await this.userRepository.findOne(user.id, {
+      relations: ['parent'],
+    });
+    return userFind.parent;
+  }
+
+  async isRightToEdit(parent: User, equipment: Equipment): Promise<void> {
+    const boolean = await this.userRepository.isRightToEquipmentEdit(
+      parent,
+      equipment,
+    );
+    ErrorIf.isFalse(boolean, NOT_CHANGE_EQUIPMENT);
   }
 }

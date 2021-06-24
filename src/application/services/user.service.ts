@@ -12,6 +12,8 @@ import { ErrorIf } from '../../infrastructure/presenter/rest-api/errors/error.if
 import {
   EQUIPMENT_NOT_FOUND,
   INVALID_CREDENTIALS,
+  NOT_CHANGE_USER,
+  NOT_CREATE_USER,
   PASSWORD_IS_EMPTY,
   ROLE_NOT_FOUND,
   SMS_TOO_OFTEN,
@@ -47,6 +49,8 @@ import { UpdatePasswordDto } from '../../infrastructure/presenter/rest-api/docum
 import { NumberEquipmentIdDto } from '../../infrastructure/presenter/rest-api/documentation/equipment/number.equipment.id.dto';
 import { Role } from '../../core/domain/entity/role.entity';
 import { FilterUserDto } from '../../infrastructure/presenter/rest-api/documentation/user/filter.user.dto';
+import { VISIBLE_ROLES } from '../../infrastructure/shared/constants';
+import { plainToClass } from 'class-transformer';
 
 const REPEAT_SMS_TIME_MS: number = config.get('sms.minRepeatTime');
 const emailTransport = new EmailTransport();
@@ -78,7 +82,7 @@ export class UserService {
     return this.userRepository.findOne({
       where: { email },
       withDeleted: true,
-      relations: ['role'],
+      relations: ['role', 'parent'],
     });
   }
 
@@ -96,10 +100,11 @@ export class UserService {
   async updateAdminUser(
     idDto: NumberIdDto,
     userUpdateDto: UpdateAdminUserDto,
+    parent: User,
   ): Promise<User> {
     const user = await this.userRepository.findOne(
       { id: idDto.id },
-      { withDeleted: true, relations: ['role'] },
+      { withDeleted: true, relations: ['role', 'parent'] },
     );
     ErrorIf.isEmpty(user, USER_NOT_FOUND);
     if (userUpdateDto.email) {
@@ -110,9 +115,11 @@ export class UserService {
         ErrorIf.isExist(userEmail, USED_EMAIL);
       }
     }
+    this.isRightToEdit(parent, user);
     if (userUpdateDto.roleId) {
       const role = await this.roleRepository.findOne(userUpdateDto.roleId);
       ErrorIf.isEmpty(role, ROLE_NOT_FOUND);
+      ErrorIf.isFalse(this.isRightToCreate(parent, role.name), NOT_CHANGE_USER);
       delete userUpdateDto.roleId;
       return this.userRepository.updateAdminUser(user, userUpdateDto, role);
     } else {
@@ -120,9 +127,10 @@ export class UserService {
     }
   }
 
-  async deleteAdminUser(idDto: NumberIdDto): Promise<void> {
+  async deleteAdminUser(idDto: NumberIdDto, parent: User): Promise<void> {
     const user = await this.userRepository.findOne(idDto.id);
     ErrorIf.isEmpty(user, USER_NOT_FOUND);
+    this.isRightToEdit(parent, user);
     await this.equipmentRepository.deleteOwnerFromEquipments(user);
     user.softRemove();
   }
@@ -130,6 +138,7 @@ export class UserService {
   async createAdminUser(
     createAdminUserDto: CreateAdminUserDto,
     requestId: string,
+    parent: User,
   ): Promise<User> {
     const user = await this.getUserByEmail(
       createAdminUserDto.email.toLowerCase(),
@@ -137,6 +146,7 @@ export class UserService {
     ErrorIf.isExist(user, USED_EMAIL);
     const role = await this.roleRepository.findOne(createAdminUserDto.roleId);
     ErrorIf.isEmpty(role, ROLE_NOT_FOUND);
+    ErrorIf.isFalse(this.isRightToCreate(parent, role.name), NOT_CREATE_USER);
     const password = generator.generate({
       length: this.lengthPassword,
       numbers: true,
@@ -145,6 +155,7 @@ export class UserService {
       createAdminUserDto,
       role,
       password,
+      parent,
     );
     await this.sendRestoreEmail(requestId, newUser);
     return newUser;
@@ -233,7 +244,7 @@ export class UserService {
       requestId,
     );
     const token = await this.generateJwtToken(user);
-    return { user, token };
+    return { user: plainToClass(User, user), token };
   }
 
   generateRandomString(): string {
@@ -322,27 +333,32 @@ export class UserService {
     return { user, token };
   }
 
-  async getUserById(idDto: NumberIdDto): Promise<User> {
+  async getUserById(idDto: NumberIdDto, parent: User): Promise<User> {
     const user = await this.userRepository.findUserByIdWithDeleted(idDto.id);
     ErrorIf.isEmpty(user, USER_NOT_FOUND);
-    return user;
+    return this.getUserByIdWithEquipment(parent, idDto.id);
   }
 
-  async getUserRoles(): Promise<Role[]> {
-    return this.roleRepository.find();
+  async getUserRoles(user: User): Promise<Role[]> {
+    const allVisible: { [name: string]: UserRolesEnum[] } = VISIBLE_ROLES();
+    if (user.role.name in allVisible) {
+      return this.roleRepository.getRolesForName(allVisible[user.role.name]);
+    } else {
+      return [];
+    }
   }
 
   async getUserByResetCode(resetCode: string): Promise<User | undefined> {
     return this.userRepository.findOne({ where: { resetCode } });
   }
 
-  async getListUser(filter: FilterUserDto): Promise<User[]> {
+  async getListUser(filter: FilterUserDto, parent: User): Promise<User[]> {
     let role: Role = null;
     if (filter && filter.roleId) {
       role = await this.roleRepository.findOne(filter.roleId);
       ErrorIf.isEmpty(role, ROLE_NOT_FOUND);
     }
-    return this.userRepository.getListNotDeleteUser(role);
+    return this.userRepository.getListNotDeleteUser(parent, role);
   }
 
   async generateSmsCode(): Promise<string> {
@@ -460,9 +476,9 @@ export class UserService {
   async addUserEquipment(
     idDto: NumberIdDto,
     addUserEquipmentDto: AddUserEquipmentDto,
+    parent: User,
   ): Promise<void> {
-    const user = await this.userRepository.findOne(idDto.id);
-    ErrorIf.isEmpty(user, USER_NOT_FOUND);
+    const user = await this.getEditUserById(parent, idDto.id);
     const equipment = await this.equipmentRepository.findOne(
       addUserEquipmentDto.equipmentId,
     );
@@ -472,6 +488,13 @@ export class UserService {
     );
     equipment.useStatus = addUserEquipmentDto.status;
     equipment.owner = user;
+    if (
+      user.role.name === UserRolesEnum.MANUFACTURER ||
+      user.role.name === UserRolesEnum.DEALER
+    ) {
+      equipment.engineer = user;
+      equipment.manager = user;
+    }
     equipment.building = building;
     equipment.address = addUserEquipmentDto.address.value;
     equipment.save();
@@ -480,9 +503,9 @@ export class UserService {
   async deleteUserEquipment(
     idDto: NumberIdDto,
     equipmentIdDto: NumberEquipmentIdDto,
+    parent: User,
   ): Promise<void> {
-    const user = await this.userRepository.findOne(idDto.id);
-    ErrorIf.isEmpty(user, USER_NOT_FOUND);
+    await this.getEditUserById(parent, idDto.id);
     const equipment = await this.equipmentRepository.findOne(
       equipmentIdDto.equipmentId,
     );
@@ -517,6 +540,42 @@ export class UserService {
       '🔑 Password restore from EMAIL +' + user.email + ' UserId: ' + user.id,
       false,
       requestId,
+    );
+  }
+
+  isRightToCreate(parent: User, newUserRole: UserRolesEnum): boolean {
+    const allVisible: { [name: string]: UserRolesEnum[] } = VISIBLE_ROLES();
+    if (parent.role && parent.role.name in allVisible) {
+      return !!allVisible[parent.role.name].find(name => name === newUserRole);
+    } else {
+      return false;
+    }
+  }
+
+  async getEditUserById(parent: User, id: number): Promise<User> {
+    const user = await this.userRepository.findOne(id, {
+      relations: ['parent', 'role'],
+    });
+    ErrorIf.isEmpty(user, USER_NOT_FOUND);
+    this.isRightToEdit(parent, user);
+    return user;
+  }
+
+  async getUserByIdWithEquipment(parent: User, id: number): Promise<User> {
+    const user = await this.userRepository.findOne(id, {
+      relations: ['role', 'equipmentOwner', 'parent'],
+    });
+    ErrorIf.isEmpty(user, USER_NOT_FOUND);
+    this.isRightToEdit(parent, user);
+    return user;
+  }
+
+  isRightToEdit(parent: User, user: User): void {
+    ErrorIf.isFalse(
+      !user.parent ||
+        parent.id === user.parent.id ||
+        parent.role.name === UserRolesEnum.ADMIN,
+      NOT_CHANGE_USER,
     );
   }
 }

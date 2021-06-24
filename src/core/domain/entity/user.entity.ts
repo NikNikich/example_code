@@ -7,6 +7,7 @@ import {
   JoinColumn,
   ManyToOne,
   OneToMany,
+  OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
@@ -81,6 +82,14 @@ export class User extends BaseEntity {
   role: Role;
 
   @Exclude()
+  @ManyToOne(
+    () => User,
+    (user: User) => user.id,
+  )
+  @JoinColumn()
+  parent?: User;
+
+  @Exclude()
   @OneToMany(
     () => Equipment,
     equipment => equipment.manager,
@@ -107,7 +116,7 @@ export class User extends BaseEntity {
   @ApiModelProperty({
     type: 'Date',
     nullable: true,
-    description: 'Если не null, значит запись считается йдалённой',
+    description: 'Если не null, значит запись считается удалённым',
   })
   @DeleteDateColumn({ type: 'timestamp' })
   public deletedAt: Date;
