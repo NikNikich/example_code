@@ -91,7 +91,7 @@ export class EquipmentService {
         id,
         deletedAt: IsNull(),
       },
-      { relations: [this.parentRelation] },
+      { relations: [this.parentRelation, this.ownerRelation] },
     );
     ErrorIf.isEmpty(equipment, OBJECT_NOT_FOUND);
     await this.isRightToDelete(user, equipment);
@@ -127,7 +127,7 @@ export class EquipmentService {
     user: User,
   ): Promise<Equipment> {
     const equipment = await this.equipmentRepository.findOne(idDto.id, {
-      relations: [this.parentRelation],
+      relations: [this.parentRelation, this.ownerRelation],
     });
     ErrorIf.isEmpty(equipment, EQUIPMENT_NOT_FOUND);
     await this.isRightToEdit(user, equipment);
@@ -248,9 +248,16 @@ export class EquipmentService {
   }
 
   async isRightToEdit(parent: User, equipment: Equipment): Promise<void> {
+    let userOwner: User = null;
+    if (equipment.owner) {
+      userOwner = await this.userRepository.getUserByIdNotDelete(
+        equipment.owner.id,
+      );
+    }
     const boolean = await this.userRepository.isRightToEquipmentEdit(
       parent,
       equipment,
+      userOwner,
     );
     ErrorIf.isFalse(boolean, NOT_CHANGE_EQUIPMENT);
   }
