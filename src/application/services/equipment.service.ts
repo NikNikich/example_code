@@ -94,7 +94,7 @@ export class EquipmentService {
       { relations: [this.parentRelation] },
     );
     ErrorIf.isEmpty(equipment, OBJECT_NOT_FOUND);
-    this.isRightToEdit(user, equipment);
+    await this.isRightToDelete(user, equipment);
     await this.equipmentRepository.softDelete(equipment.id);
   }
 
@@ -236,6 +236,15 @@ export class EquipmentService {
       relations: ['parent'],
     });
     return userFind.parent;
+  }
+
+  async isRightToDelete(user: User, equipment: Equipment): Promise<void> {
+    ErrorIf.isFalse(
+      !equipment.parent ||
+        user.id === equipment.parent.id ||
+        user.role.name === UserRolesEnum.ADMIN,
+      NOT_CHANGE_EQUIPMENT,
+    );
   }
 
   async isRightToEdit(parent: User, equipment: Equipment): Promise<void> {
