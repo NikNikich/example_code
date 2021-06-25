@@ -358,7 +358,14 @@ export class UserService {
       role = await this.roleRepository.findOne(filter.roleId);
       ErrorIf.isEmpty(role, ROLE_NOT_FOUND);
     }
-    return this.userRepository.getListNotDeleteUser(parent, role);
+    const users: User[] = await this.userRepository.getListNotDeleteUser(
+      parent,
+      role,
+    );
+    if (filter && filter.andI) {
+      if (!users.find(user => user.id === parent.id)) users.push(parent);
+    }
+    return users;
   }
 
   async generateSmsCode(): Promise<string> {

@@ -1,7 +1,8 @@
-import { IsInt, IsOptional, Min } from 'class-validator';
+import { IsBoolean, IsInt, IsOptional, Min } from 'class-validator';
 import { ApiModelProperty } from '@nestjs/swagger';
-import { Type } from 'class-transformer';
+import { Transform, Type } from 'class-transformer';
 import { MIN_ID_POSTGRES } from '../../../../shared/constants';
+import { isTrue } from '../../../../shared/is.true';
 
 export class FilterUserDto {
   @IsOptional()
@@ -14,5 +15,11 @@ export class FilterUserDto {
     example: '',
     required: false,
   })
-  roleId: number;
+  roleId?: number;
+
+  @IsOptional()
+  @IsBoolean()
+  @Transform(value => isTrue(value))
+  @ApiModelProperty({ type: 'boolean', example: false, required: false })
+  andI?: boolean;
 }
