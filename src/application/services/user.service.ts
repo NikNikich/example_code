@@ -51,6 +51,7 @@ import { Role } from '../../core/domain/entity/role.entity';
 import { FilterUserDto } from '../../infrastructure/presenter/rest-api/documentation/user/filter.user.dto';
 import { VISIBLE_ROLES } from '../../infrastructure/shared/constants';
 import { plainToClass } from 'class-transformer';
+import { Equipment } from '../../core/domain/entity/equipment.entity';
 
 const REPEAT_SMS_TIME_MS: number = config.get('sms.minRepeatTime');
 const emailTransport = new EmailTransport();
@@ -337,6 +338,10 @@ export class UserService {
     const user = await this.userRepository.findUserByIdWithDeleted(idDto.id);
     ErrorIf.isEmpty(user, USER_NOT_FOUND);
     return this.getUserByIdWithEquipment(parent, idDto.id);
+    user.equipmentOwner = await this.getFilterListUserEquipment(
+      user.equipmentOwner,
+    );
+    return user;
   }
 
   async getUserRoles(user: User): Promise<Role[]> {
@@ -518,6 +523,13 @@ export class UserService {
     );
     ErrorIf.isEmpty(equipment, EQUIPMENT_NOT_FOUND);
     await this.equipmentRepository.deleteOwner(parent, equipment);
+  }
+
+  getFilterListUserEquipment(equipments: Equipment[]): Equipment[] {
+    if (equipments.length > 0) {
+      return equipments.filter(equipment => !!!equipment.deletedAt);
+    }
+    return [];
   }
 
   async sendRestoreEmail(requestId: string, user: User): Promise<void> {
