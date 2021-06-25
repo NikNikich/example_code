@@ -152,7 +152,10 @@ export class UserRepository extends Repository<User> {
   }
 
   async getUserByIdNotDelete(id: number): Promise<User | undefined> {
-    return this.findOne({ where: { id, deletedAt: IsNull() } });
+    return this.findOne({
+      where: { id, deletedAt: IsNull() },
+      relations: ['role'],
+    });
   }
 
   async isRightToEquipmentView(
@@ -179,7 +182,8 @@ export class UserRepository extends Repository<User> {
     }
     if (user.role.name === UserRolesEnum.MANUFACTURER) {
       const booleanOwner = !!equipment.owner && equipment.owner.id === user.id;
-      const booleanParent = !equipment.owner && equipment.parent.id === user.id;
+      const booleanParent =
+        !!equipment.parent && equipment.parent.id === user.id;
       const booleanManager =
         !!equipment.manager && equipment.manager.id === user.id;
       boolean = booleanOwner || booleanManager || booleanParent;
@@ -199,12 +203,16 @@ export class UserRepository extends Repository<User> {
   async isRightToEquipmentEdit(
     user: User,
     equipment: Equipment,
+    userOwner?: User,
   ): Promise<boolean> {
     let boolean = false;
+    const booleanManufacture =
+      user.role.name === UserRolesEnum.MANUFACTURER &&
+      (!!!userOwner || userOwner.role.name !== UserRolesEnum.DEALER);
     if (
       user.role &&
       (user.role.name === UserRolesEnum.DEALER ||
-        user.role.name === UserRolesEnum.MANUFACTURER ||
+        booleanManufacture ||
         user.role.name === UserRolesEnum.ADMIN)
     ) {
       boolean = await this.isRightToEquipmentView(user, equipment);
