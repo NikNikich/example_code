@@ -206,16 +206,17 @@ export class UserRepository extends Repository<User> {
     userOwner?: User,
   ): Promise<boolean> {
     let boolean = false;
-    const booleanManufacture =
-      user.role.name === UserRolesEnum.MANUFACTURER &&
-      (!!!userOwner || userOwner.role.name !== UserRolesEnum.DEALER);
-    if (
-      user.role &&
-      (user.role.name === UserRolesEnum.DEALER ||
+    if (user.role) {
+      const booleanManufacture =
+        user.role.name === UserRolesEnum.MANUFACTURER &&
+        (!!!userOwner || userOwner.role.name !== UserRolesEnum.DEALER);
+      if (
+        user.role.name === UserRolesEnum.DEALER ||
         booleanManufacture ||
-        user.role.name === UserRolesEnum.ADMIN)
-    ) {
-      boolean = await this.isRightToEquipmentView(user, equipment);
+        user.role.name === UserRolesEnum.ADMIN
+      ) {
+        boolean = await this.isRightToEquipmentView(user, equipment);
+      }
     }
     return boolean;
   }
