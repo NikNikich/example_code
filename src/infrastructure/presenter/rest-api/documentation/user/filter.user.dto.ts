@@ -20,6 +20,22 @@ export class FilterUserDto {
   @IsOptional()
   @IsBoolean()
   @Transform(value => isTrue(value))
-  @ApiModelProperty({ type: 'boolean', example: false, required: false })
+  @ApiModelProperty({
+    description: 'добавить текущего пользователя в выводимый список',
+    type: 'boolean',
+    example: false,
+    required: false,
+  })
   andI?: boolean;
+
+  @IsOptional()
+  @IsBoolean()
+  @Transform(value => isTrue(value))
+  @ApiModelProperty({
+    description: 'вывести сервисиков текущего пользователя',
+    type: 'boolean',
+    example: false,
+    required: false,
+  })
+  engineers?: boolean;
 }

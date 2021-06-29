@@ -52,7 +52,7 @@ export class EquipmentService {
         this.ownerRelation,
       ],
     });
-    if (equipments.length > 0) {
+    if (equipments.length > 0 && filter) {
       if (filter.notUsed && !filter.andMy) {
         equipments = equipments.filter(equipment => !!!equipment.owner);
       }

@@ -337,11 +337,11 @@ export class UserService {
   async getUserById(idDto: NumberIdDto, parent: User): Promise<User> {
     const user = await this.userRepository.findUserByIdWithDeleted(idDto.id);
     ErrorIf.isEmpty(user, USER_NOT_FOUND);
-    return this.getUserByIdWithEquipment(parent, idDto.id);
-    user.equipmentOwner = await this.getFilterListUserEquipment(
-      user.equipmentOwner,
+    const userReturn = await this.getUserByIdWithEquipment(parent, idDto.id);
+    userReturn.equipmentOwner = await this.getFilterListUserEquipment(
+      userReturn.equipmentOwner,
     );
-    return user;
+    return userReturn;
   }
 
   async getUserRoles(user: User): Promise<Role[]> {
@@ -363,12 +363,21 @@ export class UserService {
       role = await this.roleRepository.findOne(filter.roleId);
       ErrorIf.isEmpty(role, ROLE_NOT_FOUND);
     }
-    const users: User[] = await this.userRepository.getListNotDeleteUser(
+    let users: User[] = await this.userRepository.getListNotDeleteUser(
       parent,
       role,
     );
-    if (filter && filter.andI) {
-      if (!users.find(user => user.id === parent.id)) users.push(parent);
+    if (filter) {
+      if (filter.engineers && users.length > 0) {
+        users = users.filter(
+          user =>
+            user.role.name === UserRolesEnum.DEALER_SERVICE ||
+            user.role.name === UserRolesEnum.MANUFACTURER_SERVICE,
+        );
+      }
+      if (filter.andI) {
+        if (!users.find(user => user.id === parent.id)) users.push(parent);
+      }
     }
     return users;
   }
