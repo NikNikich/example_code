@@ -127,7 +127,13 @@ export class EquipmentService {
     user: User,
   ): Promise<Equipment> {
     const equipment = await this.equipmentRepository.findOne(idDto.id, {
-      relations: [this.parentRelation, this.ownerRelation],
+      relations: [
+        this.parentRelation,
+        this.ownerRelation,
+        this.managerRelation,
+        this.engineerRelation,
+        this.buildingRelation,
+      ],
     });
     ErrorIf.isEmpty(equipment, EQUIPMENT_NOT_FOUND);
     await this.isRightToEdit(user, equipment);
@@ -175,9 +181,9 @@ export class EquipmentService {
       right => right === UserRightsEnum.EQUIPMENT_LIMITED_WRIGHT,
     );
     const roleWrightEquipment = rights.find(
-      right => right === UserRightsEnum.EQUIPMENT_SETTINGS_WRIGHT,
+      right => right === UserRightsEnum.EQUIPMENT_WRIGHT,
     );
-    return roleLimitedWrightEquipment && !roleWrightEquipment;
+    return !!roleLimitedWrightEquipment && !!!roleWrightEquipment;
   }
 
   getUseStatusList(): string[] {
