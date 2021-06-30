@@ -181,9 +181,9 @@ export class EquipmentService {
       right => right === UserRightsEnum.EQUIPMENT_LIMITED_WRIGHT,
     );
     const roleWrightEquipment = rights.find(
-      right => right === UserRightsEnum.EQUIPMENT_SETTINGS_WRIGHT,
+      right => right === UserRightsEnum.EQUIPMENT_WRIGHT,
     );
-    return roleLimitedWrightEquipment && !roleWrightEquipment;
+    return !!roleLimitedWrightEquipment && !!!roleWrightEquipment;
   }
 
   getUseStatusList(): string[] {
