@@ -94,3 +94,8 @@ export const USER_PARENT_NOT_FOUND: StandardRestApiError = StandardRestApiError.
   1019,
   'User parent not found',
 );
+
+export const NOT_BE_OWNER: StandardRestApiError = StandardRestApiError.create(
+  1020,
+  'This user cannot be owner.',
+);

@@ -12,6 +12,7 @@ import { ErrorIf } from '../../infrastructure/presenter/rest-api/errors/error.if
 import {
   EQUIPMENT_NOT_FOUND,
   INVALID_CREDENTIALS,
+  NOT_BE_OWNER,
   NOT_CHANGE_USER,
   NOT_CREATE_USER,
   PASSWORD_IS_EMPTY,
@@ -500,6 +501,7 @@ export class UserService {
     parent: User,
   ): Promise<void> {
     const user = await this.getEditUserById(parent, idDto.id);
+    this.isRightBeOwner(user);
     const equipment = await this.equipmentRepository.findOne(
       addUserEquipmentDto.equipmentId,
     );
@@ -596,6 +598,16 @@ export class UserService {
     ErrorIf.isEmpty(user, USER_NOT_FOUND);
     this.isRightToEdit(parent, user);
     return user;
+  }
+
+  isRightBeOwner(user: User): void {
+    ErrorIf.isTrue(
+      !user.role ||
+        user.role.name === UserRolesEnum.MANUFACTURER_SERVICE ||
+        user.role.name === UserRolesEnum.DEALER_SERVICE ||
+        user.role.name === UserRolesEnum.CLIENT_SERVICE,
+      NOT_BE_OWNER,
+    );
   }
 
   isRightToEdit(parent: User, user: User): void {
