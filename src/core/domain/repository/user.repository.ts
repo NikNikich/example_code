@@ -39,6 +39,12 @@ export class UserRepository extends Repository<User> {
     });
   }
 
+  async findUserByIdWithEquipment(id: number): Promise<User | undefined> {
+    return User.findOne(id, {
+      relations: ['role', 'equipmentOwner'],
+    });
+  }
+
   async hashPassword(password: string): Promise<string> {
     const salt: string = await genSalt();
     return hash(password, salt);

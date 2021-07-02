@@ -359,6 +359,12 @@ export class UserService {
   }
 
   async getListUser(filter: FilterUserDto, parent: User): Promise<User[]> {
+    const userI = await this.userRepository.findUserByIdWithEquipment(
+      parent.id,
+    );
+    if (filter && filter.onlyI) {
+      return [userI];
+    }
     let role: Role = null;
     if (filter && filter.roleId) {
       role = await this.roleRepository.findOne(filter.roleId);
@@ -377,7 +383,9 @@ export class UserService {
         );
       }
       if (filter.andI) {
-        if (!users.find(user => user.id === parent.id)) users.push(parent);
+        if (!users.find(user => user.id === parent.id)) {
+          users.push(userI);
+        }
       }
     }
     return users;

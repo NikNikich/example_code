@@ -38,4 +38,15 @@ export class FilterUserDto {
     required: false,
   })
   engineers?: boolean;
+
+  @IsOptional()
+  @IsBoolean()
+  @Transform(value => isTrue(value))
+  @ApiModelProperty({
+    description: 'добавить текущего пользователя в выводимый список',
+    type: 'boolean',
+    example: false,
+    required: false,
+  })
+  onlyI?: boolean;
 }
