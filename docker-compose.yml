@@ -29,12 +29,12 @@ services:
   syslog-ng:
     image: balabit/syslog-ng:3.35.1
     build: .
-    restart: always    
+    restart: always
+    ports:
+      - 514:514
     labels:
-      - traefik.backend=syslog-ng
-      - traefik.frontend.rule=Host:syslog-ng.psrv5.citronium.com
+      - traefik.enable=true
       - traefik.docker.network=traefik_proxy
-      - traefik.port=514
     volumes:
       - syslog_logs:/var/log/syslog-ng
       - syslog_socket:/var/run/syslog-ng
