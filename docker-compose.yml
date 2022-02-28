@@ -30,11 +30,11 @@ services:
     image: balabit/syslog-ng:3.35.1
     build: .
     restart: always
-    ports:
-      - "601:601"
     labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.registry.rule=Host(`syslog-ng.psrv5.citronium.com`)"
+      - traefik.backend=syslog-ng
+      - traefik.frontend.rule=Host:syslog-ng.psrv5.citronium.com
+      - traefik.port=601
+      - traefik.docker.network=traefik_proxy
     volumes:
       - syslog_logs:/var/log/syslog-ng
       - syslog_socket:/var/run/syslog-ng
