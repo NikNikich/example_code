@@ -31,7 +31,7 @@ services:
     build: .
     restart: always
     ports:
-      - 514:514
+      - "601:601"
     labels:
       - traefik.enable=true
       - traefik.docker.network=traefik_proxy
