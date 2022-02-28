@@ -33,7 +33,8 @@ services:
     ports:
       - "601:601"
     labels:
-      - traefik.enable=true
+      - traefik.backend=syslog-ng
+      - traefik.frontend.rule=Host:syslog-ng.psrv5.citronium.com
       - traefik.docker.network=traefik_proxy
     volumes:
       - syslog_logs:/var/log/syslog-ng
