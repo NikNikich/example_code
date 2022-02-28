@@ -25,7 +25,19 @@ services:
     networks:
       - united-water
       - traefik
-
+      
+  syslog-ng:
+    image: balabit/syslog-ng:3.35.1
+    build: .
+    ports:
+      - "514:514"
+    volumes:
+      - syslog_logs:/var/log/syslog-ng
+      - syslog_socket:/var/run/syslog-ng
+      - syslog_config:/etc/syslog-ng"
+    networks:
+      - united-water
+      - traefik
 networks:
   united-water:
     driver: bridge
@@ -35,3 +47,6 @@ networks:
 
 volumes:
   pg_data:
+  syslog_logs:
+  syslog_socket:
+  syslog_config:
