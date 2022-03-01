@@ -28,7 +28,7 @@ services:
       
   syslog-ng:
     image: balabit/syslog-ng:3.35.1
-    ontainer_name: syslog-ng
+    container_name: syslog-ng
     build: .
     restart: always
     labels:
