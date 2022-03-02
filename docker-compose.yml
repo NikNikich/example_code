@@ -32,7 +32,7 @@ services:
     build: .
     restart: always
     labels:
-      - traefik.backend=syslog-ng
+      - traefik.backend=united-water_syslog-ng
       - traefik.frontend.rule=Host:syslog-ng.psrv5.citronium.com
       - traefik.port=6514
       - traefik.network=traefik_proxy
