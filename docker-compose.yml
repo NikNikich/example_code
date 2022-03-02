@@ -38,7 +38,7 @@ services:
     volumes:
       - syslog_logs:/var/log/syslog-ng
       - syslog_socket:/var/run/syslog-ng
-      - syslog_config:/etc/syslog-ng"
+      - syslog_config:/etc/syslog-ng
     ports:
       - 514:5514
       - 601:6601
