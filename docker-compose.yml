@@ -28,7 +28,7 @@ services:
 
   syslog-ng:
     image: balabit/syslog-ng:3.35.1
-    container_name: syslog-ng
+    container_name: united-water_syslog-ng
     restart: always
     labels:
       - traefik.backend=united-water_syslog-ng
