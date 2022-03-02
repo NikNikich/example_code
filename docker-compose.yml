@@ -32,10 +32,10 @@ services:
     build: .
     restart: always
     labels:
-      - traefik.syslog-ng.backend=syslog-ng
-      - traefik.syslog-ng.frontend.rule=Host:syslog-ng.psrv5.citronium.com
-      - traefik.syslog-ng.port=6514
-      - traefik.docker.network=traefik_proxy
+      - traefik.backend=syslog-ng
+      - traefik.frontend.rule=Host:syslog-ng.psrv5.citronium.com
+      - traefik.port=6514
+      - traefik.network=traefik_proxy
     volumes:
       - syslog_logs:/var/log/syslog-ng
       - syslog_socket:/var/run/syslog-ng
