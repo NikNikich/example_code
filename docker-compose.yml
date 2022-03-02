@@ -25,7 +25,7 @@ services:
     networks:
       - united-water
       - traefik
-      
+
   syslog-ng:
     image: balabit/syslog-ng:3.35.1
     container_name: syslog-ng
@@ -40,6 +40,10 @@ services:
       - syslog_logs:/var/log/syslog-ng
       - syslog_socket:/var/run/syslog-ng
       - syslog_config:/etc/syslog-ng"
+    ports:
+      - 514:5514
+      - 601:6601
+      - 6514:6514
     networks:
       - united-water
       - traefik
