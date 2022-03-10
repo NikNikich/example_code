@@ -27,7 +27,7 @@ services:
       - traefik
 
   syslog-ng:
-    image: balabit/syslog-ng:3.35.1
+    image: balabit/syslog-ng:3.36.1
     container_name: united-water_syslog-ng
     restart: always
     labels:
@@ -37,7 +37,8 @@ services:
       - traefik.network=traefik_proxy
     volumes:
       - syslog_logs:/var/log/syslog-ng
-      - syslog_socket:/var/run/syslog-ng      
+      - syslog_socket:/var/run/syslog-ng
+      - syslog_config:/etc/syslog-ng
     networks:      
       - traefik
       - united-water
