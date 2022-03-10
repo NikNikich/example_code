@@ -40,8 +40,8 @@ services:
       - syslog_socket:/var/run/syslog-ng
       - syslog_config:/etc/syslog-ng
     ports:
-      - 514:5514
-      - 601:6601
+      - 5514:514
+      - 6601:601
       - 6514:6514
     networks:
       - united-water
