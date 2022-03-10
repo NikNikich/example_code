@@ -34,11 +34,9 @@ services:
       - syslog_logs:/var/log/syslog-ng
       - syslog_socket:/var/run/syslog-ng
       - syslog_config:/etc/syslog-ng
-    ports:
-      - 601:601
-      - 514:514
+    ports:      
+      - "514:514/udp"
     networks:      
-      - traefik
       - united-water
 networks:
   united-water:
