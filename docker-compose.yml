@@ -36,6 +36,7 @@ services:
       - syslog_config:/etc/syslog-ng
     ports:
       - 601:601
+      - 514:514
     networks:      
       - traefik
       - united-water
