@@ -37,8 +37,7 @@ services:
       - traefik.network=traefik_proxy
     volumes:
       - syslog_logs:/var/log/syslog-ng
-      - syslog_socket:/var/run/syslog-ng     
-      - syslog_config:/etc/syslog-ng
+      - syslog_socket:/var/run/syslog-ng      
     networks:      
       - traefik
       - united-water
