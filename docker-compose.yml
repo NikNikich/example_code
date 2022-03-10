@@ -29,16 +29,13 @@ services:
   syslog-ng:
     image: balabit/syslog-ng:3.36.1
     container_name: united-water_syslog-ng
-    restart: always
-    labels:
-      - traefik.backend=united-water_syslog-ng
-      - traefik.frontend.rule=Host:syslog-ng.psrv5.citronium.com
-      - traefik.port=601
-      - traefik.network=traefik_proxy
+    restart: always    
     volumes:
       - syslog_logs:/var/log/syslog-ng
       - syslog_socket:/var/run/syslog-ng
       - syslog_config:/etc/syslog-ng
+    ports:
+      - 601:601
     networks:      
       - traefik
       - united-water
