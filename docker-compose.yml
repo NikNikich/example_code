@@ -33,17 +33,13 @@ services:
     labels:
       - traefik.backend=united-water_syslog-ng
       - traefik.frontend.rule=Host:syslog-ng.psrv5.citronium.com
-      - traefik.port=6514
+      - traefik.port=601
       - traefik.network=traefik_proxy
     volumes:
       - syslog_logs:/var/log/syslog-ng
       - syslog_socket:/var/run/syslog-ng
-      - syslog_config:/etc/syslog-ng
-    ports:
-      - 5514:514
-      - 6601:601      
-    networks:
-      - united-water
+      - syslog_config:/etc/syslog-ng         
+    networks:      
       - traefik
 networks:
   united-water:
