@@ -41,6 +41,7 @@ services:
       - syslog_config:/etc/syslog-ng
     networks:      
       - traefik
+      - united-water
 networks:
   united-water:
     driver: bridge
