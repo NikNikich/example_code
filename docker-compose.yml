@@ -31,7 +31,7 @@ services:
     container_name: united-water_syslog-ng
     restart: always    
     volumes:
-      - syslog_logs:/var/log/syslog-ng
+      - syslog_logs:/var/log
       - syslog_socket:/var/run/syslog-ng
       - syslog_config:/etc/syslog-ng
     ports:      
