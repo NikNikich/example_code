@@ -40,9 +40,8 @@ services:
       - united-water
       
   openssh-server:
-    image: lscr.io/linuxserver/openssh-server
-    container_name: openssh-server
-    hostname: openssh-server #optional
+    image: linuxserver/openssh-server
+    container_name: united-water_ssh    
     environment:
       - PUID=1000
       - PGID=1000
