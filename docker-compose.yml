@@ -38,15 +38,36 @@ services:
       - "514:514/udp"
     networks:      
       - united-water
+      
+  openssh-server:
+    image: lscr.io/linuxserver/openssh-server
+    container_name: openssh-server
+    hostname: openssh-server #optional
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/Moscow
+      - SUDO_ACCESS=false #optional
+      - PASSWORD_ACCESS=true #optional
+      - USER_PASSWORD=GUTD78ymF3PbVe #optional
+      - USER_NAME=unitedsshuser #optional
+    volumes:
+      - ssh_config:/config
+      - syslog_logs:/var/log/syslog_ng
+    ports:
+      - 25225:2222
+    restart: unless-stopped
+      
 networks:
   united-water:
     driver: bridge
   traefik:
     external:
-      name: traefik_proxy
+      name: traefik_proxy          
 
 volumes:
   pg_data:
   syslog_logs:
   syslog_socket:
   syslog_config:
+  ssh_config:
