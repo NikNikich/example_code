@@ -44,7 +44,7 @@ services:
     networks:
       - united-water-loki
       
-   promtail:
+  promtail:
     image: grafana/promtail:2.4.2
     volumes:
       - syslog_logs:/var/log
