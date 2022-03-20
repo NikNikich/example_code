@@ -54,14 +54,10 @@ services:
 
   grafana:
     image: grafana/grafana:latest
-    labels:
-      - traefik.backend=united-water_grafana
-      - traefik.frontend.rule=Host:unitedwater-grafana.psrv5.citronium.com
-      - traefik.port=3000
-      - traefik.docker.network=traefik_proxy    
+    ports:
+      - "25226:3000"        
     networks:
-      - united-water
-      - traefik
+      - united-water     
       
 networks:  
   united-water:
