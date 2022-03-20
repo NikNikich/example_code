@@ -42,7 +42,7 @@ services:
     image: grafana/loki:2.4.2    
     command: -config.file=/etc/loki/local-config.yaml
     networks:
-      - united-water-loki
+      - united-water
       
   promtail:
     image: grafana/promtail:2.4.2
@@ -50,7 +50,7 @@ services:
       - syslog_logs:/var/log
     command: -config.file=/etc/promtail/config.yml
     networks:
-      - united-water-loki
+      - united-water
 
   grafana:
     image: grafana/grafana:latest
@@ -60,12 +60,10 @@ services:
       - traefik.port=3000
       - traefik.docker.network=traefik_proxy    
     networks:
-      - united-water-loki
+      - uunited-water
       - traefik
       
-networks:
-  united-water-loki:
-    driver: bridge
+networks:  
   united-water:
     driver: bridge
   traefik:
