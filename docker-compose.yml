@@ -36,7 +36,7 @@ services:
       - syslog_config:/etc/syslog-ng
     ports:      
       - "514:514/udp"
-      -- "601:601"
+      - "601:601"
     networks:      
       - united-water
       
