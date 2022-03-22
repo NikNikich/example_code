@@ -29,20 +29,32 @@ services:
   syslog-ng:
     image: balabit/syslog-ng:3.36.1
     container_name: united-water_syslog-ng
-    restart: always    
+    restart: always
     volumes:
       - syslog_logs:/var/log/syslog-ng
       - syslog_socket:/var/run/syslog-ng
       - syslog_config:/etc/syslog-ng
-    ports:      
-      - "514:514/udp"
-      - "601:601"
-    networks:      
+    ports:
+      - '514:514/udp'
+      - '601:601'
+    networks:
       - united-water
-      
+
+  rabbitmq:
+    image: rabbitmq:3.9-management-alpine
+    container_name: 'rabbitmq'
+    ports:
+      - 5672:5672
+      - 15672:15672
+    volumes:
+      - rabbit_date:/var/lib/rabbitmq/
+      - rabbit_logs:/var/log/rabbitmq
+    networks:
+      - united-water
+
   openssh-server:
     image: linuxserver/openssh-server
-    container_name: united-water_ssh    
+    container_name: united-water_ssh
     environment:
       - PUID=1000
       - PGID=1000
@@ -56,14 +68,14 @@ services:
       - syslog_logs:/var/log/syslog_ng
     ports:
       - 25225:2222
-    restart: unless-stopped    
-      
-networks:  
+    restart: unless-stopped
+
+networks:
   united-water:
     driver: bridge
   traefik:
     external:
-      name: traefik_proxy          
+      name: traefik_proxy
 
 volumes:
   pg_data:
@@ -71,3 +83,5 @@ volumes:
   syslog_socket:
   syslog_config:
   ssh_config:
+  rabbit_date:
+  rabbit_logs:
