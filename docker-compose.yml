@@ -73,7 +73,7 @@ services:
       - 25225:2222
     restart: unless-stopped
 
- grafana:
+  grafana:
     container_name: grafana
     environment:
       GF_SECURITY_ADMIN_PASSWORD: "jV8mj4Z9T3RH63"
