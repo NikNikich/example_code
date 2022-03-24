@@ -73,6 +73,38 @@ services:
       - 25225:2222
     restart: unless-stopped
 
+ grafana:
+    container_name: grafana
+    environment:
+      GF_SECURITY_ADMIN_PASSWORD: "jV8mj4Z9T3RH63"
+      GF_DASHBOARDS_DEFAULT_HOME_DASHBOARD_PATH: /var/lib/grafana/dashboards/no_folder/loki_syslog_aio_overview.json
+    image: grafana/grafana:8.1.2
+    ports:
+      - 25226:3000
+    networks:
+      - united-water   
+    volumes:
+    - grafana_provisioning:/etc/grafana/provisioning    
+    - grafana_lib:/var/lib/grafana
+    
+   loki:
+    command: -config.file=/etc/loki/loki-config.yml
+    container_name: loki
+    image: grafana/loki:2.3.0
+    networks:
+      - united-water
+    volumes:
+    - loki-config:/etc/loki/loki-config.yml
+    
+  promtail:
+    command: -config.file=/etc/promtail/promtail-config.yml
+    container_name: promtail
+    image: grafana/promtail:2.3.0
+    networks:
+      - united-water
+    volumes:
+    - promtail-config:/etc/promtail/promtail-config.yml
+
 networks:
   united-water:
     driver: bridge
@@ -88,3 +120,7 @@ volumes:
   ssh_config:
   rabbit_date:
   rabbit_logs:
+  grafana_provisioning:
+  grafana_lib:
+  loki-config:
+  promtail-config:
