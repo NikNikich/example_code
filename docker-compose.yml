@@ -87,7 +87,7 @@ services:
     - grafana_provisioning:/etc/grafana/provisioning    
     - grafana_lib:/var/lib/grafana
     
-   loki:
+  loki:
     command: -config.file=/etc/loki/loki-config.yml
     container_name: loki
     image: grafana/loki:2.3.0
