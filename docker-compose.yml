@@ -94,7 +94,7 @@ services:
     networks:
       - united-water
     volumes:
-    - loki-config:/etc/loki/loki-config.yml
+    - loki-config:/etc/loki
     
   promtail:
     command: -config.file=/etc/promtail/promtail-config.yml
@@ -103,7 +103,7 @@ services:
     networks:
       - united-water
     volumes:
-    - promtail-config:/etc/promtail/promtail-config.yml
+    - promtail-config:/etc/promtail
 
 networks:
   united-water:
