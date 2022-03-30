@@ -116,11 +116,13 @@ services:
       
   influxdb:
     image: influxdb:1.8-alpine
-    env_file: configuration.env
+    environment:
+      INFLUXDB_DB=influx
+      INFLUXDB_ADMIN_USER=admin
+      INFLUXDB_ADMIN_PASSWORD=admin
     networks:
       - united-water
-    volumes:
-      - ./:/imports
+    volumes:      
       - influxdb_data:/var/lib/influxdb
 
 networks:
