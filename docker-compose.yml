@@ -106,8 +106,7 @@ services:
     - promtail-config:/etc/promtail
     
   telegraf:
-    image: telegraf:1.18-alpine
-    command: [cp ./telegraf/etc/telegraf.conf /etc/telegraf/telegraf.conf]
+    image: telegraf:1.18-alpine   
     volumes:
     - telegraf_conf:/etc/telegraf
     depends_on:
