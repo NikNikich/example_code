@@ -117,9 +117,9 @@ services:
   influxdb:
     image: influxdb:1.8-alpine
     environment:
-      INFLUXDB_DB=influx
-      INFLUXDB_ADMIN_USER=admin
-      INFLUXDB_ADMIN_PASSWORD=admin
+      INFLUXDB_DB: influx
+      INFLUXDB_ADMIN_USER: admin
+      INFLUXDB_ADMIN_PASSWORD: admin
     networks:
       - united-water
     volumes:      
