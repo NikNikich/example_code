@@ -73,12 +73,63 @@ services:
       - 25225:2222
     restart: unless-stopped
 
+  grafana:
+    container_name: grafana_uw
+    environment:
+      GF_SECURITY_ADMIN_PASSWORD: "jV8mj4Z9T3RH63"
+      GF_DASHBOARDS_DEFAULT_HOME_DASHBOARD_PATH: /var/lib/grafana/dashboards/no_folder/loki_syslog_aio_overview.json
+    image: grafana/grafana:8.1.2
+    ports:
+      - 25226:3000
+    networks:
+      - united-water   
+    volumes:
+    - grafana_provisioning:/etc/grafana/provisioning    
+    - grafana_lib:/var/lib/grafana
+    
+  loki:
+    command: -config.file=/etc/loki/loki-config.yml
+    container_name: loki
+    image: grafana/loki:2.3.0
+    networks:
+      - united-water
+    volumes:
+    - loki-config:/etc/loki
+    
+  promtail:
+    command: -config.file=/etc/promtail/promtail-config.yml
+    container_name: promtail_uw
+    image: grafana/promtail:2.3.0
+    networks:
+      - united-water
+    volumes:
+    - promtail-config:/etc/promtail
+    
+  telegraf:
+    image: telegraf:1.18-alpine
+    command: [cp ./telegraf/etc/telegraf.conf /etc/telegraf/telegraf.conf]
+    volumes:
+    - telegraf_conf:/etc/telegraf
+    depends_on:
+      - influxdb
+    networks:
+      - united-water
+      
+  influxdb:
+    image: influxdb:1.8-alpine
+    env_file: configuration.env
+    networks:
+      - united-water
+    volumes:
+      - ./:/imports
+      - influxdb_data:/var/lib/influxdb
+
 networks:
   united-water:
     driver: bridge
   traefik:
     external:
-      name: traefik_proxy
+      name: traefik_proxy   
 
 volumes:
   pg_data:
@@ -88,3 +139,9 @@ volumes:
   ssh_config:
   rabbit_date:
   rabbit_logs:
+  grafana_provisioning:
+  grafana_lib:
+  loki-config:
+  promtail-config:
+  influxdb_data:
+  telegraf_conf:
