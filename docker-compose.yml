@@ -106,7 +106,7 @@ services:
     - promtail-config:/etc/promtail
     
   telegraf:
-    image: telegraf:1.18-alpine   
+    image: telegraf:1.22-alpine
     volumes:
     - telegraf_conf:/etc/telegraf
     depends_on:
@@ -115,15 +115,25 @@ services:
       - united-water
       
   influxdb:
-    image: influxdb:1.8-alpine
+    image: influxdb:2.1-alpine
     environment:
-      INFLUXDB_DB: influx
-      INFLUXDB_ADMIN_USER: admin
-      INFLUXDB_ADMIN_PASSWORD: Cid2Q9p2J1BM    
+      DOCKER_INFLUXDB_INIT_MODE: setup
+      DOCKER_INFLUXDB_INIT_USERNAME: admin
+      DOCKER_INFLUXDB_INIT_PASSWORD: Cid2Q9p2J1BM
+      DOCKER_INFLUXDB_INIT_ORG: united-water
+      DOCKER_INFLUXDB_INIT_BUCKET: rabbit
+      DOCKER_INFLUXDB_INIT_RETENTION: 1w
+    labels:
+      - traefik.backend=united-water_influxdb
+      - traefik.frontend.rule=Host:unitedwater-influxdb.psrv5.citronium.com
+      - traefik.port=8086
+      - traefik.docker.network=traefik_proxy
     networks:
-      - united-water      
+      - united-water
+      - traefik
     volumes:      
-      - influxdb_data:/var/lib/influxdb
+      - influxdb2_data:/var/lib/influxdb2
+      - influxdb2_conf:/etc/influxdb2
 
 networks:
   united-water:
@@ -144,5 +154,6 @@ volumes:
   grafana_lib:
   loki-config:
   promtail-config:
-  influxdb_data:
-  telegraf_conf:
+  influxdb2_data:
+  influxdb2_conf:
+  telegraf_conf: 
