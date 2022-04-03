@@ -77,7 +77,7 @@ services:
     container_name: grafana_uw
     environment:
       GF_SECURITY_ADMIN_PASSWORD: "jV8mj4Z9T3RH63"
-      GF_USERS_VIEWERS_CAN_EDIT: true
+      GF_USERS_VIEWERS_CAN_EDIT: "true"
       GF_DASHBOARDS_DEFAULT_HOME_DASHBOARD_PATH: /var/lib/grafana/dashboards/no_folder/loki_syslog_aio_overview.json
     image: grafana/grafana:8.1.2
     ports:
