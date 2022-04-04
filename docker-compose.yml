@@ -110,6 +110,8 @@ services:
     image: telegraf:1.22-alpine    
     depends_on:
       - influxdb
+    volumes:
+    - telegraf_conf:/etc/telegraf
     networks:
       - united-water
       
