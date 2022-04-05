@@ -17,6 +17,9 @@ module.exports = {
     migrationsRun: true,
     logging: true,
   },
+  influxDB: {
+    host: 'https://unitedwater-influxdb.psrv5.citronium.com',
+  },
   aws: {
     accessKeyId: '',
     secretAccessKey: '',
