@@ -3,6 +3,8 @@ import { InfluxDbModule, InfluxModuleOptions } from 'nest-influxdb';
 import * as config from 'config';
 import { PassportModule } from '@nestjs/passport';
 import { JwtModule } from '@nestjs/jwt';
+import { MachineLearningService } from '../../application/services/machine_learning.service';
+import { MachineLearningController } from '../presenter/rest-api/controller/machine_learning.controller';
 
 @Module({
   imports: [
@@ -23,7 +25,7 @@ import { JwtModule } from '@nestjs/jwt';
       },
     }),
   ],
-  controllers: [],
-  providers: [],
+  controllers: [MachineLearningController],
+  providers: [MachineLearningService],
 })
-export class InfluxDbModuleModule {}
+export class MachineLearningModule {}

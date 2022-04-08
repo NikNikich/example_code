@@ -12,6 +12,7 @@ import { EquipmentModule } from './equipment.module';
 import { BuildingModule } from './building.module';
 import { WebsocketTransport } from '../transport/websocket.transport';
 import { RoleRepository } from '../../core/domain/repository/role.repository';
+import { MachineLearningModule } from './machine_learning.module';
 
 @Module({
   imports: [
@@ -21,6 +22,7 @@ import { RoleRepository } from '../../core/domain/repository/role.repository';
     EquipmentModule,
     BaseModule,
     BuildingModule,
+    MachineLearningModule,
   ],
   controllers: [AppController],
   providers: [
