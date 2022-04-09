@@ -7,4 +7,5 @@ export enum UserRolesEnum {
   CLIENT = 'Клиент',
   CLIENT_SERVICE = 'Сервис Клиента',
   USER = 'user',
+  MACHINE_LEARNING = 'machine learning',
 }
