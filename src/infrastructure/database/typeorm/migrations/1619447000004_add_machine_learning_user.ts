@@ -20,11 +20,16 @@ export class addMachineLearningUser1619447000004 implements MigrationInterface {
   public async up(): Promise<void> {
     const findMachineLearning = await this.findRoleMachineLearning();
     if (findMachineLearning && findMachineLearning.length > 0) {
-      const value = new User();
-      _.assign(value, this.data);
-      value.role = findMachineLearning[0];
+      const role = new Role();
+      _.assign(role, findMachineLearning[0]);
       const salt: string = await genSalt();
-      value.password = hash(this.password, salt);
+      const password = await hash(this.password, salt);
+      const value = {
+        ...this.data,
+        password: password,
+        roleId: role.id,
+        role: role,
+      };
       await getConnection()
         .createQueryBuilder()
         .insert()
@@ -40,7 +45,7 @@ export class addMachineLearningUser1619447000004 implements MigrationInterface {
   private async findRoleMachineLearning(): Promise<Role[] | undefined> {
     const manager = getConnection().manager;
     return manager.query(
-      `SELECT r.id FROM role AS r WHERE r."name" = 
+      `SELECT * FROM role AS r WHERE r."name" = 
       '${UserRolesEnum.MACHINE_LEARNING}'`,
     );
   }

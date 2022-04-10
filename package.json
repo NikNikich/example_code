@@ -28,6 +28,7 @@
   },
   "dependencies": {
     "@golevelup/nestjs-rabbitmq": "^2.2.0",
+    "@influxdata/influxdb-client": "^1.24.0",
     "@nestjs/common": "7.0.0",
     "@nestjs/core": "7.0.0",
     "@nestjs/jwt": "7.1.0",

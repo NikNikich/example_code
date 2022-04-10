@@ -22,6 +22,8 @@ module.exports = {
     username: 'admin',
     password: 'Cid2Q9p2J1BM',
     bucket: 'rabbit',
+    token:
+      'Q5HlGZePqCkzFYLH8Mfp8hZoBhx_3dQk4LFPEhH-wXe9AIQgqnfm6n0IVOR7DIi0-E0ZYG_7NB6_muAwRVNc7Q==',
   },
   aws: {
     accessKeyId: '',
