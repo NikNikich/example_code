@@ -25,6 +25,8 @@ import { RoleRepository } from '../../core/domain/repository/role.repository';
       useFactory: async (): Promise<InfluxModuleOptions> => {
         return {
           host: config.get('influxDB.host'),
+          username: config.get('influxDB.username'),
+          password: config.get('influxDB.password'),
         };
       },
     }),

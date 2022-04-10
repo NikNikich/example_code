@@ -19,6 +19,9 @@ module.exports = {
   },
   influxDB: {
     host: 'https://unitedwater-influxdb.psrv5.citronium.com',
+    username: 'admin',
+    password: 'Cid2Q9p2J1BM',
+    bucket: 'rabbit',
   },
   aws: {
     accessKeyId: '',
