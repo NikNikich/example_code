@@ -227,7 +227,6 @@ export class EquipmentService {
     }
     return where;
   }
-  parent;
 
   async isRightToGet(user: User, equipment: Equipment): Promise<void> {
     const boolean = await this.userRepository.isRightToEquipmentView(

@@ -13,16 +13,19 @@ import { BuildingModule } from './building.module';
 import { WebsocketTransport } from '../transport/websocket.transport';
 import { RoleRepository } from '../../core/domain/repository/role.repository';
 import { MachineLearningModule } from './machine_learning.module';
+import { RabbitModule } from './rabbit.module';
+import { RabbitLogRepository } from '../../core/domain/repository/log.repository';
 
 @Module({
   imports: [
     TypeOrmModule.forRoot(typeOrmConfig),
-    TypeOrmModule.forFeature([RoleRepository]),
+    TypeOrmModule.forFeature([RoleRepository, RabbitLogRepository]),
     UserModule,
     EquipmentModule,
     BaseModule,
     BuildingModule,
     MachineLearningModule,
+    RabbitModule,
   ],
   controllers: [AppController],
   providers: [

@@ -1,5 +1,4 @@
 import { Module } from '@nestjs/common';
-import { InfluxDbModule, InfluxModuleOptions } from 'nest-influxdb';
 import * as config from 'config';
 import { PassportModule } from '@nestjs/passport';
 import { JwtModule } from '@nestjs/jwt';
@@ -8,6 +7,7 @@ import { MachineLearningController } from '../presenter/rest-api/controller/mach
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UserRepository } from '../../core/domain/repository/user.repository';
 import { RoleRepository } from '../../core/domain/repository/role.repository';
+import { RabbitLog } from '../../core/domain/entity/log.entity';
 
 @Module({
   imports: [
@@ -18,18 +18,7 @@ import { RoleRepository } from '../../core/domain/repository/role.repository';
         expiresIn: config.get('jwt.expiresIn'),
       },
     }),
-    TypeOrmModule.forFeature([UserRepository, RoleRepository]),
-    InfluxDbModule.forRootAsync({
-      imports: [],
-      inject: [],
-      useFactory: async (): Promise<InfluxModuleOptions> => {
-        return {
-          host: config.get('influxDB.host'),
-          username: config.get('influxDB.username'),
-          password: config.get('influxDB.password'),
-        };
-      },
-    }),
+    TypeOrmModule.forFeature([UserRepository, RoleRepository, RabbitLog]),
   ],
   controllers: [MachineLearningController],
   providers: [MachineLearningService],

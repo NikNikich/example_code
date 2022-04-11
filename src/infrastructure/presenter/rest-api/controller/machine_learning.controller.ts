@@ -3,7 +3,7 @@ import {
   Controller,
   Get,
   HttpStatus,
-  Param,
+  Query,
   ValidationPipe,
 } from '@nestjs/common';
 import { Auth } from '../../../../core/common/decorators/auth';
@@ -17,19 +17,20 @@ import { GetByIdBuildingDto } from '../../../response/building/get.by.id.buildin
 import { MachineLearningService } from '../../../../application/services/machine_learning.service';
 import { GetIdListResponse } from '../../../response/machine_learning/get.id.list.response';
 import { GetLogListResponse } from '../../../response/machine_learning/get.log.list.response';
+import { LogMachineLearningDto } from '../documentation/machine_learning/log.machine_learning.dto';
 
 @ApiUseTags('machine_learning')
 @Controller('machine_learning')
 export class MachineLearningController {
   constructor(private machineLearningService: MachineLearningService) {}
 
-  @Get('/ids')
+  @Get('/id')
   @Auth([UserRightsEnum.MACHINE_LEARNING_READ])
   @ApiResponse({ status: HttpStatus.OK, type: GetBuildingResponse })
   @ApiOperation({
     title: 'Получить список id борудования',
   })
-  async getIds(
+  async getId(
     @GetRequestId() requestId: string,
     @GetUser() user: User,
   ): Promise<GetIdListResponse> {
@@ -38,8 +39,8 @@ export class MachineLearningController {
     return plainToClass(GetIdListResponse, getIdListResponse);
   }
 
-  @Get('/logs/:id')
-  @Auth([UserRightsEnum.EQUIPMENT_READ])
+  @Get('/log')
+  @Auth([UserRightsEnum.MACHINE_LEARNING_READ])
   @ApiResponse({ status: HttpStatus.OK, type: GetByIdBuildingDto })
   @ApiOperation({
     title: 'Получить логи по id оборудования',
@@ -47,14 +48,15 @@ export class MachineLearningController {
   async getLogs(
     @GetRequestId() requestId: string,
     @GetUser() user: User,
-    @Param(
+    @Query(
       new ValidationPipe({
+        whitelist: true,
         transform: true,
       }),
     )
-    id: string,
+    filter: LogMachineLearningDto,
   ): Promise<GetLogListResponse> {
-    const response = await this.machineLearningService.getLogs(id);
+    const response = await this.machineLearningService.getLogs(filter);
     const getLogListResponse = new GetLogListResponse(requestId, response);
     return plainToClass(GetLogListResponse, getLogListResponse);
   }
