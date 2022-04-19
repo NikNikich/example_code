@@ -6,6 +6,8 @@ import { LessThanOrEqual, MoreThanOrEqual, Repository } from 'typeorm';
 import { RabbitLog } from '../../core/domain/entity/log.entity';
 import { LogMachineLearningDto } from '../../infrastructure/presenter/rest-api/documentation/machine_learning/log.machine_learning.dto';
 import { InjectRepository } from '@nestjs/typeorm';
+import { InfluxDB } from '@influxdata/influxdb-client';
+import * as config from 'config';
 
 Injectable();
 export class MachineLearningService {
@@ -15,6 +17,11 @@ export class MachineLearningService {
   ) {}
 
   private snEquipment = 'dfgg4353hhh';
+
+  private queryApi = new InfluxDB({
+    url: config.get('influxDB.host'),
+    token: config.get('influxDB.token'),
+  }).getQueryApi(config.get('influxDB.org'));
 
   async getIds(): Promise<string[]> {
     return [this.snEquipment];
