@@ -43,7 +43,7 @@ export class EquipmentController {
   ) {}
 
   @Get()
-  @Auth([UserRightsEnum.EQUIPMENT_READ])
+  @Auth([UserRightsEnum.EQUIPMENT_READ, UserRightsEnum.MACHINE_LEARNING_READ])
   @ApiResponse({
     status: HttpStatus.OK,
     isArray: true,

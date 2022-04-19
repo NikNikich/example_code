@@ -13,6 +13,7 @@ import { SessionRepository } from '../../core/domain/repository/session.reposito
 import { RoleRepository } from '../../core/domain/repository/role.repository';
 import { EquipmentRepository } from '../../core/domain/repository/equipment.repository';
 import { BuildingRepository } from '../../core/domain/repository/building.repository';
+import { RabbitLogRepository } from '../../core/domain/repository/log.repository';
 
 @Module({
   imports: [
@@ -30,6 +31,7 @@ import { BuildingRepository } from '../../core/domain/repository/building.reposi
       RoleRepository,
       EquipmentRepository,
       BuildingRepository,
+      RabbitLogRepository,
     ]),
   ],
   controllers: [BaseController],

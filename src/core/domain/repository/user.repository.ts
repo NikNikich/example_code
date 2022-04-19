@@ -1,6 +1,6 @@
 import { EntityRepository, FindConditions, IsNull, Repository } from 'typeorm';
 import { UpdateUserDto } from '../../../infrastructure/presenter/rest-api/documentation/user/update.user.dto';
-import * as moment from 'moment';
+import moment from 'moment';
 import { genSalt, hash } from 'bcryptjs';
 import { Role } from '../entity/role.entity';
 import { UpdateAdminUserDto } from '../../../infrastructure/presenter/rest-api/documentation/user/update.admin.user.dto';
