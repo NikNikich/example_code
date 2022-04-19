@@ -30,9 +30,9 @@ node {
         sh "docker build -t ${dockerRegistry}:${imageTag} ."
       }
 
-      stage("Push") {
-        sh "docker push ${dockerRegistry}:${imageTag}"
-      }
+      //stage("Push") {
+      //  sh "docker push ${dockerRegistry}:${imageTag}"
+      //}
 
       stage("Docker start at psrv5") {
         sh "APP_VERSION=${imageTag} docker-compose -p united-water up -d"
