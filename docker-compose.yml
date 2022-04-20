@@ -50,6 +50,7 @@ services:
       - 5672:5672
       - 15672:15672
     volumes:
+      - rabbit_config:/etc/rabbitmq/
       - rabbit_date:/var/lib/rabbitmq/
       - rabbit_logs:/var/log/rabbitmq
     networks:
@@ -157,4 +158,5 @@ volumes:
   promtail-config:
   influxdb2_data:
   influxdb2_conf:
-  telegraf_conf: 
+  telegraf_conf:
+  rabbit_config:
