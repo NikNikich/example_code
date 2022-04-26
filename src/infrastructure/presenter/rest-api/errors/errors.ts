@@ -99,3 +99,13 @@ export const NOT_BE_OWNER: StandardRestApiError = StandardRestApiError.create(
   1020,
   'This user cannot be owner.',
 );
+
+export const DATA_EQUIPMENT_NOT_FOUND: StandardRestApiError = StandardRestApiError.create(
+  1021,
+  'Data equipment not found',
+);
+
+export const ERROR_INFLUX_QUERY: StandardRestApiError = StandardRestApiError.create(
+  1022,
+  'Error influx query',
+);

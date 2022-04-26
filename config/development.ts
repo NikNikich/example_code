@@ -21,7 +21,7 @@ module.exports = {
     host: 'https://unitedwater-influxdb.psrv5.citronium.com',
     username: 'admin',
     password: 'Cid2Q9p2J1BM',
-    bucket: 'rabbit',
+    bucket: 'rabbit_dev',
     org: 'united-water',
     token:
       'Q5HlGZePqCkzFYLH8Mfp8hZoBhx_3dQk4LFPEhH-wXe9AIQgqnfm6n0IVOR7DIi0-E0ZYG_7NB6_muAwRVNc7Q==',
