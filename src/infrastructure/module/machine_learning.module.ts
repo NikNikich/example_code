@@ -8,7 +8,6 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { UserRepository } from '../../core/domain/repository/user.repository';
 import { RoleRepository } from '../../core/domain/repository/role.repository';
 import { RabbitLog } from '../../core/domain/entity/log.entity';
-import { InfluxDbModule, InfluxModuleOptions } from 'nest-influxdb';
 
 @Module({
   imports: [
@@ -20,17 +19,6 @@ import { InfluxDbModule, InfluxModuleOptions } from 'nest-influxdb';
       },
     }),
     TypeOrmModule.forFeature([UserRepository, RoleRepository, RabbitLog]),
-    InfluxDbModule.forRootAsync({
-      imports: [],
-      inject: [],
-      useFactory: async (): Promise<InfluxModuleOptions> => {
-        return {
-          host: config.get('influxDB.host'),
-          username: config.get('influxDB.username'),
-          password: config.get('influxDB.password'),
-        };
-      },
-    }),
   ],
   controllers: [MachineLearningController],
   providers: [MachineLearningService],

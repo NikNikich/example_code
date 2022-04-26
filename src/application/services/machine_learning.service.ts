@@ -1,6 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { ErrorIf } from '../../infrastructure/presenter/rest-api/errors/error.if';
-import { EQUIPMENT_NOT_FOUND } from '../../infrastructure/presenter/rest-api/errors/errors';
+import {
+  EQUIPMENT_NOT_FOUND,
+  ERROR_INFLUX_QUERY,
+} from '../../infrastructure/presenter/rest-api/errors/errors';
 import { FindConditions } from 'typeorm/find-options/FindConditions';
 import { LessThanOrEqual, MoreThanOrEqual, Repository } from 'typeorm';
 import { RabbitLog } from '../../core/domain/entity/log.entity';
@@ -8,6 +11,7 @@ import { LogMachineLearningDto } from '../../infrastructure/presenter/rest-api/d
 import { InjectRepository } from '@nestjs/typeorm';
 import { InfluxDB } from '@influxdata/influxdb-client';
 import * as config from 'config';
+import { InfluxDto } from '../../infrastructure/presenter/rest-api/documentation/influx/influx.dto';
 
 Injectable();
 export class MachineLearningService {
@@ -16,7 +20,7 @@ export class MachineLearningService {
     private rabbitsRepository: Repository<RabbitLog>,
   ) {}
 
-  private snEquipment = 'dfgg4353hhh';
+  private snEquipment = 'mqtt_test';
 
   private queryApi = new InfluxDB({
     url: config.get('influxDB.host'),
@@ -33,10 +37,19 @@ export class MachineLearningService {
       filter,
     );
     const find = await this.rabbitsRepository.find(where);
-    if (find.length > 0) {
-      return find.map(log => log.message);
-    } else {
-      return [];
+    console.error(find);
+    try {
+      const queryInflux = await this.getQueryInflux(filter);
+      const influxFind: Array<InfluxDto> = await this.queryApi.collectRows<
+        InfluxDto
+      >(queryInflux);
+      if (influxFind.length > 0) {
+        return influxFind.map(finded => finded._value);
+      } else {
+        return [];
+      }
+    } catch (e) {
+      throw ERROR_INFLUX_QUERY;
     }
   }
 
@@ -55,5 +68,22 @@ export class MachineLearningService {
       }
     }
     return where;
+  }
+
+  async getQueryInflux(filter: LogMachineLearningDto): Promise<string> {
+    const table = config.get('influxDB.bucket');
+    let queryInflux = `from(bucket: "${table}") |> range(`;
+    if (Object.keys(filter).length > 0 && filter.fromDate) {
+      const fromDate = new Date(filter.fromDate).toISOString();
+      queryInflux = queryInflux + `start: ${fromDate} , `;
+    }
+    if (Object.keys(filter).length > 0 && filter.toDate) {
+      const toDate = new Date(filter.toDate).toISOString();
+      queryInflux = queryInflux + `stop: ${toDate})`;
+    } else {
+      queryInflux = queryInflux + 'stop: now())';
+    }
+    queryInflux = queryInflux + '|> keep(columns: ["_value"])';
+    return queryInflux;
   }
 }
