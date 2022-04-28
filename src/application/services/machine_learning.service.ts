@@ -20,7 +20,7 @@ export class MachineLearningService {
     private rabbitsRepository: Repository<RabbitLog>,
   ) {}
 
-  private snEquipment = 'mqtt_test';
+  private snEquipment = 'long2';
 
   private queryApi = new InfluxDB({
     url: config.get('influxDB.host'),
