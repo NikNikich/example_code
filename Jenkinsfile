@@ -37,6 +37,14 @@ node {
       stage("Docker start at psrv5") {
         sh "APP_VERSION=${imageTag} docker-compose -p united-water up -d"
       }
+        
+      stage("Config") {
+        sh "docker cp ./config/telegraf.conf united-water_telegraf:/etc/telegraf/telegraf.conf"
+      }  
+        
+      stage("restart") {
+        sh "docker restart united-water_telegraf"
+      }
 
       stage("Finish") {
         sendMessage("🛠✅ Build ${repositoryName} №${env.BUILD_NUMBER}: ${imageTag}. Finish. Deploy: https://${jenkinsURL}/job/api_deploy/")
