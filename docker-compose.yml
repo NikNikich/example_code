@@ -109,7 +109,8 @@ services:
     - promtail-config:/etc/promtail
     
   telegraf:
-    image: telegraf:1.22-alpine    
+    image: telegraf:1.22-alpine
+    container_name: united-water_telegraf
     depends_on:
       - influxdb
     volumes:
