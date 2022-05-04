@@ -39,6 +39,7 @@
     "@nestjs/swagger": "3.1.0",
     "@nestjs/typeorm": "7.1.4",
     "@nestjs/websockets": "7.6.17",
+    "@types/amqplib": "^0.8.2",
     "@types/lodash": "4.14.168",
     "@types/webpack": "4.41.27",
     "amqp-connection-manager": "^4.1.1",
