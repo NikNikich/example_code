@@ -33,6 +33,7 @@ import { FilterEquipmentDto } from '../documentation/equipment/filter.equipment.
 import { MessageBaseDto } from '../documentation/base/message.base.dto';
 import { SocketService } from '../../../../application/services/socket.service';
 import { UserRightsEnum } from '../../../shared/enum/user.rights.enum';
+import { ParameterEquipmentResponse } from '../../../response/equipment/parameter.equipment.response';
 
 @ApiUseTags('equipments')
 @Controller('equipments')
@@ -152,6 +153,26 @@ export class EquipmentController {
       requestId,
       await this.equipmentService.getActiveEquipment(idDto, user),
     );
+  }
+
+  @Get('/parameter/:id')
+  @Auth([UserRightsEnum.EQUIPMENT_READ])
+  @ApiResponse({
+    status: HttpStatus.OK,
+    isArray: true,
+    type: EquipmentResponseDto,
+  })
+  @ApiOperation({ title: 'Параметры оборудования по id' })
+  async getParameter(
+    @GetRequestId() requestId: string,
+    @GetUser() user: User,
+    @Param(ValidationPipe) idDto: NumberIdDto,
+  ): Promise<ParameterEquipmentResponse> {
+    const parameterEquipmentResponse = new ParameterEquipmentResponse(
+      requestId,
+      await this.equipmentService.getParameterEquipment(idDto, user),
+    );
+    return plainToClass(ParameterEquipmentResponse, parameterEquipmentResponse);
   }
 
   @Delete('/:id')

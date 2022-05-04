@@ -6,6 +6,7 @@ import {
   Entity,
   JoinColumn,
   ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
@@ -15,6 +16,7 @@ import { EquipmentJobStatusEnum } from '../../../infrastructure/shared/enum/equi
 import { ApiModelProperty } from '@nestjs/swagger';
 import { EquipmentUseStatusEnum } from '../../../infrastructure/shared/enum/equipment.use.status.enum';
 import { Exclude } from 'class-transformer';
+import { ParameterEquipment } from './parameter.equipment.entity';
 
 @Entity({ name: 'equipment' })
 export class Equipment extends BaseEntity {
@@ -128,6 +130,14 @@ export class Equipment extends BaseEntity {
   )
   @JoinColumn()
   parent?: User;
+
+  @Exclude()
+  @OneToMany(
+    () => ParameterEquipment,
+    (parameter: ParameterEquipment) => parameter.equipment,
+    { nullable: true },
+  )
+  parameterEquipment?: ParameterEquipment[];
 
   @Exclude()
   @DeleteDateColumn({ type: 'timestamp', nullable: true })

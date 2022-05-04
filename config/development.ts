@@ -28,7 +28,13 @@ module.exports = {
   },
   rabbitMQ: {
     uri: 'amqp://united_rabbit:5lIHHO5QcvdSi@psrv5.citronium.com:5672',
-    queue1: 'Logs',
+    exchange: 'amq.topic',
+    queue1: 'devs_rpc_req',
+    replacement1: 2,
+    queue2: 'devs_rpc_res',
+    replacement2: 2,
+    queue3: 'devs_events',
+    replacement3: 2,
   },
   aws: {
     accessKeyId: '',

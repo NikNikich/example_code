@@ -15,6 +15,7 @@ import { RabbitService } from '../../application/services/rabbit.service';
         },
       ],
       uri: config.get('rabbitMQ.uri'),
+      connectionInitOptions: { wait: false, reject: false },
     }),
     RabbitModule,
     TypeOrmModule.forFeature([RabbitLogRepository]),

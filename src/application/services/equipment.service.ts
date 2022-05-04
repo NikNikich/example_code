@@ -23,6 +23,11 @@ import { RoleRepository } from '../../core/domain/repository/role.repository';
 import { UserRightsEnum } from '../../infrastructure/shared/enum/user.rights.enum';
 import { FindConditions } from 'typeorm/find-options/FindConditions';
 import { plainToClass } from 'class-transformer';
+import {
+  GraphResponseDto,
+  ParameterEquipmentResponseDto,
+} from '../../infrastructure/response/equipment/parameter.equipment.response';
+import { ParameterEquipment } from '../../core/domain/entity/parameter.equipment.entity';
 
 @Injectable()
 export class EquipmentService {
@@ -36,6 +41,8 @@ export class EquipmentService {
   private ownerRelation = 'owner';
   private parentRelation = 'parent';
   private buildingRelation = 'building';
+  private parameterEquipmentRelation = 'parameterEquipment';
+  private lengthGraphParameterEquipment = 24;
 
   async getActiveEquipments(
     user: User,
@@ -83,6 +90,32 @@ export class EquipmentService {
     ErrorIf.isEmpty(equipment, EQUIPMENT_NOT_FOUND);
     await this.isRightToGet(user, equipment);
     return plainToClass(Equipment, equipment);
+  }
+
+  async getParameterEquipment(
+    idDto: NumberIdDto,
+    user: User,
+  ): Promise<ParameterEquipmentResponseDto> {
+    const equipment = await this.equipmentRepository.findOne(idDto.id, {
+      relations: [
+        this.buildingRelation,
+        this.engineerRelation,
+        this.managerRelation,
+        this.ownerRelation,
+        this.parentRelation,
+        this.parameterEquipmentRelation,
+      ],
+    });
+    ErrorIf.isEmpty(equipment, EQUIPMENT_NOT_FOUND);
+    await this.isRightToGet(user, equipment);
+    const parameterEquipment =
+      equipment.parameterEquipment && equipment.parameterEquipment.length > 0
+        ? equipment.parameterEquipment[0]
+        : null;
+    const returnParameter = new ParameterEquipmentResponseDto();
+    returnParameter.equipmentParameters = parameterEquipment;
+    returnParameter.graph = this.getGraphEquipment(parameterEquipment);
+    return plainToClass(ParameterEquipmentResponseDto, returnParameter);
   }
 
   async delete(user: User, id: number): Promise<void> {
@@ -250,6 +283,43 @@ export class EquipmentService {
         user.role.name === UserRolesEnum.ADMIN,
       NOT_CHANGE_EQUIPMENT,
     );
+  }
+
+  private getGraphEquipment(
+    parameterEquipment: ParameterEquipment,
+  ): GraphResponseDto[] {
+    const parameterEquipmentGraph: GraphResponseDto[] = [];
+    if (parameterEquipment) {
+      for (let _i = 0; _i < this.lengthGraphParameterEquipment; _i++) {
+        const graph = new GraphResponseDto();
+        const tempHotWater = parameterEquipment.tempHotWater
+          ? parameterEquipment.tempHotWater - (_i % 3) * 2
+          : null;
+        const tempColdWater = parameterEquipment.tempColdWater
+          ? parameterEquipment.tempColdWater + (_i % 3) * 3
+          : null;
+        const tempCo2 = parameterEquipment.tempCO2
+          ? parameterEquipment.tempCO2 + (_i % 3) * 2
+          : null;
+        const pressureHotWater = parameterEquipment.pressureHotWater
+          ? parameterEquipment.pressureHotWater + (_i % 3)
+          : null;
+        const pressureColdWater = parameterEquipment.pressureColdWater
+          ? parameterEquipment.pressureColdWater - (_i % 3)
+          : null;
+        const pressureCo2 = parameterEquipment.pressureCO2
+          ? parameterEquipment.pressureCO2 - (_i % 3) * 2
+          : null;
+        graph.tempColdWater = tempColdWater;
+        graph.tempHotWater = tempHotWater;
+        graph.pressureCO2 = tempCo2;
+        graph.pressureColdWater = pressureColdWater;
+        graph.pressureHotWater = pressureHotWater;
+        graph.pressureCO2 = pressureCo2;
+        parameterEquipmentGraph.push(graph);
+      }
+    }
+    return parameterEquipmentGraph;
   }
 
   async isRightToEdit(parent: User, equipment: Equipment): Promise<void> {
