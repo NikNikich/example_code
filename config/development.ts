@@ -26,6 +26,15 @@ module.exports = {
     token:
       'Q5HlGZePqCkzFYLH8Mfp8hZoBhx_3dQk4LFPEhH-wXe9AIQgqnfm6n0IVOR7DIi0-E0ZYG_7NB6_muAwRVNc7Q==',
   },
+  influxDB1: {
+    host: 'https://unitedwater-influxdb.psrv5.citronium.com',
+    username: 'admin',
+    password: 'Cid2Q9p2J1BM',
+    bucket: 'rabbit_dev_1',
+    org: 'united-water',
+    token:
+      'Q5HlGZePqCkzFYLH8Mfp8hZoBhx_3dQk4LFPEhH-wXe9AIQgqnfm6n0IVOR7DIi0-E0ZYG_7NB6_muAwRVNc7Q==',
+  },
   rabbitMQ: {
     uri: 'amqp://united_rabbit:5lIHHO5QcvdSi@psrv5.citronium.com:5672',
     exchange: 'amq.topic',
