@@ -37,8 +37,12 @@ module.exports = {
   },
   rabbitMQ: {
     uri: 'amqp://united_rabbit:5lIHHO5QcvdSi@psrv5.citronium.com:5672',
+    host: 'psrv5.citronium.com',
+    login: 'united_rabbit',
+    password: '5lIHHO5QcvdSi',
     exchange: 'amq.topic',
-    queue1: 'devs_rpc_req',
+    topic: 'watwell.devs.*.events',
+    queue1: 'devs_messagges',
     replacement1: 2,
     queue2: 'devs_rpc_res',
     replacement2: 2,

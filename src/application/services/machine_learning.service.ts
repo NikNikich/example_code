@@ -12,12 +12,15 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { InfluxDB } from '@influxdata/influxdb-client';
 import * as config from 'config';
 import { InfluxDto } from '../../infrastructure/presenter/rest-api/documentation/influx/influx.dto';
+import { ParameterEquipment } from '../../core/domain/entity/parameter.equipment.entity';
 
 Injectable();
 export class MachineLearningService {
   constructor(
     @InjectRepository(RabbitLog)
     private rabbitsRepository: Repository<RabbitLog>,
+    @InjectRepository(ParameterEquipment)
+    private parameterEquipmentRepository: Repository<ParameterEquipment>,
   ) {}
 
   private snEquipment = 'long2';

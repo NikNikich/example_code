@@ -292,14 +292,14 @@ export class EquipmentService {
     if (parameterEquipment) {
       for (let _i = 0; _i < this.lengthGraphParameterEquipment; _i++) {
         const graph = new GraphResponseDto();
-        const tempHotWater = parameterEquipment.tempHotWater
-          ? parameterEquipment.tempHotWater - (_i % 3) * 2
+        const tempHotWater = parameterEquipment.tempBoiler
+          ? parameterEquipment.tempBoiler - (_i % 3) * 2
           : null;
-        const tempColdWater = parameterEquipment.tempColdWater
-          ? parameterEquipment.tempColdWater + (_i % 3) * 3
+        const tempColdWater = parameterEquipment.tempChiller
+          ? parameterEquipment.tempChiller + (_i % 3) * 3
           : null;
-        const tempCo2 = parameterEquipment.tempCO2
-          ? parameterEquipment.tempCO2 + (_i % 3) * 2
+        const tempCo2 = parameterEquipment.tempEnv
+          ? parameterEquipment.tempEnv + (_i % 3) * 2
           : null;
         const pressureHotWater = parameterEquipment.pressureHotWater
           ? parameterEquipment.pressureHotWater + (_i % 3)

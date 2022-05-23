@@ -8,6 +8,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { UserRepository } from '../../core/domain/repository/user.repository';
 import { RoleRepository } from '../../core/domain/repository/role.repository';
 import { RabbitLog } from '../../core/domain/entity/log.entity';
+import { ParameterEquipment } from '../../core/domain/entity/parameter.equipment.entity';
 
 @Module({
   imports: [
@@ -18,7 +19,12 @@ import { RabbitLog } from '../../core/domain/entity/log.entity';
         expiresIn: config.get('jwt.expiresIn'),
       },
     }),
-    TypeOrmModule.forFeature([UserRepository, RoleRepository, RabbitLog]),
+    TypeOrmModule.forFeature([
+      UserRepository,
+      RoleRepository,
+      RabbitLog,
+      ParameterEquipment,
+    ]),
   ],
   controllers: [MachineLearningController],
   providers: [MachineLearningService],
