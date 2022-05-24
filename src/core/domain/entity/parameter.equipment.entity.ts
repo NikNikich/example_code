@@ -80,7 +80,6 @@ export class ParameterEquipment extends BaseEntity {
   @Column({ nullable: true, name: 'time_out_water' })
   timeOutWater: string;
 
-  @Exclude()
   @ApiModelProperty({
     type: 'timestamp',
     description: 'Время и тип выдачи воды',
