@@ -40,7 +40,7 @@ import * as config from 'config';
           host: config.get<string>('rabbitMQ.host'),
         },
       ],
-      queueName: 'devs_rpc_req1',
+      queueName: config.get<string>('rabbitMQ.queue1'),
       middleware: [RabbitMiddle],
       intercepters: [RabbitIntercepter],
     }),

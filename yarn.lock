@@ -5555,12 +5555,12 @@ neo-async@^2.6.2:
   resolved "https://registry.yarnpkg.com/neo-async/-/neo-async-2.6.2.tgz#b4aafb93e3aeb2d8174ca53cf163ab7d7308305f"
   integrity sha512-Yd3UES5mWCSqR+qNT93S3UoYUkqAZ9lLg8a7g9rimsWmYGK8cVToA4/sF3RrshdyV3sAGMXVUmpMYOw+dLpOuw==
 
-nest-influxdb@^0.0.3:
+nest-influxdb@0.0.3:
   version "0.0.3"
   resolved "https://registry.yarnpkg.com/nest-influxdb/-/nest-influxdb-0.0.3.tgz#97215d63843fa6734f4aa8713f54782bc02c7e0b"
   integrity sha512-3FecWljPcWTDC69G7RuTAGl5IJt2DqiklGaxhxHMgoSAm+luRj8xSvobXajPU/aylSF+uL24ZxGycytS72t74g==
 
-nestjs-rmq@^2.7.2:
+nestjs-rmq@2.7.2:
   version "2.7.2"
   resolved "https://registry.yarnpkg.com/nestjs-rmq/-/nestjs-rmq-2.7.2.tgz#a0fa603a292d5678aafc679fca588822bee6a51a"
   integrity sha512-2JWMOmpPAV/wza/iHm4Jcu+qEYLcZQrBzDT4QAzQaphj2p+5hUGYBkaQCmtP3xZ/2mfSu7Q+5DgKN7qIvbc7+w==
