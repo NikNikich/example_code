@@ -3,7 +3,7 @@ import { ApiModelProperty } from '@nestjs/swagger';
 
 export class LogMachineLearningDto {
   @IsString()
-  @MinLength(4)
+  @MinLength(2)
   @ApiModelProperty({
     type: 'string',
     example: 'id оборудования',

@@ -9,6 +9,7 @@ import { UserRepository } from '../../core/domain/repository/user.repository';
 import { RoleRepository } from '../../core/domain/repository/role.repository';
 import { RabbitLog } from '../../core/domain/entity/log.entity';
 import { ParameterEquipment } from '../../core/domain/entity/parameter.equipment.entity';
+import { Equipment } from '../../core/domain/entity/equipment.entity';
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { ParameterEquipment } from '../../core/domain/entity/parameter.equipment
     TypeOrmModule.forFeature([
       UserRepository,
       RoleRepository,
+      Equipment,
       RabbitLog,
       ParameterEquipment,
     ]),

@@ -7,15 +7,17 @@ import {
   ManyToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
-import { Exclude } from 'class-transformer';
+import { Exclude, Expose } from 'class-transformer';
 import { Equipment } from './equipment.entity';
 import { ApiModelProperty } from '@nestjs/swagger';
 
 @Entity({ name: 'parameter_equipment' })
 export class ParameterEquipment extends BaseEntity {
+  @Exclude()
   @PrimaryGeneratedColumn()
   id: number;
 
+  @Expose()
   @ApiModelProperty({ type: 'real', description: 'Температура холодной воды' })
   @Column({
     nullable: true,
@@ -78,6 +80,7 @@ export class ParameterEquipment extends BaseEntity {
   @Column({ nullable: true, name: 'time_out_water' })
   timeOutWater: string;
 
+  @Exclude()
   @ApiModelProperty({
     type: 'timestamp',
     description: 'Время и тип выдачи воды',
@@ -100,6 +103,7 @@ export class ParameterEquipment extends BaseEntity {
   @Column({ nullable: true, name: 'energy_carbonize' })
   energyCarbonize: number;
 
+  @Exclude()
   @ManyToOne(
     () => Equipment,
     equipment => equipment.id,
