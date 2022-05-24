@@ -5,22 +5,34 @@ import {
   ERROR_INFLUX_QUERY,
 } from '../../infrastructure/presenter/rest-api/errors/errors';
 import { FindConditions } from 'typeorm/find-options/FindConditions';
-import { LessThanOrEqual, MoreThanOrEqual, Repository } from 'typeorm';
+import {
+  LessThanOrEqual,
+  MoreThanOrEqual,
+  Not,
+  IsNull,
+  Repository,
+} from 'typeorm';
 import { RabbitLog } from '../../core/domain/entity/log.entity';
 import { LogMachineLearningDto } from '../../infrastructure/presenter/rest-api/documentation/machine_learning/log.machine_learning.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { InfluxDB } from '@influxdata/influxdb-client';
 import * as config from 'config';
 import { InfluxDto } from '../../infrastructure/presenter/rest-api/documentation/influx/influx.dto';
+import { ParameterEquipment } from '../../core/domain/entity/parameter.equipment.entity';
+import { Equipment } from '../../core/domain/entity/equipment.entity';
 
 Injectable();
 export class MachineLearningService {
   constructor(
     @InjectRepository(RabbitLog)
     private rabbitsRepository: Repository<RabbitLog>,
+    @InjectRepository(ParameterEquipment)
+    private parameterEquipmentRepository: Repository<ParameterEquipment>,
+    @InjectRepository(Equipment)
+    private equipmentRepository: Repository<Equipment>,
   ) {}
 
-  private snEquipment = 'long2';
+  private logDate = 'dateEquipment';
 
   private queryApi = new InfluxDB({
     url: config.get('influxDB.host'),
@@ -28,43 +40,58 @@ export class MachineLearningService {
   }).getQueryApi(config.get('influxDB.org'));
 
   async getIds(): Promise<string[]> {
-    return [this.snEquipment];
+    const equipments = await this.equipmentRepository.find({
+      where: { equipmentId: Not(IsNull()) },
+    });
+    return equipments.length > 0
+      ? equipments.map(equipment => equipment.equipmentId)
+      : [];
   }
 
-  async getLogs(filter: LogMachineLearningDto): Promise<string[]> {
-    ErrorIf.isFalse(filter.id === this.snEquipment, EQUIPMENT_NOT_FOUND);
-    const where: FindConditions<RabbitLog> = await this.getWhereLogOption(
+  async getLogs(filter: LogMachineLearningDto): Promise<ParameterEquipment[]> {
+    const equipment = await this.equipmentRepository.findOne({
+      where: { equipmentId: filter.id },
+    });
+    ErrorIf.isEmpty(equipment, EQUIPMENT_NOT_FOUND);
+    const where: FindConditions<ParameterEquipment> = await this.getWhereLogOption(
+      equipment,
       filter,
     );
-    const find = await this.rabbitsRepository.find(where);
-    console.error(find);
-    try {
-      const queryInflux = await this.getQueryInflux(filter);
-      const influxFind: Array<InfluxDto> = await this.queryApi.collectRows<
-        InfluxDto
-      >(queryInflux);
-      if (influxFind.length > 0) {
-        return influxFind.map(finded => finded._value);
-      } else {
-        return [];
+    if (false) {
+      try {
+        const queryInflux = await this.getQueryInflux(filter);
+        const influxFind: Array<InfluxDto> = await this.queryApi.collectRows<
+          InfluxDto
+        >(queryInflux);
+        if (influxFind.length > 0) {
+          return []; // influxFind.map(finded => finded._value);
+        } else {
+          return [];
+        }
+      } catch (e) {
+        throw ERROR_INFLUX_QUERY;
       }
-    } catch (e) {
-      throw ERROR_INFLUX_QUERY;
     }
+    const findParameter = await this.parameterEquipmentRepository.find(where);
+    findParameter.forEach(param =>
+      Object.keys(param).forEach(k => param[k] == null && delete param[k]),
+    );
+    return findParameter;
   }
 
   async getWhereLogOption(
+    equipment: Equipment,
     filter: LogMachineLearningDto,
-  ): Promise<FindConditions<RabbitLog>> {
-    const where: FindConditions<RabbitLog> = { snEquipment: filter.id };
+  ): Promise<FindConditions<ParameterEquipment>> {
+    const where: FindConditions<ParameterEquipment> = { equipment };
     if (Object.keys(filter).length > 0) {
       if (filter.fromDate) {
         const fromDate = new Date(filter.fromDate);
-        where['createdAt'] = MoreThanOrEqual(fromDate);
+        where[this.logDate] = MoreThanOrEqual(fromDate);
       }
       if (filter.toDate) {
         const toDate = new Date(filter.toDate);
-        where['createdAt'] = LessThanOrEqual(toDate);
+        where[this.logDate] = LessThanOrEqual(toDate);
       }
     }
     return where;

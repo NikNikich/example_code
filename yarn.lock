@@ -1458,17 +1458,17 @@ ajv@6.12.6, ajv@^6.10.0, ajv@^6.10.2, ajv@^6.12.2, ajv@^6.12.3, ajv@^6.12.5:
     json-schema-traverse "^0.4.1"
     uri-js "^4.2.2"
 
-amqp-connection-manager@^3.0.0:
-  version "3.9.0"
-  resolved "https://registry.yarnpkg.com/amqp-connection-manager/-/amqp-connection-manager-3.9.0.tgz#aebebfebd506449b0831e2669d5f89005534392e"
-  integrity sha512-ZKw9ckJKz40Lc2pC7DY0NVocpzPalMaCgv0sBn+N4er2QFAJul9pIiMOm/FsPHeCzB+FulV7PckOpmZvWvewGQ==
-  dependencies:
-    promise-breaker "^5.0.0"
-
-amqp-connection-manager@^4.1.1:
+amqp-connection-manager@4.1.1:
   version "4.1.1"
   resolved "https://registry.yarnpkg.com/amqp-connection-manager/-/amqp-connection-manager-4.1.1.tgz#15ddc23b823ebba133efbe6629fba6d57cdd5f15"
   integrity sha512-vkEwurqrVu4O44+lmGZHJs2pPWHU746lc81UCrp+IYusBt+F09rVMjgBPnTv28NzkC+9HhQUIEz80xwTpz0bYA==
+  dependencies:
+    promise-breaker "^5.0.0"
+
+amqp-connection-manager@^3.0.0, amqp-connection-manager@^3.7.0:
+  version "3.9.0"
+  resolved "https://registry.yarnpkg.com/amqp-connection-manager/-/amqp-connection-manager-3.9.0.tgz#aebebfebd506449b0831e2669d5f89005534392e"
+  integrity sha512-ZKw9ckJKz40Lc2pC7DY0NVocpzPalMaCgv0sBn+N4er2QFAJul9pIiMOm/FsPHeCzB+FulV7PckOpmZvWvewGQ==
   dependencies:
     promise-breaker "^5.0.0"
 
@@ -2102,6 +2102,14 @@ chalk@^4.0.0, chalk@^4.1.0:
     ansi-styles "^4.1.0"
     supports-color "^7.1.0"
 
+chalk@^4.1.2:
+  version "4.1.2"
+  resolved "https://registry.yarnpkg.com/chalk/-/chalk-4.1.2.tgz#aac4e2b7734a740867aeb16bf02aad556a1e7a01"
+  integrity sha512-oKnbhFyRIXpUuez8iBMmyEa4nbj4IOQyuhc/wy9kY7/WVPcwIO9VA668Pu8RkO7+0G76SLROeyw9CpQ061i4mA==
+  dependencies:
+    ansi-styles "^4.1.0"
+    supports-color "^7.1.0"
+
 char-regex@^1.0.2:
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/char-regex/-/char-regex-1.0.2.tgz#d744358226217f981ed58f479b1d6bcc29545dcf"
@@ -2164,6 +2172,11 @@ class-transformer@0.2.3:
   resolved "https://registry.yarnpkg.com/class-transformer/-/class-transformer-0.2.3.tgz#598c92ca71dcca73f91ccb875d74a3847ccfa32d"
   integrity sha512-qsP+0xoavpOlJHuYsQJsN58HXSl8Jvveo+T37rEvCEeRfMWoytAyR0Ua/YsFgpM6AZYZ/og2PJwArwzJl1aXtQ==
 
+class-transformer@^0.4.0:
+  version "0.4.1"
+  resolved "https://registry.yarnpkg.com/class-transformer/-/class-transformer-0.4.1.tgz#eb86449fb5dc8333acbf880c96214acfa0d8dedf"
+  integrity sha512-mbBtth1BFa+pN2fmx6/NmMNxxyu9Mw9rx3rzKWBH7yoG+bfSoJOnEJ3qmB6yEKvoO502zUxSV2AqN7EUypC2Tg==
+
 class-utils@^0.3.5:
   version "0.3.6"
   resolved "https://registry.yarnpkg.com/class-utils/-/class-utils-0.3.6.tgz#f93369ae8b9a7ce02fd41faad0ca83033190c463"
@@ -2182,6 +2195,14 @@ class-validator@0.11.0:
     "@types/validator" "10.11.3"
     google-libphonenumber "^3.1.6"
     validator "12.0.0"
+
+class-validator@^0.13.1:
+  version "0.13.2"
+  resolved "https://registry.yarnpkg.com/class-validator/-/class-validator-0.13.2.tgz#64b031e9f3f81a1e1dcd04a5d604734608b24143"
+  integrity sha512-yBUcQy07FPlGzUjoLuUfIOXzgynnQPPruyK1Ge2B74k9ROwnle1E+NxLWnUv5OLU8hA/qL5leAE9XnXq3byaBw==
+  dependencies:
+    libphonenumber-js "^1.9.43"
+    validator "^13.7.0"
 
 cli-color@2.0.0:
   version "2.0.0"
@@ -5095,6 +5116,11 @@ levn@^0.4.1:
     prelude-ls "^1.2.1"
     type-check "~0.4.0"
 
+libphonenumber-js@^1.9.43:
+  version "1.10.4"
+  resolved "https://registry.yarnpkg.com/libphonenumber-js/-/libphonenumber-js-1.10.4.tgz#90397f0ed620262570a32244c9fbc389cc417ce4"
+  integrity sha512-9QWxEk4GW5RDnFzt8UtyRENfFpAN8u7Sbf9wf32tcXY9tdtnz1dKHIBwW2Wnfx8ypXJb9zUnTpK9aQJ/B8AlnA==
+
 lines-and-columns@^1.1.6:
   version "1.1.6"
   resolved "https://registry.yarnpkg.com/lines-and-columns/-/lines-and-columns-1.1.6.tgz#1c00c743b433cd0a4e80758f7b64a57440d9ff00"
@@ -5533,6 +5559,19 @@ nest-influxdb@^0.0.3:
   version "0.0.3"
   resolved "https://registry.yarnpkg.com/nest-influxdb/-/nest-influxdb-0.0.3.tgz#97215d63843fa6734f4aa8713f54782bc02c7e0b"
   integrity sha512-3FecWljPcWTDC69G7RuTAGl5IJt2DqiklGaxhxHMgoSAm+luRj8xSvobXajPU/aylSF+uL24ZxGycytS72t74g==
+
+nestjs-rmq@^2.7.2:
+  version "2.7.2"
+  resolved "https://registry.yarnpkg.com/nestjs-rmq/-/nestjs-rmq-2.7.2.tgz#a0fa603a292d5678aafc679fca588822bee6a51a"
+  integrity sha512-2JWMOmpPAV/wza/iHm4Jcu+qEYLcZQrBzDT4QAzQaphj2p+5hUGYBkaQCmtP3xZ/2mfSu7Q+5DgKN7qIvbc7+w==
+  dependencies:
+    "@types/amqplib" "^0.8.2"
+    amqp-connection-manager "^3.7.0"
+    amqplib "^0.8.0"
+    chalk "^4.1.2"
+    class-transformer "^0.4.0"
+    class-validator "^0.13.1"
+    reflect-metadata "^0.1.13"
 
 next-tick@1:
   version "1.1.0"
@@ -7977,6 +8016,11 @@ validator@12.0.0:
   version "12.0.0"
   resolved "https://registry.yarnpkg.com/validator/-/validator-12.0.0.tgz#fb33221f5320abe2422cda2f517dc3838064e813"
   integrity sha512-r5zA1cQBEOgYlesRmSEwc9LkbfNLTtji+vWyaHzRZUxCTHdsX3bd+sdHfs5tGZ2W6ILGGsxWxCNwT/h3IY/3ng==
+
+validator@^13.7.0:
+  version "13.7.0"
+  resolved "https://registry.yarnpkg.com/validator/-/validator-13.7.0.tgz#4f9658ba13ba8f3d82ee881d3516489ea85c0857"
+  integrity sha512-nYXQLCBkpJ8X6ltALua9dRrZDHVYxjJ1wgskNt1lH9fzGjs3tgojGSCBjmEPwkWS1y29+DrizMTW19Pr9uB2nw==
 
 vary@^1, vary@~1.1.2:
   version "1.1.2"

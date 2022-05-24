@@ -7,44 +7,46 @@ import {
   ManyToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
-import { Exclude } from 'class-transformer';
+import { Exclude, Expose } from 'class-transformer';
 import { Equipment } from './equipment.entity';
 import { ApiModelProperty } from '@nestjs/swagger';
 
 @Entity({ name: 'parameter_equipment' })
 export class ParameterEquipment extends BaseEntity {
+  @Exclude()
   @PrimaryGeneratedColumn()
   id: number;
 
+  @Expose()
   @ApiModelProperty({ type: 'real', description: 'Температура холодной воды' })
   @Column({
     nullable: true,
-    name: 'temp_cold_water',
+    name: 'temp_boiler',
     type: 'numeric',
     precision: 10,
     scale: 2,
   })
-  tempColdWater: number;
+  tempBoiler: number;
 
   @ApiModelProperty({ type: 'real', description: 'Температура горячей воды' })
   @Column({
     nullable: true,
-    name: 'temp_hot_water',
+    name: 'temp_chiller',
     type: 'numeric',
     precision: 10,
     scale: 2,
   })
-  tempHotWater: number;
+  tempChiller: number;
 
   @ApiModelProperty({ type: 'real', description: 'Температура CO2' })
   @Column({
     nullable: true,
-    name: 'temp_co2',
+    name: 'temp_env',
     type: 'numeric',
     precision: 10,
     scale: 2,
   })
-  tempCO2: number;
+  tempEnv: number;
 
   @ApiModelProperty({ type: 'integer', description: 'Давление холодной воды' })
   @Column({ nullable: true, name: 'pressure_cold_water' })
@@ -78,6 +80,13 @@ export class ParameterEquipment extends BaseEntity {
   @Column({ nullable: true, name: 'time_out_water' })
   timeOutWater: string;
 
+  @ApiModelProperty({
+    type: 'timestamp',
+    description: 'Время и тип выдачи воды',
+  })
+  @Column({ nullable: true, name: 'date_equipment' })
+  dateEquipment: Date;
+
   @ApiModelProperty({ type: 'integer', description: 'Расход энергии бойлера' })
   @Column({ nullable: true, name: 'energy_boiler' })
   energyBoiler: number;
@@ -93,6 +102,7 @@ export class ParameterEquipment extends BaseEntity {
   @Column({ nullable: true, name: 'energy_carbonize' })
   energyCarbonize: number;
 
+  @Exclude()
   @ManyToOne(
     () => Equipment,
     equipment => equipment.id,

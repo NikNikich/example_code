@@ -12,11 +12,16 @@ import * as config from 'config';
 import path = require('path');
 import { Auth } from '../../../../core/common/decorators/auth';
 import { UserRightsEnum } from '../../../shared/enum/user.rights.enum';
+import { ExtendedMessage, Message, RMQMessage, RMQRoute } from 'nestjs-rmq';
+import { RabbitService } from '../../../../application/services/rabbit.service';
 
 @ApiUseTags('root')
 @Controller()
 export class AppController {
-  constructor(private readonly appService: AppService) {}
+  constructor(
+    private readonly appService: AppService,
+    private readonly rabbitService: RabbitService,
+  ) {}
 
   @Get()
   @Auth([UserRightsEnum.ALL])
@@ -64,5 +69,12 @@ export class AppController {
     };
 
     return new SettingsResponse(requestId, settingsData);
+  }
+
+  @RMQRoute(config.get<string>('rabbitMQ.topic'), {
+    msgFactory: (msg: Message) => [msg.content.toString()],
+  })
+  async getMessage(data: string[], @RMQMessage msg: ExtendedMessage) {
+    await this.rabbitService.getMessage(data.toString(), msg.fields.routingKey);
   }
 }
