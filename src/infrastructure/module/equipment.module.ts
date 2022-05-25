@@ -10,6 +10,7 @@ import * as config from 'config';
 import { SocketService } from '../../application/services/socket.service';
 import { WebsocketTransport } from '../transport/websocket.transport';
 import { RoleRepository } from '../../core/domain/repository/role.repository';
+import { ParameterEquipmentLogRepository } from '../../core/domain/repository/parameter.equipment.log.repository';
 
 @Module({
   imports: [
@@ -21,6 +22,7 @@ import { RoleRepository } from '../../core/domain/repository/role.repository';
       },
     }),
     TypeOrmModule.forFeature([
+      ParameterEquipmentLogRepository,
       EquipmentRepository,
       UserRepository,
       RoleRepository,

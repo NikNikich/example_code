@@ -10,6 +10,7 @@ import { RoleRepository } from '../../core/domain/repository/role.repository';
 import { RabbitLog } from '../../core/domain/entity/log.entity';
 import { ParameterEquipment } from '../../core/domain/entity/parameter.equipment.entity';
 import { Equipment } from '../../core/domain/entity/equipment.entity';
+import { ParameterEquipmentLog } from '../../core/domain/entity/parameter.equipment.log.entity';
 
 @Module({
   imports: [
@@ -26,6 +27,7 @@ import { Equipment } from '../../core/domain/entity/equipment.entity';
       Equipment,
       RabbitLog,
       ParameterEquipment,
+      ParameterEquipmentLog,
     ]),
   ],
   controllers: [MachineLearningController],

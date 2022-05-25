@@ -18,16 +18,16 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { InfluxDB } from '@influxdata/influxdb-client';
 import * as config from 'config';
 import { InfluxDto } from '../../infrastructure/presenter/rest-api/documentation/influx/influx.dto';
-import { ParameterEquipment } from '../../core/domain/entity/parameter.equipment.entity';
 import { Equipment } from '../../core/domain/entity/equipment.entity';
+import { ParameterEquipmentLog } from '../../core/domain/entity/parameter.equipment.log.entity';
 
 Injectable();
 export class MachineLearningService {
   constructor(
     @InjectRepository(RabbitLog)
     private rabbitsRepository: Repository<RabbitLog>,
-    @InjectRepository(ParameterEquipment)
-    private parameterEquipmentRepository: Repository<ParameterEquipment>,
+    @InjectRepository(ParameterEquipmentLog)
+    private parameterEquipmentLogRepository: Repository<ParameterEquipmentLog>,
     @InjectRepository(Equipment)
     private equipmentRepository: Repository<Equipment>,
   ) {}
@@ -48,12 +48,14 @@ export class MachineLearningService {
       : [];
   }
 
-  async getLogs(filter: LogMachineLearningDto): Promise<ParameterEquipment[]> {
+  async getLogs(
+    filter: LogMachineLearningDto,
+  ): Promise<ParameterEquipmentLog[]> {
     const equipment = await this.equipmentRepository.findOne({
       where: { equipmentId: filter.id },
     });
     ErrorIf.isEmpty(equipment, EQUIPMENT_NOT_FOUND);
-    const where: FindConditions<ParameterEquipment> = await this.getWhereLogOption(
+    const where: FindConditions<ParameterEquipmentLog> = await this.getWhereLogOption(
       equipment,
       filter,
     );
@@ -72,7 +74,9 @@ export class MachineLearningService {
         throw ERROR_INFLUX_QUERY;
       }
     }
-    const findParameter = await this.parameterEquipmentRepository.find(where);
+    const findParameter = await this.parameterEquipmentLogRepository.find(
+      where,
+    );
     findParameter.forEach(param =>
       Object.keys(param).forEach(k => param[k] == null && delete param[k]),
     );
@@ -82,8 +86,8 @@ export class MachineLearningService {
   async getWhereLogOption(
     equipment: Equipment,
     filter: LogMachineLearningDto,
-  ): Promise<FindConditions<ParameterEquipment>> {
-    const where: FindConditions<ParameterEquipment> = { equipment };
+  ): Promise<FindConditions<ParameterEquipmentLog>> {
+    const where: FindConditions<ParameterEquipmentLog> = { equipment };
     if (Object.keys(filter).length > 0) {
       if (filter.fromDate) {
         const fromDate = new Date(filter.fromDate);

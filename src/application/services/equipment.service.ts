@@ -11,7 +11,7 @@ import {
   USER_NOT_FOUND,
   USER_PARENT_NOT_FOUND,
 } from '../../infrastructure/presenter/rest-api/errors/errors';
-import { IsNull } from 'typeorm';
+import { IsNull, MoreThanOrEqual, Not } from 'typeorm';
 import { UserRolesEnum } from '../../infrastructure/shared/enum/user.roles.enum';
 import { CreateEquipmentDto } from '../../infrastructure/presenter/rest-api/documentation/equipment/create.equipment.dto';
 import { UserRepository } from '../../core/domain/repository/user.repository';
@@ -28,11 +28,13 @@ import {
   ParameterEquipmentResponseDto,
 } from '../../infrastructure/response/equipment/parameter.equipment.response';
 import { ParameterEquipment } from '../../core/domain/entity/parameter.equipment.entity';
+import { ParameterEquipmentLogRepository } from '../../core/domain/repository/parameter.equipment.log.repository';
 
 @Injectable()
 export class EquipmentService {
   constructor(
     private equipmentRepository: EquipmentRepository,
+    private parameterEquipmentLogRepository: ParameterEquipmentLogRepository,
     private userRepository: UserRepository,
     private roleRepository: RoleRepository,
   ) {}
@@ -114,7 +116,10 @@ export class EquipmentService {
         : null;
     const returnParameter = new ParameterEquipmentResponseDto();
     returnParameter.equipmentParameters = parameterEquipment;
-    returnParameter.graph = this.getGraphEquipment(parameterEquipment);
+    returnParameter.graph = this.getGraphEquipment(
+      parameterEquipment,
+      equipment,
+    );
     return plainToClass(ParameterEquipmentResponseDto, returnParameter);
   }
 
@@ -208,6 +213,7 @@ export class EquipmentService {
       );
     }
   }
+
   async isLimitedWright(user: User): Promise<boolean> {
     const rights = await this.roleRepository.getRights(user.role);
     const roleLimitedWrightEquipment = rights.find(
@@ -287,9 +293,38 @@ export class EquipmentService {
 
   private getGraphEquipment(
     parameterEquipment: ParameterEquipment,
+    equipment: Equipment,
   ): GraphResponseDto[] {
     const parameterEquipmentGraph: GraphResponseDto[] = [];
     if (parameterEquipment) {
+      const endDate = new Date(Date.now());
+      const startDate = new Date(Date.now());
+      startDate.setDate(startDate.getDate() - 1);
+      const log = this.parameterEquipmentLogRepository.find({
+        where: [
+          {
+            tempBoiler: Not(IsNull()),
+            dateEquipment: MoreThanOrEqual(startDate),
+          },
+          {
+            tempChiller: Not(IsNull()),
+            dateEquipment: MoreThanOrEqual(startDate),
+          },
+          { tempEnv: Not(IsNull()), dateEquipment: MoreThanOrEqual(startDate) },
+          {
+            pressureHotWater: Not(IsNull()),
+            dateEquipment: MoreThanOrEqual(startDate),
+          },
+          {
+            pressureColdWater: Not(IsNull()),
+            dateEquipment: MoreThanOrEqual(startDate),
+          },
+          {
+            pressureCO2: Not(IsNull()),
+            dateEquipment: MoreThanOrEqual(startDate),
+          },
+        ],
+      });
       for (let _i = 0; _i < this.lengthGraphParameterEquipment; _i++) {
         const graph = new GraphResponseDto();
         const tempHotWater = parameterEquipment.tempBoiler
