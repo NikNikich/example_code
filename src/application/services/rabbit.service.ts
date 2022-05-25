@@ -104,13 +104,17 @@ export class RabbitService {
           if (tempData[0] && tempData[1]) {
             switch (tempData[0]) {
               case this.tempBoiler:
-                parameterEquipment.tempBoiler = Number(tempData[1]);
+                parameterEquipment.tempBoiler = Number(
+                  tempData[1].slice(0, -1),
+                );
                 break;
               case this.tempChiller:
-                parameterEquipment.tempChiller = Number(tempData[1]);
+                parameterEquipment.tempChiller = Number(
+                  tempData[1].slice(0, -1),
+                );
                 break;
               case this.tempEnv:
-                parameterEquipment.tempEnv = Number(tempData[1]);
+                parameterEquipment.tempEnv = Number(tempData[1].slice(0, -1));
                 break;
               default:
                 break;
@@ -135,13 +139,19 @@ export class RabbitService {
           if (pressureData[0] && pressureData[1]) {
             switch (pressureData[0]) {
               case this.pressureCold:
-                parameterEquipment.pressureColdWater = Number(pressureData[1]);
+                parameterEquipment.pressureColdWater = Number(
+                  pressureData[1].slice(0, -1),
+                );
                 break;
               case this.pressureHot:
-                parameterEquipment.pressureHotWater = Number(pressureData[1]);
+                parameterEquipment.pressureHotWater = Number(
+                  pressureData[1].slice(0, -1),
+                );
                 break;
               case this.pressureCo2:
-                parameterEquipment.pressureCO2 = Number(pressureData[1]);
+                parameterEquipment.pressureCO2 = Number(
+                  pressureData[1].slice(0, -1),
+                );
                 break;
               default:
                 break;
