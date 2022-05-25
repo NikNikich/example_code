@@ -102,19 +102,23 @@ export class RabbitService {
         if (message.length > 1) {
           const tempData = message.split('=');
           if (tempData[0] && tempData[1]) {
+            const lengthData1 =
+              tempData[1].length > 1 ? tempData[1].length - 1 : 0;
             switch (tempData[0]) {
               case this.tempBoiler:
                 parameterEquipment.tempBoiler = Number(
-                  tempData[1].slice(0, -1),
+                  tempData[1].slice(0, lengthData1),
                 );
                 break;
               case this.tempChiller:
                 parameterEquipment.tempChiller = Number(
-                  tempData[1].slice(0, -1),
+                  tempData[1].slice(0, lengthData1),
                 );
                 break;
               case this.tempEnv:
-                parameterEquipment.tempEnv = Number(tempData[1].slice(0, -1));
+                parameterEquipment.tempEnv = Number(
+                  tempData[1].slice(0, lengthData1),
+                );
                 break;
               default:
                 break;
@@ -137,20 +141,22 @@ export class RabbitService {
         if (message.length > 1) {
           const pressureData = message.split('=');
           if (pressureData[0] && pressureData[1]) {
+            const lengthData1 =
+              pressureData[1].length > 1 ? pressureData[1].length - 1 : 0;
             switch (pressureData[0]) {
               case this.pressureCold:
                 parameterEquipment.pressureColdWater = Number(
-                  pressureData[1].slice(0, -1),
+                  pressureData[1].slice(0, lengthData1),
                 );
                 break;
               case this.pressureHot:
                 parameterEquipment.pressureHotWater = Number(
-                  pressureData[1].slice(0, -1),
+                  pressureData[1].slice(0, lengthData1),
                 );
                 break;
               case this.pressureCo2:
                 parameterEquipment.pressureCO2 = Number(
-                  pressureData[1].slice(0, -1),
+                  pressureData[1].slice(0, lengthData1),
                 );
                 break;
               default:
