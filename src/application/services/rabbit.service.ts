@@ -7,11 +7,15 @@ import { ParameterEquipmentRepository } from '../../core/domain/repository/param
 import { EquipmentRepository } from '../../core/domain/repository/equipment.repository';
 import { ErrorIf } from '../../infrastructure/presenter/rest-api/errors/error.if';
 import { EQUIPMENT_NOT_FOUND } from '../../infrastructure/presenter/rest-api/errors/errors';
+import { ParameterEquipmentLogRepository } from '../../core/domain/repository/parameter.equipment.log.repository';
+import { ParameterEquipmentLog } from '../../core/domain/entity/parameter.equipment.log.entity';
+import { Equipment } from '../../core/domain/entity/equipment.entity';
 
 @Injectable()
 export class RabbitService {
   constructor(
     private parameterEquipmentRepository: ParameterEquipmentRepository,
+    private parameterEquipmentLogRepository: ParameterEquipmentLogRepository,
     private rabbitLogRepository: RabbitLogRepository,
     private equipmentRepository: EquipmentRepository,
   ) {}
@@ -37,10 +41,11 @@ export class RabbitService {
       where: { equipmentId: log.snEquipment },
     });
     ErrorIf.isEmpty(equipment, EQUIPMENT_NOT_FOUND);
-    const parameterEquipment = await this.getMessageParsing(msg);
-    if (parameterEquipment) {
-      parameterEquipment.equipment = equipment;
-      await this.parameterEquipmentRepository.save(parameterEquipment);
+    const parameterEquipmentLog = await this.getMessageParsing(msg);
+    if (parameterEquipmentLog) {
+      await this.saveLog(parameterEquipmentLog, equipment);
+      parameterEquipmentLog.equipment = equipment;
+      await this.parameterEquipmentLogRepository.save(parameterEquipmentLog);
     }
   }
 
@@ -55,7 +60,7 @@ export class RabbitService {
 
   private async getMessageParsing(
     msg: string,
-  ): Promise<ParameterEquipment | null> {
+  ): Promise<ParameterEquipmentLog | null> {
     if (msg && msg.length > 5) {
       const msgSplit = msg.trim().split(' ');
       if (msgSplit.length > 2) {
@@ -89,10 +94,10 @@ export class RabbitService {
 
   private async getTempDataParsing(
     msg: string,
-  ): Promise<ParameterEquipment | null> {
+  ): Promise<ParameterEquipmentLog | null> {
     if (msg && msg.length > 5) {
       const msgSplit = msg.trim().split(',');
-      const parameterEquipment = new ParameterEquipment();
+      const parameterEquipment = new ParameterEquipmentLog();
       msgSplit.forEach(message => {
         if (message.length > 1) {
           const tempData = message.split('=');
@@ -120,10 +125,10 @@ export class RabbitService {
 
   private async getPressureDataParsing(
     msg: string,
-  ): Promise<ParameterEquipment | null> {
+  ): Promise<ParameterEquipmentLog | null> {
     if (msg && msg.length > 5) {
       const msgSplit = msg.trim().split(',');
-      const parameterEquipment = new ParameterEquipment();
+      const parameterEquipment = new ParameterEquipmentLog();
       msgSplit.forEach(message => {
         if (message.length > 1) {
           const pressureData = message.split('=');
@@ -147,5 +152,44 @@ export class RabbitService {
       return parameterEquipment;
     }
     return null;
+  }
+
+  private async saveLog(
+    log: ParameterEquipmentLog,
+    equipment: Equipment,
+  ): Promise<void> {
+    if (log) {
+      let parameterEquipment = await this.parameterEquipmentRepository.findOne({
+        where: { equipment: equipment },
+      });
+      if (!parameterEquipment) {
+        parameterEquipment = new ParameterEquipment();
+        parameterEquipment.equipment = equipment;
+      }
+
+      parameterEquipment.pressureColdWater = log.pressureColdWater
+        ? log.pressureColdWater
+        : parameterEquipment.pressureColdWater;
+      parameterEquipment.pressureHotWater = log.pressureHotWater
+        ? log.pressureHotWater
+        : parameterEquipment.pressureHotWater;
+      parameterEquipment.pressureCO2 = log.pressureCO2
+        ? log.pressureCO2
+        : parameterEquipment.pressureCO2;
+      parameterEquipment.tempEnv = log.tempEnv
+        ? log.tempEnv
+        : parameterEquipment.tempEnv;
+      parameterEquipment.tempChiller = log.tempChiller
+        ? log.tempChiller
+        : parameterEquipment.tempChiller;
+      parameterEquipment.tempBoiler = log.tempBoiler
+        ? log.tempBoiler
+        : parameterEquipment.tempBoiler;
+      parameterEquipment.dateEquipment = log.dateEquipment
+        ? log.dateEquipment
+        : parameterEquipment.dateEquipment;
+
+      await this.parameterEquipmentRepository.save(parameterEquipment);
+    }
   }
 }

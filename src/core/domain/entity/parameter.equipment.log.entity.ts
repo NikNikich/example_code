@@ -11,8 +11,8 @@ import { Exclude, Expose } from 'class-transformer';
 import { Equipment } from './equipment.entity';
 import { ApiModelProperty } from '@nestjs/swagger';
 
-@Entity({ name: 'parameter_equipment' })
-export class ParameterEquipment extends BaseEntity {
+@Entity({ name: 'parameter_equipment_log' })
+export class ParameterEquipmentLog extends BaseEntity {
   @Exclude()
   @PrimaryGeneratedColumn()
   id: number;
@@ -80,6 +80,13 @@ export class ParameterEquipment extends BaseEntity {
   @Column({ nullable: true, name: 'time_out_water' })
   timeOutWater: string;
 
+  @ApiModelProperty({
+    type: 'timestamp',
+    description: 'Время от оборудования',
+  })
+  @Column({ nullable: true, name: 'date_equipment' })
+  dateEquipment: Date;
+
   @ApiModelProperty({ type: 'integer', description: 'Расход энергии бойлера' })
   @Column({ nullable: true, name: 'energy_boiler' })
   energyBoiler: number;
@@ -94,14 +101,6 @@ export class ParameterEquipment extends BaseEntity {
   })
   @Column({ nullable: true, name: 'energy_carbonize' })
   energyCarbonize: number;
-
-  @Exclude()
-  @ApiModelProperty({
-    type: 'timestamp',
-    description: 'Время от оборудования',
-  })
-  @Column({ nullable: true, name: 'date_equipment' })
-  dateEquipment: Date;
 
   @Exclude()
   @ManyToOne(

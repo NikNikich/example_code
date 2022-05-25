@@ -21,6 +21,7 @@ import { RabbitMiddle } from '../middle/rabbit.middle';
 import { RabbitIntercepter } from '../interceptor/rabbit.intercepter';
 import { EquipmentRepository } from '../../core/domain/repository/equipment.repository';
 import * as config from 'config';
+import { ParameterEquipmentLogRepository } from '../../core/domain/repository/parameter.equipment.log.repository';
 
 @Module({
   imports: [
@@ -29,6 +30,7 @@ import * as config from 'config';
       RoleRepository,
       RabbitLogRepository,
       ParameterEquipmentRepository,
+      ParameterEquipmentLogRepository,
       EquipmentRepository,
     ]),
     RMQModule.forRoot({
