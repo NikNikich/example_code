@@ -11,6 +11,7 @@ import {
   Not,
   IsNull,
   Repository,
+  Between,
 } from 'typeorm';
 import { RabbitLog } from '../../core/domain/entity/log.entity';
 import { LogMachineLearningDto } from '../../infrastructure/presenter/rest-api/documentation/machine_learning/log.machine_learning.dto';
@@ -89,11 +90,14 @@ export class MachineLearningService {
   ): Promise<FindConditions<ParameterEquipmentLog>> {
     const where: FindConditions<ParameterEquipmentLog> = { equipment };
     if (Object.keys(filter).length > 0) {
-      if (filter.fromDate) {
+      if (filter.fromDate && filter.toDate && filter.toDate > filter.fromDate) {
+        const fromDate = new Date(filter.fromDate);
+        const toDate = new Date(filter.toDate);
+        where[this.logDate] = Between(fromDate, toDate);
+      } else if (filter.fromDate) {
         const fromDate = new Date(filter.fromDate);
         where[this.logDate] = MoreThanOrEqual(fromDate);
-      }
-      if (filter.toDate) {
+      } else if (filter.toDate) {
         const toDate = new Date(filter.toDate);
         where[this.logDate] = LessThanOrEqual(toDate);
       }
