@@ -22,14 +22,48 @@ export class RabbitService {
 
   private snEquipment = 'dfgg4353hhh';
   private regexp = new RegExp('([^.]+)', 'g');
-  private temp = 'temp';
-  private pressure = 'pressure';
-  private tempBoiler = 'boiler';
-  private tempChiller = 'chiller';
-  private tempEnv = 'env';
-  private pressureCold = 'cold';
-  private pressureHot = 'hot';
-  private pressureCo2 = 'co2';
+
+  private id = 'id';
+  private createdAt = 'createdAt';
+
+  private findProperties = {
+    temp: 'temp',
+    tempBoiler: 'boiler',
+    tempChiller: 'chiller',
+    tempEnv: 'env',
+
+    pressure: 'pressure',
+    pressureCold: 'cold',
+    pressureHot: 'hot',
+    pressureCo2: 'co2',
+
+    waterflow: 'pressure',
+    waterflowCold: 'cold',
+    waterflowHot: 'hot',
+    waterflowSpark: 'spark',
+
+    energy: 'energy',
+    energyBoiler: 'boiler',
+    energyChiller: 'chiller',
+    energyCarb: 'carb',
+
+    stopServe: 'stop_serve',
+    stopServeType: 'type',
+    stopServeDuration: 'duration',
+
+    startServe: 'start_serve',
+    startServeType: 'type',
+    startServeSensor: 'sensor',
+
+    carbStatus: 'carb_status',
+    chilStatus: 'chil_status',
+    boilStatus: 'boil_status',
+    contState: 'cont_state',
+    cErr: 'c_err',
+    cPo: 'c_po',
+    cDi: 'c_di',
+    val: 'val',
+  };
 
   public async getMessage(msg: string, routingKey: string): Promise<void> {
     const log = new RabbitLog();
@@ -64,27 +98,68 @@ export class RabbitService {
     if (msg && msg.length > 5) {
       const msgSplit = msg.trim().split(' ');
       if (msgSplit.length > 2) {
+        let parameterEquipment: ParameterEquipmentLog | null = null;
+        const timestamp = +msgSplit[2];
         switch (msgSplit[0]) {
-          case this.temp:
-            const tempDataParsing = await this.getTempDataParsing(msgSplit[1]);
-            const timestampT = +msgSplit[2];
-            if (tempDataParsing && timestampT && timestampT > 100000) {
-              tempDataParsing.dateEquipment = new Date(timestampT);
-              return tempDataParsing;
-            }
+          case this.findProperties.temp:
+            parameterEquipment = await this.getTempDataParsing(msgSplit[1]);
             break;
-          case this.pressure:
-            const pressureEquipment = await this.getPressureDataParsing(
+          case this.findProperties.pressure:
+            parameterEquipment = await this.getPressureDataParsing(msgSplit[1]);
+            break;
+          case this.findProperties.waterflow:
+            parameterEquipment = await this.getWaterflowDataParsing(
               msgSplit[1],
             );
-            const timestampP = +msgSplit[2];
-            if (pressureEquipment && timestampP && timestampP > 100000) {
-              pressureEquipment.dateEquipment = new Date(timestampP);
-              return pressureEquipment;
-            }
+            break;
+          case this.findProperties.energy:
+            parameterEquipment = await this.getEnergyDataParsing(msgSplit[1]);
+            break;
+          case this.findProperties.stopServe:
+            parameterEquipment = await this.getStopServeDataParsing(
+              msgSplit[1],
+            );
+            break;
+          case this.findProperties.startServe:
+            parameterEquipment = await this.getStartServeDataParsing(
+              msgSplit[1],
+            );
+            break;
+          case this.findProperties.carbStatus:
+            parameterEquipment = await this.getCarbStatusDataParsing(
+              msgSplit[1],
+            );
+            break;
+          case this.findProperties.chilStatus:
+            parameterEquipment = await this.getChilStatusDataParsing(
+              msgSplit[1],
+            );
+            break;
+          case this.findProperties.boilStatus:
+            parameterEquipment = await this.getBoilStatusDataParsing(
+              msgSplit[1],
+            );
+            break;
+          case this.findProperties.contState:
+            parameterEquipment = await this.getContStateDataParsing(
+              msgSplit[1],
+            );
+            break;
+          case this.findProperties.cErr:
+            parameterEquipment = await this.getCErrDataParsing(msgSplit[1]);
+            break;
+          case this.findProperties.cPo:
+            parameterEquipment = await this.getCpoDataParsing(msgSplit[1]);
+            break;
+          case this.findProperties.cDi:
+            parameterEquipment = await this.getCDiDataParsing(msgSplit[1]);
             break;
           default:
-            break;
+            return null;
+        }
+        if (parameterEquipment && timestamp && timestamp > 100000) {
+          parameterEquipment.dateEquipment = new Date(timestamp);
+          return parameterEquipment;
         }
         return null;
       }
@@ -103,18 +178,92 @@ export class RabbitService {
           const tempData = message.split('=');
           if (tempData[0] && tempData[1]) {
             switch (tempData[0]) {
-              case this.tempBoiler:
+              case this.findProperties.tempBoiler:
                 parameterEquipment.tempBoiler = Number(
                   tempData[1].slice(0, -1),
                 );
                 break;
-              case this.tempChiller:
+              case this.findProperties.tempChiller:
                 parameterEquipment.tempChiller = Number(
                   tempData[1].slice(0, -1),
                 );
                 break;
-              case this.tempEnv:
+              case this.findProperties.tempEnv:
                 parameterEquipment.tempEnv = Number(tempData[1].slice(0, -1));
+                break;
+              default:
+                break;
+            }
+          }
+        }
+      });
+      return parameterEquipment;
+    }
+    return null;
+  }
+
+  private async getWaterflowDataParsing(
+    msg: string,
+  ): Promise<ParameterEquipmentLog | null> {
+    if (msg && msg.length > 5) {
+      const msgSplit = msg.trim().split(',');
+      const parameterEquipment = new ParameterEquipmentLog();
+      msgSplit.forEach(message => {
+        if (message.length > 1) {
+          const tempData = message.split('=');
+          if (tempData[0] && tempData[1]) {
+            switch (tempData[0]) {
+              case this.findProperties.waterflowHot:
+                parameterEquipment.waterflowHot = Number(
+                  tempData[1].slice(0, -1),
+                );
+                break;
+              case this.findProperties.waterflowCold:
+                parameterEquipment.waterflowCold = Number(
+                  tempData[1].slice(0, -1),
+                );
+                break;
+              case this.findProperties.waterflowSpark:
+                parameterEquipment.waterflowSpark = Number(
+                  tempData[1].slice(0, -1),
+                );
+                break;
+              default:
+                break;
+            }
+          }
+        }
+      });
+      return parameterEquipment;
+    }
+    return null;
+  }
+
+  private async getEnergyDataParsing(
+    msg: string,
+  ): Promise<ParameterEquipmentLog | null> {
+    if (msg && msg.length > 5) {
+      const msgSplit = msg.trim().split(',');
+      const parameterEquipment = new ParameterEquipmentLog();
+      msgSplit.forEach(message => {
+        if (message.length > 1) {
+          const tempData = message.split('=');
+          if (tempData[0] && tempData[1]) {
+            switch (tempData[0]) {
+              case this.findProperties.energyCarb:
+                parameterEquipment.energyCarbonize = Number(
+                  tempData[1].slice(0, -1),
+                );
+                break;
+              case this.findProperties.energyChiller:
+                parameterEquipment.energyChiller = Number(
+                  tempData[1].slice(0, -1),
+                );
+                break;
+              case this.findProperties.energyBoiler:
+                parameterEquipment.energyBoiler = Number(
+                  tempData[1].slice(0, -1),
+                );
                 break;
               default:
                 break;
@@ -138,17 +287,17 @@ export class RabbitService {
           const pressureData = message.split('=');
           if (pressureData[0] && pressureData[1]) {
             switch (pressureData[0]) {
-              case this.pressureCold:
+              case this.findProperties.pressureCold:
                 parameterEquipment.pressureColdWater = Number(
                   pressureData[1].slice(0, -1),
                 );
                 break;
-              case this.pressureHot:
+              case this.findProperties.pressureHot:
                 parameterEquipment.pressureHotWater = Number(
                   pressureData[1].slice(0, -1),
                 );
                 break;
-              case this.pressureCo2:
+              case this.findProperties.pressureCo2:
                 parameterEquipment.pressureCO2 = Number(
                   pressureData[1].slice(0, -1),
                 );
@@ -160,6 +309,216 @@ export class RabbitService {
         }
       });
       return parameterEquipment;
+    }
+    return null;
+  }
+
+  private async getStopServeDataParsing(
+    msg: string,
+  ): Promise<ParameterEquipmentLog | null> {
+    if (msg && msg.length > 5) {
+      const msgSplit = msg.trim().split(',');
+      const parameterEquipment = new ParameterEquipmentLog();
+      msgSplit.forEach(message => {
+        if (message.length > 1) {
+          const pressureData = message.split('=');
+          if (pressureData[0] && pressureData[1]) {
+            switch (pressureData[0]) {
+              case this.findProperties.stopServeType:
+                parameterEquipment.stopServeType = Number(
+                  pressureData[1].slice(0, -1),
+                );
+                break;
+              case this.findProperties.stopServeDuration:
+                parameterEquipment.stopServeDuration = Number(
+                  pressureData[1].slice(0, -1),
+                );
+                break;
+              default:
+                break;
+            }
+          }
+        }
+      });
+      return parameterEquipment;
+    }
+    return null;
+  }
+
+  private async getStartServeDataParsing(
+    msg: string,
+  ): Promise<ParameterEquipmentLog | null> {
+    if (msg && msg.length > 5) {
+      const msgSplit = msg.trim().split(',');
+      const parameterEquipment = new ParameterEquipmentLog();
+      msgSplit.forEach(message => {
+        if (message.length > 1) {
+          const pressureData = message.split('=');
+          if (pressureData[0] && pressureData[1]) {
+            switch (pressureData[0]) {
+              case this.findProperties.startServeType:
+                parameterEquipment.startServeType = Number(
+                  pressureData[1].slice(0, -1),
+                );
+                break;
+              case this.findProperties.startServeSensor:
+                parameterEquipment.startServeSensor = Number(
+                  pressureData[1].slice(0, -1),
+                );
+                break;
+              default:
+                break;
+            }
+          }
+        }
+      });
+      return parameterEquipment;
+    }
+    return null;
+  }
+
+  private async getCarbStatusDataParsing(
+    msg: string,
+  ): Promise<ParameterEquipmentLog | null> {
+    if (msg && msg.length > 5) {
+      const pressureData = msg.split('=');
+      if (pressureData[0] && pressureData[1]) {
+        const parameterEquipment = new ParameterEquipmentLog();
+        switch (pressureData[0]) {
+          case this.findProperties.val:
+            parameterEquipment.statusCarbonize = Number(
+              pressureData[1].slice(0, -1),
+            );
+            break;
+          default:
+            break;
+        }
+        return parameterEquipment;
+      }
+    }
+    return null;
+  }
+
+  private async getChilStatusDataParsing(
+    msg: string,
+  ): Promise<ParameterEquipmentLog | null> {
+    if (msg && msg.length > 5) {
+      const pressureData = msg.split('=');
+      if (pressureData[0] && pressureData[1]) {
+        const parameterEquipment = new ParameterEquipmentLog();
+        switch (pressureData[0]) {
+          case this.findProperties.val:
+            parameterEquipment.statusChiller = Number(
+              pressureData[1].slice(0, -1),
+            );
+            break;
+          default:
+            break;
+        }
+        return parameterEquipment;
+      }
+    }
+    return null;
+  }
+
+  private async getBoilStatusDataParsing(
+    msg: string,
+  ): Promise<ParameterEquipmentLog | null> {
+    if (msg && msg.length > 5) {
+      const pressureData = msg.split('=');
+      if (pressureData[0] && pressureData[1]) {
+        const parameterEquipment = new ParameterEquipmentLog();
+        switch (pressureData[0]) {
+          case this.findProperties.val:
+            parameterEquipment.statusBoiler = Number(
+              pressureData[1].slice(0, -1),
+            );
+            break;
+          default:
+            break;
+        }
+        return parameterEquipment;
+      }
+    }
+    return null;
+  }
+
+  private async getContStateDataParsing(
+    msg: string,
+  ): Promise<ParameterEquipmentLog | null> {
+    if (msg && msg.length > 5) {
+      const pressureData = msg.split('=');
+      if (pressureData[0] && pressureData[1]) {
+        const parameterEquipment = new ParameterEquipmentLog();
+        switch (pressureData[0]) {
+          case this.findProperties.val:
+            parameterEquipment.contState = Number(pressureData[1].slice(0, -1));
+            break;
+          default:
+            break;
+        }
+        return parameterEquipment;
+      }
+    }
+    return null;
+  }
+
+  private async getCErrDataParsing(
+    msg: string,
+  ): Promise<ParameterEquipmentLog | null> {
+    if (msg && msg.length > 5) {
+      const pressureData = msg.split('=');
+      if (pressureData[0] && pressureData[1]) {
+        const parameterEquipment = new ParameterEquipmentLog();
+        switch (pressureData[0]) {
+          case this.findProperties.val:
+            parameterEquipment.cErr = Number(pressureData[1].slice(0, -1));
+            break;
+          default:
+            break;
+        }
+        return parameterEquipment;
+      }
+    }
+    return null;
+  }
+
+  private async getCpoDataParsing(
+    msg: string,
+  ): Promise<ParameterEquipmentLog | null> {
+    if (msg && msg.length > 5) {
+      const pressureData = msg.split('=');
+      if (pressureData[0] && pressureData[1]) {
+        const parameterEquipment = new ParameterEquipmentLog();
+        switch (pressureData[0]) {
+          case this.findProperties.val:
+            parameterEquipment.cPo = Number(pressureData[1].slice(0, -1));
+            break;
+          default:
+            break;
+        }
+        return parameterEquipment;
+      }
+    }
+    return null;
+  }
+
+  private async getCDiDataParsing(
+    msg: string,
+  ): Promise<ParameterEquipmentLog | null> {
+    if (msg && msg.length > 5) {
+      const pressureData = msg.split('=');
+      if (pressureData[0] && pressureData[1]) {
+        const parameterEquipment = new ParameterEquipmentLog();
+        switch (pressureData[0]) {
+          case this.findProperties.val:
+            parameterEquipment.cDi = Number(pressureData[1].slice(0, -1));
+            break;
+          default:
+            break;
+        }
+        return parameterEquipment;
+      }
     }
     return null;
   }
@@ -180,24 +539,12 @@ export class RabbitService {
       parameterEquipment.pressureColdWater = log.pressureColdWater
         ? log.pressureColdWater
         : parameterEquipment.pressureColdWater;
-      parameterEquipment.pressureHotWater = log.pressureHotWater
-        ? log.pressureHotWater
-        : parameterEquipment.pressureHotWater;
-      parameterEquipment.pressureCO2 = log.pressureCO2
-        ? log.pressureCO2
-        : parameterEquipment.pressureCO2;
-      parameterEquipment.tempEnv = log.tempEnv
-        ? log.tempEnv
-        : parameterEquipment.tempEnv;
-      parameterEquipment.tempChiller = log.tempChiller
-        ? log.tempChiller
-        : parameterEquipment.tempChiller;
-      parameterEquipment.tempBoiler = log.tempBoiler
-        ? log.tempBoiler
-        : parameterEquipment.tempBoiler;
-      parameterEquipment.dateEquipment = log.dateEquipment
-        ? log.dateEquipment
-        : parameterEquipment.dateEquipment;
+      for (const [key, value] of Object.entries(log)) {
+        if (key != this.id && key != this.createdAt && value) {
+          parameterEquipment[key] = value;
+        }
+        console.log(`${key}: ${value}`);
+      }
 
       await this.parameterEquipmentRepository.save(parameterEquipment);
     }

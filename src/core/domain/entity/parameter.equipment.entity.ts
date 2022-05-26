@@ -17,7 +17,6 @@ export class ParameterEquipment extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Expose()
   @ApiModelProperty({ type: 'real', description: 'Температура холодной воды' })
   @Column({
     nullable: true,
@@ -60,33 +59,25 @@ export class ParameterEquipment extends BaseEntity {
   @Column({ nullable: true, name: 'pressure_co2' })
   pressureCO2: number;
 
-  @ApiModelProperty({ type: 'varchar', description: 'Общий статус' })
-  @Column({ nullable: true, name: 'status_overall' })
-  statusOverall: string;
-
-  @ApiModelProperty({ type: 'varchar', description: 'Статус бойлера' })
+  @ApiModelProperty({ type: 'integer', description: 'Статус бойлера' })
   @Column({ nullable: true, name: 'status_boiler' })
-  statusBoiler: string;
+  statusBoiler: number;
 
-  @ApiModelProperty({ type: 'varchar', description: 'Стутус куллера' })
-  @Column({ nullable: true, name: 'status_cooler' })
-  statusCooler: string;
+  @ApiModelProperty({ type: 'integer', description: 'Стутус куллера' })
+  @Column({ nullable: true, name: 'status_chiller' })
+  statusChiller: number;
 
-  @ApiModelProperty({ type: 'varchar', description: 'Статус карбонайзера' })
+  @ApiModelProperty({ type: 'integer', description: 'Статус карбонайзера' })
   @Column({ nullable: true, name: 'status_carbonize' })
-  statusCarbonize: string;
-
-  @ApiModelProperty({ type: 'varchar', description: 'Время и тип выдачи воды' })
-  @Column({ nullable: true, name: 'time_out_water' })
-  timeOutWater: string;
+  statusCarbonize: number;
 
   @ApiModelProperty({ type: 'integer', description: 'Расход энергии бойлера' })
   @Column({ nullable: true, name: 'energy_boiler' })
   energyBoiler: number;
 
   @ApiModelProperty({ type: 'integer', description: 'Расход энергии куллера' })
-  @Column({ nullable: true, name: 'energy_cooler' })
-  energyCooler: number;
+  @Column({ nullable: true, name: 'energy_chiller' })
+  energyChiller: number;
 
   @ApiModelProperty({
     type: 'integer',
@@ -94,6 +85,83 @@ export class ParameterEquipment extends BaseEntity {
   })
   @Column({ nullable: true, name: 'energy_carbonize' })
   energyCarbonize: number;
+
+  @ApiModelProperty({
+    type: 'integer',
+    description: 'Расход воды бойлера',
+  })
+  @Column({ nullable: true, name: 'waterflow_hot' })
+  waterflowHot: number;
+
+  @ApiModelProperty({
+    type: 'integer',
+    description: 'Расход воды чиллера',
+  })
+  @Column({ nullable: true, name: 'waterflow_cold' })
+  waterflowCold: number;
+
+  @ApiModelProperty({
+    type: 'integer',
+    description: 'Расход воды карбонизатора',
+  })
+  @Column({ nullable: true, name: 'waterflow_spark' })
+  waterflowSpark: number;
+
+  @ApiModelProperty({
+    type: 'integer',
+    description: 'Битовая маска состояния цифровых входов',
+  })
+  @Column({ nullable: true, name: 'c_di' })
+  cDi: number;
+
+  @ApiModelProperty({
+    type: 'integer',
+    description: 'Битовая маска состояния силовых выходов контроллера',
+  })
+  @Column({ nullable: true, name: 'c_po' })
+  cPo: number;
+
+  @ApiModelProperty({
+    type: 'integer',
+    description: 'Битовая маска ошибок контроллера',
+  })
+  @Column({ nullable: true, name: 'c_err' })
+  cErr: number;
+
+  @ApiModelProperty({
+    type: 'integer',
+    description: 'Передает состояние контроллера',
+  })
+  @Column({ nullable: true, name: 'cont_state' })
+  contState: number;
+
+  @ApiModelProperty({
+    type: 'integer',
+    description: 'Тип воды при начале операции выдачи',
+  })
+  @Column({ nullable: true, name: 'start_serve_type' })
+  startServeType: number;
+
+  @ApiModelProperty({
+    type: 'integer',
+    description: 'Какой сенсор используется при выдаче воды',
+  })
+  @Column({ nullable: true, name: 'start_serve_sensor' })
+  startServeSensor: number;
+
+  @ApiModelProperty({
+    type: 'integer',
+    description: 'Тип овыданной',
+  })
+  @Column({ nullable: true, name: 'stop_serve_type' })
+  stopServeType: number;
+
+  @ApiModelProperty({
+    type: 'integer',
+    description: 'Время выданной воды',
+  })
+  @Column({ nullable: true, name: 'stop_serve_duration' })
+  stopServeDuration: number;
 
   @Exclude()
   @ApiModelProperty({
