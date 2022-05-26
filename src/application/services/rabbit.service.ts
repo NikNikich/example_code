@@ -37,7 +37,7 @@ export class RabbitService {
     pressureHot: 'hot',
     pressureCo2: 'co2',
 
-    waterflow: 'pressure',
+    waterflow: 'waterflow',
     waterflowCold: 'cold',
     waterflowHot: 'hot',
     waterflowSpark: 'spark',
