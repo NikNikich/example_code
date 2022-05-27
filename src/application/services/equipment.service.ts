@@ -38,6 +38,7 @@ export class EquipmentService {
     private userRepository: UserRepository,
     private roleRepository: RoleRepository,
   ) {}
+
   private engineerRelation = 'engineer';
   private managerRelation = 'manager';
   private ownerRelation = 'owner';
@@ -116,7 +117,7 @@ export class EquipmentService {
         : null;
     const returnParameter = new ParameterEquipmentResponseDto();
     returnParameter.equipmentParameters = parameterEquipment;
-    returnParameter.graph = this.getGraphEquipment(
+    returnParameter.graph = await this.getGraphEquipment(
       parameterEquipment,
       equipment,
     );
@@ -291,63 +292,127 @@ export class EquipmentService {
     );
   }
 
-  private getGraphEquipment(
+  private async getGraphEquipment(
     parameterEquipment: ParameterEquipment,
     equipment: Equipment,
-  ): GraphResponseDto[] {
+  ): Promise<GraphResponseDto[]> {
     const parameterEquipmentGraph: GraphResponseDto[] = [];
     if (parameterEquipment) {
-      const endDate = new Date(Date.now());
-      const startDate = new Date(Date.now());
+      let startDate = new Date(Date.now());
       startDate.setDate(startDate.getDate() - 1);
-      const log = this.parameterEquipmentLogRepository.find({
+      const logs = await this.parameterEquipmentLogRepository.find({
         where: [
           {
             tempBoiler: Not(IsNull()),
             dateEquipment: MoreThanOrEqual(startDate),
+            equipment,
           },
           {
             tempChiller: Not(IsNull()),
             dateEquipment: MoreThanOrEqual(startDate),
+            equipment,
           },
-          { tempEnv: Not(IsNull()), dateEquipment: MoreThanOrEqual(startDate) },
+          {
+            tempEnv: Not(IsNull()),
+            dateEquipment: MoreThanOrEqual(startDate),
+            equipment,
+          },
           {
             pressureHotWater: Not(IsNull()),
             dateEquipment: MoreThanOrEqual(startDate),
+            equipment,
           },
           {
             pressureColdWater: Not(IsNull()),
             dateEquipment: MoreThanOrEqual(startDate),
+            equipment,
           },
           {
             pressureCO2: Not(IsNull()),
             dateEquipment: MoreThanOrEqual(startDate),
+            equipment,
           },
         ],
       });
+      const endDate = new Date(startDate);
+      endDate.setHours(endDate.getHours() + 1);
+      let tempColdWater = 0;
+      let tempHotWater = 0;
+      let tempCo2 = 0;
+      let pressureColdWater = 0;
+      let pressureHotWater = 0;
+      let pressureCo2 = 0;
       for (let _i = 0; _i < this.lengthGraphParameterEquipment; _i++) {
         const graph = new GraphResponseDto();
-        const tempHotWater = parameterEquipment.tempBoiler
-          ? parameterEquipment.tempBoiler - (_i % 3) * 2
-          : null;
-        const tempColdWater = parameterEquipment.tempChiller
-          ? parameterEquipment.tempChiller + (_i % 3) * 3
-          : null;
-        const tempCo2 = parameterEquipment.tempEnv
-          ? parameterEquipment.tempEnv + (_i % 3) * 2
-          : null;
-        const pressureHotWater = parameterEquipment.pressureHotWater
-          ? parameterEquipment.pressureHotWater + (_i % 3)
-          : null;
-        const pressureColdWater = parameterEquipment.pressureColdWater
-          ? parameterEquipment.pressureColdWater - (_i % 3)
-          : null;
-        const pressureCo2 = parameterEquipment.pressureCO2
-          ? parameterEquipment.pressureCO2 - (_i % 3) * 2
-          : null;
+        if (logs.length > 0) {
+          const tempHotWaterFind = await logs.filter(
+            log =>
+              log.dateEquipment <= endDate &&
+              log.dateEquipment > startDate &&
+              log.tempBoiler,
+          );
+          tempHotWater =
+            tempHotWaterFind.length > 0
+              ? tempHotWaterFind[tempHotWaterFind.length - 1].tempBoiler
+              : tempHotWater;
+          const tempColdWaterFind = await logs.filter(
+            log =>
+              log.dateEquipment <= endDate &&
+              log.dateEquipment > startDate &&
+              log.tempChiller,
+          );
+          tempColdWater =
+            tempColdWaterFind.length > 0
+              ? tempColdWaterFind[tempColdWaterFind.length - 1].tempChiller
+              : tempColdWater;
+          const tempCo2Find = await logs.filter(
+            log =>
+              log.dateEquipment <= endDate &&
+              log.dateEquipment > startDate &&
+              log.tempEnv,
+          );
+          tempCo2 =
+            tempCo2Find.length > 0
+              ? tempCo2Find[tempCo2Find.length - 1].tempEnv
+              : tempCo2;
+          const pressureHotWaterFind = await logs.filter(
+            log =>
+              log.dateEquipment <= endDate &&
+              log.dateEquipment > startDate &&
+              log.pressureHotWater,
+          );
+          pressureHotWater =
+            pressureHotWaterFind.length > 0
+              ? pressureHotWaterFind[pressureHotWaterFind.length - 1]
+                  .pressureHotWater
+              : pressureHotWater;
+          const pressureColdWaterFind = await logs.filter(
+            log =>
+              log.dateEquipment <= endDate &&
+              log.dateEquipment > startDate &&
+              log.pressureColdWater,
+          );
+          pressureColdWater =
+            pressureColdWaterFind.length > 0
+              ? pressureColdWaterFind[pressureColdWaterFind.length - 1]
+                  .pressureColdWater
+              : pressureColdWater;
+          const pressureCo2Find = await logs.filter(
+            log =>
+              log.dateEquipment <= endDate &&
+              log.dateEquipment > startDate &&
+              log.pressureCO2,
+          );
+          pressureCo2 =
+            pressureCo2Find.length > 0
+              ? pressureCo2Find[pressureCo2Find.length - 1].pressureCO2
+              : pressureCo2;
+        }
+        startDate = new Date(endDate);
+        endDate.setHours(endDate.getHours() + 1);
         graph.tempColdWater = tempColdWater;
         graph.tempHotWater = tempHotWater;
-        graph.pressureCO2 = tempCo2;
+        graph.tempCO2 = tempCo2;
         graph.pressureColdWater = pressureColdWater;
         graph.pressureHotWater = pressureHotWater;
         graph.pressureCO2 = pressureCo2;
